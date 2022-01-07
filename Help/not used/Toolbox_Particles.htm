@@ -1,0 +1,44 @@
+<html>
+
+<head>
+<title>Particles Toolbox</title>
+<style>@import url(style.css);</style>
+</head>
+
+<body>
+
+<h1>Particles Toolbox</h1>
+
+The <b>Particles</b> toolbox controls the <A href="Particles.htm">display of particles</a> for
+MODFLOW 2000-GWT or MOC3D simulations.
+
+<ul>
+<li>If the <b>Particles</b> toolbox is not visible, display it by clicking 
+the <b>Toolbox</b> menu and selecting <b>Particles</b>.       
+
+<li>The text boxes in the <STRONG>Crop</STRONG> section allow you show only 
+  those particles in a subregion defined by the cropping planes, which are similar
+  to the <a href="Cropping.htm">cropping planes for solid and isosurfaces</a>. You may
+    <ul>
+    <li>Specify the <b>Min</b> and <b>Max</b> positions of the x, y, and z cropping planes.
+    (Min = 0, Max = 1)
+    <li>Specify the <b>Delta</b> value, which is used to increase or decrease the 
+    Min or Max position when the up or down arrow is clicked. (0.1)
+    </ul>
+  <b>Important Note:</b> Cropping does not go into effect when the up or down arrow is
+  clicked. You must click <b>Apply</b>.</li>
+
+<li>The edit boxes in the <b>Threshold</b> section allow you to show only those particles having 
+concentrations within the threshold range. To apply thresholding:
+    <ul>
+    <li>Specify the minimum and maximum values of the threshold range.
+    <li>Click <b>Apply</b>            
+    </ul>
+<li>The <b>Full</b> button sets the minimum and maximum values of the threshold range
+  respectively to the minimum and maximum particle concentrations at the current time
+step.
+
+<li>Particle size may be increased or decreased by clicking the up or down arrow next to the label "Size".
+</ul>
+</body>
+</html>

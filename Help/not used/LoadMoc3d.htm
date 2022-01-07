@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title>Loading MOC3D (Version 3.5) Data</title>
+<style>@import url(style.css);</style>
+</head>
+
+<body>
+
+<h1>Loading MOC3D (Version 3.5) Data</h1>
+
+<ol>
+<li>Click the <b>File</b> menu and select <b>New</b>.
+<li>If changes to the previous MV document have not been saved, a dialog box is displayed
+that allows you to click: <b>Yes</b> to save changes, or <b>No</b> to discard changes.
+<li>The Model Selection dialog box is displayed. Select <b>MOC3D (Version 3.5)</b> from the
+drop-list box, and then click <b>OK</b>. 
+<li>The MOC3D Data File dialog box is displayed. Specify the "name file" in the 
+first text box by clicking the corresponding <b>Browse</b> button and navigating to the
+file.
+<li>Specify the <A href="TopElevationFile.htm">top elevation file</A> in the 
+second text box by using the corresponding <b>Browse</b> button.
+<li>If pathlines have been calculated by MODPATH, the 
+  pathline file may be optionally entered into the third text box by using the 
+  corresponding <STRONG>Browse</STRONG> button. Note that 
+  the pathline file must be in the same folder as the "name" file. If pathlines 
+  were not calculated, leave
+the text box blank.
+<li>If the model has generated binary (unformatted) output data, the specify
+the <A href="BinaryDataType.htm">type of binary data</A> from the drop-list box.
+If no binary data are generated, ignore this step.  
+<li>Click <b>OK</b>. 
+  
+<li>The Data Selection dialog box is displayed. From the 
+  drop-list boxes, select the time for the initial display. (Note that the numbers in parentheses indicate the stress period,
+time step, and particle move.) Then click <b>OK</b>.</li>
+</ol>
+
+<p>
+After the model data are loaded, the opening display will be a 
+bounding box viewed from overhead (from +z axis toward -z direction) at the selected 
+time in Step 9 above.
+</p>
+
+<p>Concentrations at the selected time are used to set the <A href="ColorBar.html">color bar</A> as follows:
+<ul>
+<li>Red represents the maximum concentration.
+<li>Blue represents the minimum concentration.
+<li>However, if concentrations are uniform over the grid, 
+  then red represents c+1, and blue represents c-1, where c is the uniform 
+  concentration.
+  <P></P></li></ul>
+
+<p>If velocity data are available, then velocity vectors
+are scaled so that, for the selected time, the length of the vector with the 
+highest magnitude is approximately one-tenth the diagonal distance across the 
+<A href="AuxiliaryGraphicalObjects.htm">bounding box</A>.</p>
+
+</body>
+</html>

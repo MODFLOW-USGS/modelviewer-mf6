@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>Loading PHAST Data</title>
+<style>@import url(style.css);</style>
+</head>
+
+<body>
+
+<h1>Loading PHAST Data</h1>
+
+<ol>
+  <li>
+    Click the <b>File</b> menu and select <b>New</b>.
+  </li>
+  <li>
+    If changes to the previous MV document have not been saved, a dialog box is displayed
+    that allows you to click: <b>Yes</b> to save changes, or <b>No</b> to discard changes.
+  </li>
+  <li>
+    The Model Selection dialog box is displayed. Select <b>Phast HDF</b> from the
+    drop-list box, and then click <b>OK</b>.
+  </li>
+  <li>
+    The Phast Data File dialog box is displayed. Specify the HDF file in the
+    text box by clicking the corresponding <b>Browse</b> button and navigating to the
+    file.
+  </li>
+  <li>
+    Click <b>OK</b>.
+  </li>
+  <li>
+    The Data Selection dialog box is displayed. From the
+    drop-list boxes, select the time and data type for the initial display.
+    Then click <b>OK</b>.
+  </li>
+</ol>
+
+<p>
+After the model data are loaded, the opening display will be a
+bounding box viewed from overhead (from +z axis toward -z direction) at the selected
+time in Step 6 above.
+</p>
+
+<p>Scalar data (for example, heads, concentrations, etc.) are displayed by selecting
+solid or isosurface from the Show menu. Scalar values at the selected time are
+used to set the <A href="ColorBar.html">color bar</A> as follows:
+<ul>
+<li>Red represents the maximum scalar value.
+<li>Blue represents the minimum scalar value.
+<li>However, if scalar values are uniform over the grid,
+  then red represents s+1, and blue represents s-1, where s is the uniform
+  scalar value.
+  <P></P></li></ul>
+
+<p>Vector data are displayed by selecting Vectors from the Show menu.  If nodal
+velocity data are available, then the velocity vectors are scaled so that, for
+the selected time, the length of the vector with the highest magnitude is
+approximately one-tenth the diagonal distance across the
+<A href="AuxiliaryGraphicalObjects.htm">bounding box</A>.</p>
+
+</body>
+</html>

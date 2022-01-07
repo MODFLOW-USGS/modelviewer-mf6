@@ -1,0 +1,30 @@
+<html>
+
+<head>
+<title>Assuming All Active Cells</title>
+<style>@import url(style.css);</style>
+</head>
+
+<body>
+
+<h1>Assuming All Active Cells</h1>
+
+<ul>
+<li>The last item under the <b>Action</b> menu is the <b>Advanced</b>
+submenu, which contains the <b>Assume All Active Cells</b> command.
+
+<li>For <b>finite-difference</b> models (MODFLOW-2000, MODFLOW-2000 GWT, 
+MODFLOW-96, MOC3D, and MT3DMS), if all cells in the model grid are active, 
+invoking this command can speed up calculations required for graphical 
+rendering.
+
+<li>However, if the model grid contains inactive cells, this command should 
+not be invoked. Otherwise, inactive cells will be displayed as active.
+
+<li>For the <b>finite-element</b> model SUTRA, all cells are active, so this
+command is disabled.
+
+</ul>
+
+</body>
+</html>

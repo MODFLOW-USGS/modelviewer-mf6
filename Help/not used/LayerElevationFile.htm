@@ -1,0 +1,66 @@
+<html>
+
+<head>
+<title>Layer Elevation File</title>
+<style>@import url(style.css);</style>
+</head>
+
+<body>
+
+<h1>Layer Elevation File</h1>
+
+<p>
+Because the MODFLOW-96 input data do not always contain layer top and bottom elevations, 
+an extra text file is needed to supply these data for Model Viewer. This file is known as the 
+<b>layer elevation file</b> and must contain the following information.
+</p>
+
+
+<p>
+<br><b>Item 1</b> -- Confining Bed Codes. One number for each model layer. Free format.
+</p>
+<ul> 
+<li> 0 = no quasi 3-D confining layer below the model layer
+<li> 1 = a quasi 3-D confining layer exists below the 
+  model layer          
+</ul>
+
+<p>
+<br><b>Item 2</b> -- Elevation of top of layer 1 (top layer). Use MODFLOW 2D array reader format.
+</p>
+
+<p>
+<br><b>Item 3 and onward</b> (for each layer or quasi-3D confining layer) -- Elevation of bottom of 
+layer or quasi-3D confining layer. Use MODFLOW 2D array reader format.
+</p>
+
+<p>&nbsp;</p>
+
+<p>
+For example, if the model grid has 5 layers, and layers 1 and 3 have quasi-3D confining 
+layers, then the layer elevation file might look like the following 
+(words after the # symbol on the right are explanations and not part of the file):
+</p>
+
+<xmp>
+
+1 0 1 0 0	                             #confining bed codes
+constant  250.0	                         #top of model
+constant  150.0	                         #bottom of model layer 1 (top layer)
+constant  120.0	                         #bottom of layer 1 confining bed
+open/close  lay2.bot    1.0    (free)	 #bottom of model layer 2
+open/close  lay3.bot    1.0    (free)	 #bottom of model layer 3
+external  34    1.0    (free)	         #bottom of  layer 3 confining bed
+external  35    1.0    (free)	         #bottom of model layer 4
+open/close  lay5.bot    1.0    (free)	 #bottom of model layer 5
+
+</xmp>
+
+<p>
+    Note that the "open/close" method may be used only if the file is 
+not listed in the name file. If a file is listed in the "name" file, then use the 
+"external" method and specify the same unit number as that in the "name" file.
+</p>
+
+</body>
+</html>

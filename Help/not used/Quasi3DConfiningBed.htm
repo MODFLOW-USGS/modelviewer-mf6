@@ -1,0 +1,30 @@
+<html>
+
+<head>
+<title>Treatment of Quasi-3d Confining Bed</title>
+<style>@import url(style.css);</style>
+</head>
+
+<body>
+
+<h1>Treatment of Quasi-3d Confining Bed</h1>
+
+<ul>
+<li>MODFLOW-2000 and MODFLOW-96 allow for the presence of a
+quasi-3d confining bed below a model layer. This confining bed
+is not counted in the layer index. Hydraulic head and drawdown
+are not explicitly computer in the confining bed.
+
+<li>In Model Viewer, a quasi-3d confining bed is counted
+explicitly as a layer. Hydraulic head (and drawdown, if simulated)
+in the layer is obtained by linear interpolation using the values
+in the overlying and underlying aquifer layers.
+
+<li>The figure below shows the layer indexing convention used
+in MODFLOW and in Model Viewer.  
+</ul>
+
+<p align="center"><img src="quasi3d.bmp"></p>
+
+</body>
+</html>

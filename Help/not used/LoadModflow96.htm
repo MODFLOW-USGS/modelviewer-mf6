@@ -1,0 +1,61 @@
+<html>
+
+<head>
+<title>Loading MODFLOW-96 Data</title>
+<style>@import url(style.css);</style>
+</head>
+
+<body>
+
+<h1>Loading MODFLOW-96 Data</h1>
+
+<ol>
+<li>Click the <b>File</b> menu and select <b>New</b>.
+<li>If changes to the previous MV document have not been saved, a dialog box is displayed
+that allows you to click: <b>Yes</b> to save changes, or <b>No</b> to discard changes.
+<li>The Model Selection dialog box is displayed. Select <b>MODFLOW-96</b> from the
+drop-list box, and then click <b>OK</b>. 
+<li>The MODFLOW-96 Data File dialog box is displayed. Specify the "name" file in the 
+first text box by clicking the corresponding <b>Browse</b> button and navigating to the
+file.
+<li>Specify the <A href="LayerElevationFile.htm">layer elevation file</A> in the 
+second text box by using the corresponding <b>Browse</b> button.
+<li>If pathlines have been calculated by MODPATH, the 
+  pathline file may be optionally entered into the third text box by using the 
+  corresponding <STRONG>Browse</STRONG> button. Note that 
+  the pathline file must be in the same folder as the "name" file. If pathlines 
+  were not calculated, leave
+the text box blank.
+<li>If the model has generated binary (unformatted) output data, the specify
+the <A href="BinaryDataType.htm">type of binary data</A> from the drop-list box. 
+If no binary data are generated, ignore this step. 
+<li>Click <b>OK</b>. 
+  
+<li>The Data Selection dialog box is displayed. From the 
+  drop-list boxes, select the time and data type for the initial display. (Note that the numbers
+in parentheses indicate the stress period and time step.)&nbsp;Then click <b>OK</b>.</li>
+</ol>
+
+<p>
+After the model data are loaded, the initial display will be a 
+bounding box viewed from overhead (from +z axis toward -z direction) at the selected 
+time in Step 9 above.
+</p>
+
+<p>Scalar values (for example, heads, drawdown, etc.) at the selected time are 
+used to set the <A href="ColorBar.html">color bar</A> as follows:
+<ul>
+<li>Red represents the maximum scalar value.
+<li>Blue represents the minimum scalar value.
+<li>However, if scalar values are uniform over the grid, 
+  then red represents s+1, and blue represents s-1, where s is the uniform 
+  scalar value.
+  <P></P></li></ul>
+
+<p>If cell-by-cell flow data are available, then the vectors specific discharge vectors
+are scaled so that, for the selected time, the length of the vector with the 
+highest magnitude is approximately one-tenth the diagonal distance across the 
+<A href="AuxiliaryGraphicalObjects.htm">bounding box</A>.</p>
+
+</body>
+</html>
