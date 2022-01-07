@@ -1,0 +1,36 @@
+name: build
+
+on:
+  push:
+
+env:
+  # vtk version
+  VTK_VERSION: 6.0.0
+
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Cache vtk
+      id: cache-vtk
+      uses: actions/cache@v2
+      with:
+        path: |
+          C:\VTK6.0.0
+          C:\VTK6.0.0_build64
+        key: ${{runner.os}}-qtif-${{env.VTK_VERSION}}
+
+    - name: Download and install vtk
+      if: steps.cache-vtk.outputs.cache-hit != 'true'
+      shell: pwsh
+      run: |
+        pip install gdown
+        gdown https://drive.google.com/uc?id=1FHn0dSghDXuVt3OvxrxtJP4KYtLap9be
+        7z x -oC:\ vtk6.zip
+        Remove-Item vtk6.zip
