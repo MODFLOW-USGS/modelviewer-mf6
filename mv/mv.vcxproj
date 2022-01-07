@@ -121,7 +121,9 @@
       <AdditionalDependencies>user32.lib;vtkCommonCore-6.0.lib;vtkCommonDataModel-6.0.lib;vtkCommonExecutionModel-6.0.lib;vtkCommonMath-6.0.lib;vtkCommonMisc-6.0.lib;vtkCommonTransforms-6.0.lib;vtkFiltersCore-6.0.lib;vtkFiltersExtraction-6.0.lib;vtkFiltersGeneral-6.0.lib;vtkFiltersGeometry-6.0.lib;vtkFiltersModeling-6.0.lib;vtkFiltersSources-6.0.lib;vtkFiltersStatistics-6.0.lib;vtkInteractionStyle-6.0.lib;vtkRenderingCore-6.0.lib;vtkRenderingFreeType-6.0.lib;vtkRenderingFreeTypeOpenGL-6.0.lib;vtkRenderingLOD-6.0.lib;vtkRenderingOpenGL-6.0.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy .\x64\Debug\mv.dll ..\ModelViewer\x64\Debug\mv.dll /Y</Command>
+      <Command>SET D=$(SolutionDir)ModelViewer\$(Platform)\$(Configuration)
+IF NOT EXIST %D% MKDIR %D%
+COPY $(TargetPath) %D% /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -167,7 +169,9 @@
       <AdditionalDependencies>user32.lib;vtkCommonCore-6.0.lib;vtkCommonDataModel-6.0.lib;vtkCommonExecutionModel-6.0.lib;vtkCommonMath-6.0.lib;vtkCommonMisc-6.0.lib;vtkCommonTransforms-6.0.lib;vtkFiltersCore-6.0.lib;vtkFiltersExtraction-6.0.lib;vtkFiltersGeneral-6.0.lib;vtkFiltersGeometry-6.0.lib;vtkFiltersModeling-6.0.lib;vtkFiltersSources-6.0.lib;vtkFiltersStatistics-6.0.lib;vtkInteractionStyle-6.0.lib;vtkRenderingCore-6.0.lib;vtkRenderingFreeType-6.0.lib;vtkRenderingFreeTypeOpenGL-6.0.lib;vtkRenderingLOD-6.0.lib;vtkRenderingOpenGL-6.0.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy .\x64\Release\mv.dll ..\ModelViewer\x64\Release\mv.dll /Y</Command>
+      <Command>SET D=$(SolutionDir)ModelViewer\$(Platform)\$(Configuration)
+IF NOT EXIST %D% MKDIR %D%
+COPY $(TargetPath) %D% /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

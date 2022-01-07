@@ -34,3 +34,12 @@ jobs:
         gdown https://drive.google.com/uc?id=1FHn0dSghDXuVt3OvxrxtJP4KYtLap9be
         7z x -oC:\ vtk6.zip
         Remove-Item vtk6.zip
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+        msbuild-architecture: x64
+        vs-version: '[16.9,17)'
+
+    - name: Build modelviewer
+      run: msbuild MvProject.sln -property:Platform=x64 -property:Configuration=Release

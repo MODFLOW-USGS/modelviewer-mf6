@@ -18,3 +18,6 @@ ipch/
 
 # Compiled Html file
 Help/mvmf6.chm
+
+# Visual Studio history directories
+.vshistory/
