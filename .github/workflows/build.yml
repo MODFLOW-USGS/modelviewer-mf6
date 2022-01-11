@@ -213,21 +213,20 @@ jobs:
           # ie https://uploads.github.com/repos/MODFLOW-USGS/modelviewer-mf6/releases/24058628/assets{?name,label}
           throw "Bad upload_url"
         }
-        $upload_uri = $Matches[1] + "?name=mvmf6-$version"
-
+        $upload_uri = $Matches[1] + "?name=mvmf6-$version.7z"
         $h["Content-type"] = "application/x-7z-compressed"
         $bytes = [System.IO.File]::ReadAllBytes("mvmf6.7z")
         $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method POST -Body $bytes
 
-        # # update release
-        # # PATCH /repos/{owner}/{repo}/releases/{release_id}
-        # # see https://docs.github.com/en/rest/reference/repos#update-a-release
-        # #
-        # $release_id = ($release.Content | ConvertFrom-Json).id
-        # $h.Remove("Content-type")
-        # $update = @{ "draft" = $false }
-        # $update_json = $update | ConvertTo-Json
-        # $release = Invoke-WebRequest -Uri "$releases_url/$release_id" -Headers $h -Method PATCH -Body $update_json
+        # update release
+        # PATCH /repos/{owner}/{repo}/releases/{release_id}
+        # see https://docs.github.com/en/rest/reference/repos#update-a-release
+        #
+        $release_id = ($release.Content | ConvertFrom-Json).id
+        $h.Remove("Content-type")
+        $update = @{ "draft" = $false }
+        $update_json = $update | ConvertTo-Json
+        $release = Invoke-WebRequest -Uri "$releases_url/$release_id" -Headers $h -Method PATCH -Body $update_json
 
         # display download url
         Write-Output "$((($release.Content | ConvertFrom-Json).assets).browser_download_url)"
