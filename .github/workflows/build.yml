@@ -200,7 +200,7 @@ jobs:
         }
         $upload_uri = $Matches[1] + "?name=mvmf6-$version.7z"
         $h["Content-type"] = "application/x-7z-compressed"
-        $bytes = [System.IO.File]::ReadAllBytes("mvmf6.7z")
+        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-$version.7z")
         $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method POST -Body $bytes
 
         # update release
@@ -215,5 +215,5 @@ jobs:
 
         # display download url
         Write-Output "$((($release.Content | ConvertFrom-Json).assets).browser_download_url)"
-        Get-FileHash "mvmf6.7z"
-        Remove-Item mvmf6.7z
+        Get-FileHash "mvmf6-$version.7z"
+        Remove-Item mvmf6-$version.7z
