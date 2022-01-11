@@ -2,13 +2,22 @@ name: build
 
 on:
   push:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Person to greet'
+        # Default value if no value is explicitly provided
+        default: 'World'
+        # Input has to be provided for the workflow to run
+        required: true
 
 env:
   # vtk version
   VTK_VERSION: 6.0.0
 
   # releases api
-  
   RELEASES_URL: ${{github.api_url}}/repos/${{github.repository}}/releases
 
 jobs:
@@ -88,9 +97,9 @@ jobs:
         mkdir mvmf6
         mkdir mvmf6\bin
         Push-Location mvmf6\bin
-        Copy-Item ..\ModelViewer\x64\Release\mvmf6.exe .
-        Copy-Item ..\mv\x64\Release\mv.dll .
-        Copy-Item ..\Help\mvmf6.chm .
+        Copy-Item ..\..\ModelViewer\x64\Release\mvmf6.exe .
+        Copy-Item ..\..\mv\x64\Release\mv.dll .
+        Copy-Item ..\..\Help\mvmf6.chm .
         Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkalglib-6.0.dll .
         Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonComputationalGeometry-6.0.dll .
         Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonCore-6.0.dll .
