@@ -82,11 +82,39 @@ jobs:
         fi
         popd
 
+    - name: Export next mvmf6 version
+      run: |
+        # create headers dictionary
+        $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
+
+        try {
+            $response = Invoke-WebRequest -Uri ${{env.RELEASES_URL}}/latest -Headers $h -Method GET
+            $json = $response.Content | ConvertFrom-Json
+            $tag_name = $json.tag_name
+        }
+        catch {
+            # none so far
+            $tag_name = "v0.0"
+        }
+
+        $next_version = "0.0.0"
+        if ($tag_name -match '^v(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))?$') {
+            if ($Matches.ContainsKey('patch')) {
+              $patch = 1 + $Matches['patch']
+            }
+            else {
+              $patch = 0
+            }
+            $next_version = $Matches['major'] + "." + $Matches['minor'] + "." + $patch
+        }
+        Write-Output "NEXT_VERSION=$next_version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
     - name: Build mvmf6.zip
       run: |
-        mkdir mvmf6
-        mkdir mvmf6\bin
-        Push-Location mvmf6\bin
+        $version=${{env.NEXT_VERSION}}
+        mkdir mvmf6-$version
+        mkdir mvmf6-$version\bin
+        Push-Location mvmf6-$version\bin
         Copy-Item ..\..\ModelViewer\x64\Release\mvmf6.exe .
         Copy-Item ..\..\mv\x64\Release\mv.dll .
         Copy-Item ..\..\Help\mvmf6.chm .
@@ -129,50 +157,17 @@ jobs:
         Copy-Item C:\VTK6.0.0_build64\bin\Release\vtktiff-6.0.dll .
         Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkzlib-6.0.dll .
         Pop-Location
-        7z a mvmf6.7z .\mvmf6\
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        path: mvmf6
-
-
-    - name: Export next mvmf6 version
-      run: |
-        # create headers dictionary
-        $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
-
-        try {
-            $response = Invoke-WebRequest -Uri ${{env.RELEASES_URL}}/latest -Headers $h -Method GET
-            $json = $response.Content | ConvertFrom-Json
-            $tag_name = $json.tag_name
-        }
-        catch {
-            # none so far
-            $tag_name = "v0.0"
-        }
-
-        $next_tag_name = "v0.0.0"
-        if ($tag_name -match '^v(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))?$') {
-            if ($Matches.ContainsKey('patch')) {
-              $patch = 1 + $Matches['patch']
-            }
-            else {
-              $patch = 0
-            }
-            $next_tag_name = "v" + $Matches['major'] + "." + $Matches['minor'] + "." + $patch
-        }
-        Write-Output "NEXT_TAG_NAME=$next_tag_name" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        7z a mvmf6-$version.7z .\mvmf6-$version\
 
     - name: Create release
       run: |
         # store new commit
         $target_commitish = (git log -n1 --format=format:"%H")
 
-        if (! ($env:NEXT_TAG_NAME -match "^v(?<major>0|[1-9]\d*)\.(?<minor>[0|1-9]\d*)\.(?<patch>[0|1-9]\d*)$") ) {
+        if (! ($env:NEXT_VERSION -match "^(?<major>0|[1-9]\d*)\.(?<minor>[0|1-9]\d*)\.(?<patch>[0|1-9]\d*)$") ) {
           throw "Bad version"
         }
-        $version = $Matches['major'] + "." + $Matches['minor'] + "." + $Matches['patch']
+        $version = $env:NEXT_VERSION
 
         # create headers dictionary
         $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
@@ -184,7 +179,7 @@ jobs:
         # see https://docs.github.com/en/rest/reference/repos#create-a-release
         #
         $create = @{
-          "tag_name"         = "$env:NEXT_TAG_NAME"
+          "tag_name"         = "v$env:NEXT_VERSION"
           "target_commitish" = "$target_commitish"
           "name"             = "mvmf6 " + $version
           "draft"            = $true
