@@ -7,6 +7,9 @@ env:
   # vtk version
   VTK_VERSION: 6.0.0
 
+  # releases api
+  
+  RELEASES_URL: ${{github.api_url}}/repos/${{github.repository}}/releases
 
 jobs:
   build:
@@ -83,7 +86,8 @@ jobs:
     - name: Build mvmf6.zip
       run: |
         mkdir mvmf6
-        Push-Location mvmf6
+        mkdir mvmf6\bin
+        Push-Location mvmf6\bin
         Copy-Item ..\ModelViewer\x64\Release\mvmf6.exe .
         Copy-Item ..\mv\x64\Release\mv.dll .
         Copy-Item ..\Help\mvmf6.chm .
@@ -126,9 +130,40 @@ jobs:
         Copy-Item C:\VTK6.0.0_build64\bin\Release\vtktiff-6.0.dll .
         Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkzlib-6.0.dll .
         Pop-Location
-        # 7z a mvmf6.7z .\mvmf6\
+        7z a mvmf6.7z .\mvmf6\
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
         path: mvmf6
+
+
+    - name: Export next mvmf6 version
+      run: |
+        # create headers dictionary
+        $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
+
+        try {
+            $response = Invoke-WebRequest -Uri ${{env:RELEASES_URL}}/latest -Headers $h -Method GET
+            $json = $response.Content | ConvertFrom-Json
+            $tag_name = $json.tag_name
+        }
+        catch {
+            # none so far
+            $tag_name = "v0.0"
+        }
+
+        $next_tag_name = "v0.0.0"
+        if ($tag_name -match '^v(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))?$') {
+            if ($Matches.ContainsKey('patch')) {
+              $patch = 1 + $Matches['patch']
+            }
+            else {
+              $patch = 0
+            }
+            $next_tag_name = "v" + $Matches['major'] + "." + $Matches['minor'] + "." + $patch
+        }
+        Write-Output "NEXT_TAG_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Verify
+      run: Write-Output "tag_name=${{env.NEXT_TAG_NAME}}"
