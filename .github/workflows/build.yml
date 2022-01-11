@@ -174,5 +174,62 @@ jobs:
         }
         Write-Output "NEXT_TAG_NAME=$next_tag_name" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-    - name: Verify
-      run: Write-Output "tag_name=${{env.NEXT_TAG_NAME}}"
+    - name: Create release
+      run: |
+        # store new commit
+        $target_commitish = (git log -n1 --format=format:"%H")
+
+        if (! ($env:NEXT_TAG_NAME -match "^v(?<major>0|[1-9]\d*)\.(?<minor>[0|1-9]\d*)\.(?<patch>[0|1-9]\d*)$") ) {
+          throw "Bad version"
+        }
+        $version = $Matches['major'] + "." + $Matches['minor'] + "." + $Matches['patch']
+
+        # create headers dictionary
+        $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
+
+        $releases_url = "${{env.releases_url}}"
+
+        # create release
+        # POST /repos/{owner}/{repo}/releases
+        # see https://docs.github.com/en/rest/reference/repos#create-a-release
+        #
+        $create = @{
+          "tag_name"         = "$env:NEXT_TAG_NAME"
+          "target_commitish" = "$target_commitish"
+          "name"             = "mvmf6 " + $version
+          "draft"            = $true
+          "prerelease"       = $true
+        }
+        $create_json = $create | ConvertTo-Json
+        $release = Invoke-WebRequest -Uri $releases_url -Headers $h -Method POST -Body $create_json
+
+        # upload artifact (asset)
+        # POST /repos/{owner}/{repo}/releases/{release_id}/assets
+        # see https://docs.github.com/en/rest/reference/repos#upload-a-release-asset
+        #
+        $upload_uri = ($release.Content | ConvertFrom-Json).upload_url
+        if (! ($upload_uri -match  "(.*)\{\?name,label\}") ) {
+          # expecting URI{?name,label}
+          # ie https://uploads.github.com/repos/MODFLOW-USGS/modelviewer-mf6/releases/24058628/assets{?name,label}
+          throw "Bad upload_url"
+        }
+        $upload_uri = $Matches[1] + "?name=mvmf6-$version"
+
+        $h["Content-type"] = "application/x-7z-compressed"
+        $bytes = [System.IO.File]::ReadAllBytes("mvmf6.7z")
+        $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method POST -Body $bytes
+
+        # # update release
+        # # PATCH /repos/{owner}/{repo}/releases/{release_id}
+        # # see https://docs.github.com/en/rest/reference/repos#update-a-release
+        # #
+        # $release_id = ($release.Content | ConvertFrom-Json).id
+        # $h.Remove("Content-type")
+        # $update = @{ "draft" = $false }
+        # $update_json = $update | ConvertTo-Json
+        # $release = Invoke-WebRequest -Uri "$releases_url/$release_id" -Headers $h -Method PATCH -Body $update_json
+
+        # display download url
+        Write-Output "$((($release.Content | ConvertFrom-Json).assets).browser_download_url)"
+        Get-FileHash "mvmf6.7z"
+        Remove-Item mvmf6.7z
