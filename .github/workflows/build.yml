@@ -144,7 +144,7 @@ jobs:
         $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
 
         try {
-            $response = Invoke-WebRequest -Uri ${{env:RELEASES_URL}}/latest -Headers $h -Method GET
+            $response = Invoke-WebRequest -Uri ${{env.RELEASES_URL}}/latest -Headers $h -Method GET
             $json = $response.Content | ConvertFrom-Json
             $tag_name = $json.tag_name
         }
