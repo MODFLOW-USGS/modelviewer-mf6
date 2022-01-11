@@ -188,7 +188,7 @@ jobs:
           "target_commitish" = "$target_commitish"
           "name"             = "mvmf6 " + $version
           "draft"            = $true
-          "prerelease"       = $true
+          # "prerelease"       = $true
         }
         $create_json = $create | ConvertTo-Json
         $release = Invoke-WebRequest -Uri $releases_url -Headers $h -Method POST -Body $create_json
