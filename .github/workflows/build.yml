@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [ main-actions ]
+    branches: [ main ]
 
 env:
   # vtk version
@@ -219,3 +219,4 @@ jobs:
         Write-Output "$((($release.Content | ConvertFrom-Json).assets).browser_download_url)"
         Get-FileHash "mvmf6-$version.zip"
         Remove-Item mvmf6-$version.zip
+
