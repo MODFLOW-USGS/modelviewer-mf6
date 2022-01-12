@@ -190,6 +190,7 @@
       <AdditionalLibraryDirectories>C:\VTK6.0.0_build64\lib\Debug;..\mv\x64\Debug;..\Help\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>mv.lib;Htmlhelp.Lib;vtkCommonCore-6.0.lib;vtkInteractionStyle-6.0.lib;vtkRenderingCore-6.0.lib;vtkRenderingFreeType-6.0.lib;vtkRenderingFreeTypeOpenGL-6.0.lib;vtkRenderingLOD-6.0.lib;vtkRenderingOpenGL-6.0.lib</AdditionalDependencies>
     </Link>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -276,6 +277,7 @@
       <AdditionalLibraryDirectories>C:\VTK6.0.0_build64\lib\Release;..\mv\x64\Release;..\Help\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>mv.lib;Htmlhelp.Lib;vtkCommonCore-6.0.lib;vtkInteractionStyle-6.0.lib;vtkRenderingCore-6.0.lib;vtkRenderingFreeType-6.0.lib;vtkRenderingFreeTypeOpenGL-6.0.lib;vtkRenderingLOD-6.0.lib;vtkRenderingOpenGL-6.0.lib</AdditionalDependencies>
     </Link>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AnimationControlsPage.cpp" />
