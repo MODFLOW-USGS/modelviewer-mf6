@@ -111,7 +111,7 @@ jobs:
 
     - name: Build mvmf6.zip
       run: |
-        $version=${{env.NEXT_VERSION}}
+        $version="${{env.NEXT_VERSION}}"
         mkdir mvmf6-$version
         mkdir mvmf6-$version\bin
         Push-Location mvmf6-$version\bin
