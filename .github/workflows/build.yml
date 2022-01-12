@@ -94,11 +94,11 @@ jobs:
         }
         catch {
             # none so far
-            $tag_name = "v0.0"
+            $tag_name = "0.0"
         }
 
         $next_version = "0.0.0"
-        if ($tag_name -match '^v(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))?$') {
+        if ($tag_name -match '(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))?$') {
             if ($Matches.ContainsKey('patch')) {
               $patch = 1 + $Matches['patch']
             }
@@ -157,7 +157,7 @@ jobs:
         Copy-Item C:\VTK6.0.0_build64\bin\Release\vtktiff-6.0.dll .
         Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkzlib-6.0.dll .
         Pop-Location
-        7z a mvmf6-$version.7z .\mvmf6-$version\
+        7z a -tzip mvmf6-$version.zip .\mvmf6-$version\
 
     - name: Create release
       run: |
@@ -179,9 +179,10 @@ jobs:
         # see https://docs.github.com/en/rest/reference/repos#create-a-release
         #
         $create = @{
-          "tag_name"         = "v$env:NEXT_VERSION"
+          "tag_name"         = "$env:NEXT_VERSION"
           "target_commitish" = "$target_commitish"
-          "name"             = "mvmf6 " + $version
+          "name"             = "Model Viewer for Modflow 6 Beta Version " + $version
+          "body"             = "This is a beta test version of USGS Model Viewer for Modflow 6."
           "draft"            = $true
           # "prerelease"       = $true
         }
@@ -198,9 +199,9 @@ jobs:
           # ie https://uploads.github.com/repos/MODFLOW-USGS/modelviewer-mf6/releases/24058628/assets{?name,label}
           throw "Bad upload_url"
         }
-        $upload_uri = $Matches[1] + "?name=mvmf6-$version.7z"
-        $h["Content-type"] = "application/x-7z-compressed"
-        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-$version.7z")
+        $upload_uri = $Matches[1] + "?name=mvmf6-$version.zip"
+        $h["Content-type"] = "application/zip"
+        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-$version.zip")
         $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method POST -Body $bytes
 
         # update release
@@ -215,5 +216,5 @@ jobs:
 
         # display download url
         Write-Output "$((($release.Content | ConvertFrom-Json).assets).browser_download_url)"
-        Get-FileHash "mvmf6-$version.7z"
-        Remove-Item mvmf6-$version.7z
+        Get-FileHash "mvmf6-$version.zip"
+        Remove-Item mvmf6-$version.zip
