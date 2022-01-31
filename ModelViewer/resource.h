@@ -310,6 +310,7 @@
 #define IDC_GRID_DISPLAY_INTERPOLATED   1186
 #define IDC_RADIO2                      1187
 #define IDC_GRID_DISPLAY_STAIRSTEPPED   1187
+#define IDC_MV_RELEASE                  1188
 #define ID_PREFERENCES                  32771
 #define ID_SHOW_AXES                    32772
 #define ID_COPY_DISPLAY_TO_CLIPBOARD    32774
@@ -373,7 +374,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        178
 #define _APS_NEXT_COMMAND_VALUE         32839
-#define _APS_NEXT_CONTROL_VALUE         1188
+#define _APS_NEXT_CONTROL_VALUE         1189
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
