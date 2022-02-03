@@ -1,0 +1,26 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 18,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "vs2019",
+      "displayName": "Build using Visual Studio 2019",
+      "generator": "Visual Studio 16 2019",
+      "binaryDir": "${sourceDir}/_vs2019",
+      "cacheVariables": {
+        "VTK_DIR" : "C:/VTK6.0.0_build64"
+      }
+    }
+  ]
+  ,
+  "buildPresets": [
+    {
+      "name": "vs2019",
+      "configurePreset": "vs2019"
+    }
+  ]
+}
