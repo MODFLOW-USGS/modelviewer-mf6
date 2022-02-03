@@ -118,7 +118,7 @@ jobs:
     - name: Build mvmf6.zip
       run: |
         Copy-Item .\Help\mvmf6.chm mvmf6-${{env.NEXT_VERSION}}\bin\.
-        7z a -tzip mvmf6-$version.zip .\mvmf6-${{env.NEXT_VERSION}}\
+        7z a -tzip mvmf6-${{env.NEXT_VERSION}}.zip .\mvmf6-${{env.NEXT_VERSION}}\
 
     - name: Create release
       run: |
