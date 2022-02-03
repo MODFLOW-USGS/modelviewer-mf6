@@ -142,6 +142,47 @@ add_executable(ModelViewer WIN32
   VectorThresholdPage.h
 )
 
+set(reqdVTKLibs
+  vtkalglib
+  vtkCommonComputationalGeometry
+  vtkCommonCore
+  vtkCommonDataModel
+  vtkCommonExecutionModel
+  vtkCommonMath
+  vtkCommonMisc
+  vtkCommonSystem
+  vtkCommonTransforms
+  vtkDICOMParser
+  vtkexpat
+  vtkFiltersCore
+  vtkFiltersExtraction
+  vtkFiltersGeneral
+  vtkFiltersGeometry
+  vtkFiltersModeling
+  vtkFiltersSources
+  vtkFiltersStatistics
+  vtkfreetype
+  vtkftgl
+  vtkImagingCore
+  vtkImagingFourier
+  vtkImagingHybrid
+  vtkInteractionStyle
+  vtkIOCore
+  vtkIOImage
+  vtkIOXMLParser
+  vtkjpeg
+  vtkmetaio
+  vtkpng
+  vtkRenderingCore
+  vtkRenderingFreeType
+  vtkRenderingFreeTypeOpenGL
+  vtkRenderingLOD
+  vtkRenderingOpenGL
+  vtksys
+  vtktiff
+  vtkzlib
+)
+
 set_target_properties(ModelViewer PROPERTIES OUTPUT_NAME mvmf6)
 
 target_include_directories(ModelViewer PRIVATE ../mv)
@@ -170,51 +211,11 @@ if(MSVC_VERSION EQUAL 1900)
   target_compile_definitions(ModelViewer PRIVATE _UNICODE)
 endif()
 
+
 # copy required dlls
 if (MSVC)
   add_custom_command(TARGET ModelViewer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo Copying VTK dlls...
-  )
-
-  set(reqdVTKLibs
-    vtkalglib
-    vtkCommonComputationalGeometry
-    vtkCommonCore
-    vtkCommonDataModel
-    vtkCommonExecutionModel
-    vtkCommonMath
-    vtkCommonMisc
-    vtkCommonSystem
-    vtkCommonTransforms
-    vtkDICOMParser
-    vtkexpat
-    vtkFiltersCore
-    vtkFiltersExtraction
-    vtkFiltersGeneral
-    vtkFiltersGeometry
-    vtkFiltersModeling
-    vtkFiltersSources
-    vtkFiltersStatistics
-    vtkfreetype
-    vtkftgl
-    vtkImagingCore
-    vtkImagingFourier
-    vtkImagingHybrid
-    vtkInteractionStyle
-    vtkIOCore
-    vtkIOImage
-    vtkIOXMLParser
-    vtkjpeg
-    vtkmetaio
-    vtkpng
-    vtkRenderingCore
-    vtkRenderingFreeType
-    vtkRenderingFreeTypeOpenGL
-    vtkRenderingLOD
-    vtkRenderingOpenGL
-    vtksys
-    vtktiff
-    vtkzlib
   )
   foreach(_lib ${reqdVTKLibs})
     add_custom_command(TARGET ModelViewer POST_BUILD
@@ -222,3 +223,15 @@ if (MSVC)
     )
   endforeach()
 endif()
+
+# install
+install(TARGETS ModelViewer
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+# install vtk
+foreach(_lib ${reqdVTKLibs})
+  install(FILES $<TARGET_FILE:${_lib}>
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+endforeach()

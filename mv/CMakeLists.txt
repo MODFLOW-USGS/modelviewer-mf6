@@ -72,3 +72,8 @@ if (MSVC)
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:mv> $<TARGET_FILE_DIR:ModelViewer>
   )
 endif()
+
+# install
+install(TARGETS mv
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
