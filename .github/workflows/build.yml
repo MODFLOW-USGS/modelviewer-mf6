@@ -38,15 +38,6 @@ jobs:
         7z x -oC:\ vtk6.zip
         Remove-Item vtk6.zip
 
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.1
-      with:
-        msbuild-architecture: x64
-        vs-version: '[16.9,17)'
-
-    - name: Build modelviewer
-      run: msbuild MvProject.sln -property:Platform=x64 -property:Configuration=Release
-
     - name: Install htmlhelp
       run: |
         curl -L -O http://web.archive.org/web/20160201063255/http://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe
@@ -110,55 +101,22 @@ jobs:
         }
         Write-Output "NEXT_VERSION=$next_version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
+    - name: Configure
+      shell: pwsh
+      run: cmake --preset vs2019
+
+    - name: Build
+      shell: pwsh
+      run: cmake --build _vs2019 --config release
+
+    - name: Install
+      shell: pwsh
+      run: cmake --install _vs2019 --prefix mvmf6-${{env.NEXT_VERSION}} --config release
+
     - name: Build mvmf6.zip
       run: |
-        $version="${{env.NEXT_VERSION}}"
-        mkdir mvmf6-$version
-        mkdir mvmf6-$version\bin
-        Push-Location mvmf6-$version\bin
-        Copy-Item ..\..\ModelViewer\x64\Release\mvmf6.exe .
-        Copy-Item ..\..\mv\x64\Release\mv.dll .
-        Copy-Item ..\..\Help\mvmf6.chm .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkalglib-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonComputationalGeometry-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonCore-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonDataModel-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonExecutionModel-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonMath-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonMisc-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonSystem-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonTransforms-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkDICOMParser-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkexpat-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersCore-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersExtraction-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersGeneral-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersGeometry-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersModeling-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersSources-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersStatistics-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkfreetype-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkftgl-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkImagingCore-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkImagingFourier-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkImagingHybrid-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkInteractionStyle-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkIOCore-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkIOImage-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkIOXMLParser-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkjpeg-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkmetaio-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkpng-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkRenderingCore-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkRenderingFreeType-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkRenderingFreeTypeOpenGL-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkRenderingLOD-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkRenderingOpenGL-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtksys-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtktiff-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkzlib-6.0.dll .
-        Pop-Location
-        7z a -tzip mvmf6-$version.zip .\mvmf6-$version\
+        Copy-Item .\Help\mvmf6.chm mvmf6-${{env.NEXT_VERSION}}\bin\.
+        7z a -tzip mvmf6-$version.zip .\mvmf6-${{env.NEXT_VERSION}}\
 
     - name: Create release
       run: |
