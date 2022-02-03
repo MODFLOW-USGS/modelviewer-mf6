@@ -233,5 +233,5 @@ install(TARGETS ModelViewer
 foreach(_lib ${reqdVTKLibs})
   install(FILES $<TARGET_FILE:${_lib}>
     DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+  )
 endforeach()
