@@ -114,20 +114,20 @@ jobs:
 
     # - name: Install vs2017
     #   shell: pwsh
-    #   run: cmake --install _vs2017 --prefix mvmf6-vs2017-${{env.NEXT_VERSION}} --config release
+    #   run: cmake --install _vs2017 --prefix mvmf6-${{env.NEXT_VERSION}}-vs2017 --config release
 
     # - name: Build mvmf6-vs2017-x.x.x.zip
     #   run: |
-    #     Copy-Item .\Help\mvmf6.chm mvmf6-vs2017-${{env.NEXT_VERSION}}\bin\.
-    #     7z a -tzip mvmf6-vs2017-${{env.NEXT_VERSION}}.zip .\mvmf6-vs2017-${{env.NEXT_VERSION}}\
+    #     Copy-Item .\Help\mvmf6.chm mvmf6-${{env.NEXT_VERSION}}-vs2017\bin\.
+    #     7z a -tzip mvmf6-${{env.NEXT_VERSION}}-vs2017.zip .\mvmf6-${{env.NEXT_VERSION}}-vs2017\
 
     - name: Build mvmf6-vs2017-x.x.x.zip
       run: |
         # Testing multiple asset upload (only htmlhelp file)
-        mkdir mvmf6-vs2017-${{env.NEXT_VERSION}}
-        mkdir mvmf6-vs2017-${{env.NEXT_VERSION}}\bin
-        Copy-Item .\Help\mvmf6.chm mvmf6-vs2017-${{env.NEXT_VERSION}}\bin\.
-        7z a -tzip mvmf6-vs2017-${{env.NEXT_VERSION}}.zip .\mvmf6-vs2017-${{env.NEXT_VERSION}}\
+        mkdir mvmf6-${{env.NEXT_VERSION}}-vs2017
+        mkdir mvmf6-${{env.NEXT_VERSION}}-vs2017\bin
+        Copy-Item .\Help\mvmf6.chm mvmf6-${{env.NEXT_VERSION}}-vs2017\bin\.
+        7z a -tzip mvmf6-${{env.NEXT_VERSION}}-vs2017.zip .\mvmf6-${{env.NEXT_VERSION}}-vs2017\
 
     - name: Configure vs2019
       shell: pwsh
@@ -139,12 +139,12 @@ jobs:
 
     - name: Install vs2019
       shell: pwsh
-      run: cmake --install _vs2019 --prefix mvmf6-vs2019-${{env.NEXT_VERSION}} --config release
+      run: cmake --install _vs2019 --prefix mvmf6-${{env.NEXT_VERSION}}-vs2019 --config release
 
     - name: Build mvmf6-vs2019-x.x.x.zip
       run: |
-        Copy-Item .\Help\mvmf6.chm mvmf6-vs2019-${{env.NEXT_VERSION}}\bin\.
-        7z a -tzip mvmf6-vs2019-${{env.NEXT_VERSION}}.zip .\mvmf6-vs2019-${{env.NEXT_VERSION}}\
+        Copy-Item .\Help\mvmf6.chm mvmf6-${{env.NEXT_VERSION}}-vs2019\bin\.
+        7z a -tzip mvmf6-${{env.NEXT_VERSION}}-vs2019.zip .\mvmf6-${{env.NEXT_VERSION}}-vs2019\
 
     - name: Create release
       run: |
@@ -188,15 +188,15 @@ jobs:
         }
 
         # vs2017
-        $upload_uri = $Matches[1] + "?name=mvmf6-vs2017-$version.zip"
+        $upload_uri = $Matches[1] + "?name=mvmf6-$version-vs2017.zip"
         $h["Content-type"] = "application/zip"
-        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-vs2017-$version.zip")
+        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-$version-vs2017.zip")
         $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method POST -Body $bytes
 
         # vs2019
-        $upload_uri = $Matches[1] + "?name=mvmf6-vs2019-$version.zip"
+        $upload_uri = $Matches[1] + "?name=mvmf6-$version-vs2019.zip"
         $h["Content-type"] = "application/zip"
-        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-vs2019-$version.zip")
+        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-$version-vs2019.zip")
         $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method POST -Body $bytes
 
         # update release
@@ -211,11 +211,11 @@ jobs:
 
         # display download url vs2017
         Write-Output "$((($release.Content | ConvertFrom-Json).assets[0]).browser_download_url)"
-        Get-FileHash "mvmf6-vs2017-$version.zip"
-        Remove-Item mvmf6-vs2017-$version.zip
+        Get-FileHash "mvmf6-$version-vs2017.zip"
+        Remove-Item mvmf6-$version-vs2017.zip
 
         # display download url vs2019
         Write-Output "$((($release.Content | ConvertFrom-Json).assets[1]).browser_download_url)"
-        Get-FileHash "mvmf6-vs2019-$version.zip"
-        Remove-Item mvmf6-vs2019-$version.zip
+        Get-FileHash "mvmf6-$version-vs2019.zip"
+        Remove-Item mvmf6-$version-vs2019.zip
 
