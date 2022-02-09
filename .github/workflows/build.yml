@@ -44,6 +44,7 @@ jobs:
       run: |
         curl -L -O http://web.archive.org/web/20160201063255/http://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe
         cmd /c start /wait .\htmlhelp.exe /q /c /t:$(Get-Location)\tmp
+        # These changes allow htmlhelp to be installed without user input
         $file = "$(Get-Location)\tmp\htmlhelp.inf"
         (Get-Content $file) | Foreach-Object { $_ `
           -replace '^BeginPrompt',                                               ';;BeginPrompt' `
@@ -103,22 +104,39 @@ jobs:
         }
         Write-Output "NEXT_VERSION=$next_version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-    - name: Configure
+    - name: Configure vs2017
+      shell: pwsh
+      run: cmake --preset vs2017
+
+    - name: Build vs2017
+      shell: pwsh
+      run: cmake --build _vs2017 --config release
+
+    - name: Install vs2017
+      shell: pwsh
+      run: cmake --install _vs2017 --prefix mvmf6-vs2017-${{env.NEXT_VERSION}} --config release
+
+    - name: Build mvmf6-vs2017-x.x.x.zip
+      run: |
+        Copy-Item .\Help\mvmf6.chm mvmf6-vs2017-${{env.NEXT_VERSION}}\bin\.
+        7z a -tzip mvmf6-vs2017-${{env.NEXT_VERSION}}.zip .\mvmf6-vs2017-${{env.NEXT_VERSION}}\
+
+    - name: Configure vs2019
       shell: pwsh
       run: cmake --preset vs2019
 
-    - name: Build
+    - name: Build vs2019
       shell: pwsh
       run: cmake --build _vs2019 --config release
 
-    - name: Install
+    - name: Install vs2019
       shell: pwsh
-      run: cmake --install _vs2019 --prefix mvmf6-${{env.NEXT_VERSION}} --config release
+      run: cmake --install _vs2019 --prefix mvmf6-vs2019-${{env.NEXT_VERSION}} --config release
 
-    - name: Build mvmf6.zip
+    - name: Build mvmf6-vs2019-x.x.x.zip
       run: |
-        Copy-Item .\Help\mvmf6.chm mvmf6-${{env.NEXT_VERSION}}\bin\.
-        7z a -tzip mvmf6-${{env.NEXT_VERSION}}.zip .\mvmf6-${{env.NEXT_VERSION}}\
+        Copy-Item .\Help\mvmf6.chm mvmf6-vs2019-${{env.NEXT_VERSION}}\bin\.
+        7z a -tzip mvmf6-vs2019-${{env.NEXT_VERSION}}.zip .\mvmf6-vs2019-${{env.NEXT_VERSION}}\
 
     - name: Create release
       run: |
@@ -142,8 +160,8 @@ jobs:
         $create = @{
           "tag_name"         = "$env:NEXT_VERSION"
           "target_commitish" = "$target_commitish"
-          "name"             = "Model Viewer for Modflow 6 Beta Version " + $version
-          "body"             = "This is a beta test version of USGS Model Viewer for Modflow 6."
+          "name"             = "Model Viewer for Modflow 6 Version " + $version
+          "name"             = "Model Viewer for Modflow 6 Version " + $version
           "draft"            = $true
           # "prerelease"       = $true
         }
@@ -160,9 +178,17 @@ jobs:
           # ie https://uploads.github.com/repos/MODFLOW-USGS/modelviewer-mf6/releases/24058628/assets{?name,label}
           throw "Bad upload_url"
         }
-        $upload_uri = $Matches[1] + "?name=mvmf6-$version.zip"
+
+        # vs2017
+        $upload_uri = $Matches[1] + "?name=mvmf6-vs2017-$version.zip"
         $h["Content-type"] = "application/zip"
-        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-$version.zip")
+        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-vs2017-$version.zip")
+        $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method POST -Body $bytes
+
+        # vs2019
+        $upload_uri = $Matches[1] + "?name=mvmf6-vs2019-$version.zip"
+        $h["Content-type"] = "application/zip"
+        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-vs2019-$version.zip")
         $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method POST -Body $bytes
 
         # update release
@@ -175,8 +201,13 @@ jobs:
         $update_json = $update | ConvertTo-Json
         $release = Invoke-WebRequest -Uri "$releases_url/$release_id" -Headers $h -Method PATCH -Body $update_json
 
-        # display download url
-        Write-Output "$((($release.Content | ConvertFrom-Json).assets).browser_download_url)"
-        Get-FileHash "mvmf6-$version.zip"
-        Remove-Item mvmf6-$version.zip
+        # display download url vs2017
+        Write-Output "$((($release.Content | ConvertFrom-Json).assets[0]).browser_download_url)"
+        Get-FileHash "mvmf6-vs2017-$version.zip"
+        Remove-Item mvmf6-vs2017-$version.zip
+
+        # display download url vs2019
+        Write-Output "$((($release.Content | ConvertFrom-Json).assets[1]).browser_download_url)"
+        Get-FileHash "mvmf6-vs2019-$version.zip"
+        Remove-Item mvmf6-vs2019-$version.zip
 

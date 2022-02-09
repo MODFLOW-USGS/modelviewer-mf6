@@ -4,6 +4,7 @@
 # Build results
 ModelViewer/x64/
 mv/x64/
+_*/
 
 # User-specific files
 *.suo

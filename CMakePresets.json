@@ -7,8 +7,18 @@
   },
   "configurePresets": [
     {
+      "name": "vs2017",
+      "displayName": "Build using Visual Studio 2017 x64",
+      "generator": "Visual Studio 15 2017",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/_vs2017",
+      "cacheVariables": {
+        "VTK_DIR" : "C:/VTK6.0.0_build64"
+      }
+    },
+    {
       "name": "vs2019",
-      "displayName": "Build using Visual Studio 2019",
+      "displayName": "Build using Visual Studio 2019 x64",
       "generator": "Visual Studio 16 2019",
       "binaryDir": "${sourceDir}/_vs2019",
       "cacheVariables": {
