@@ -104,20 +104,28 @@ jobs:
         }
         Write-Output "NEXT_VERSION=$next_version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-    - name: Configure vs2017
-      shell: pwsh
-      run: cmake --preset vs2017
+    # - name: Configure vs2017
+    #   shell: pwsh
+    #   run: cmake --preset vs2017
 
-    - name: Build vs2017
-      shell: pwsh
-      run: cmake --build _vs2017 --config release
+    # - name: Build vs2017
+    #   shell: pwsh
+    #   run: cmake --build _vs2017 --config release
 
-    - name: Install vs2017
-      shell: pwsh
-      run: cmake --install _vs2017 --prefix mvmf6-vs2017-${{env.NEXT_VERSION}} --config release
+    # - name: Install vs2017
+    #   shell: pwsh
+    #   run: cmake --install _vs2017 --prefix mvmf6-vs2017-${{env.NEXT_VERSION}} --config release
+
+    # - name: Build mvmf6-vs2017-x.x.x.zip
+    #   run: |
+    #     Copy-Item .\Help\mvmf6.chm mvmf6-vs2017-${{env.NEXT_VERSION}}\bin\.
+    #     7z a -tzip mvmf6-vs2017-${{env.NEXT_VERSION}}.zip .\mvmf6-vs2017-${{env.NEXT_VERSION}}\
 
     - name: Build mvmf6-vs2017-x.x.x.zip
       run: |
+        # Testing multiple asset upload (only htmlhelp file)
+        mkdir mvmf6-vs2017-${{env.NEXT_VERSION}}
+        mkdir mvmf6-vs2017-${{env.NEXT_VERSION}}\bin
         Copy-Item .\Help\mvmf6.chm mvmf6-vs2017-${{env.NEXT_VERSION}}\bin\.
         7z a -tzip mvmf6-vs2017-${{env.NEXT_VERSION}}.zip .\mvmf6-vs2017-${{env.NEXT_VERSION}}\
 
