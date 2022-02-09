@@ -169,7 +169,7 @@ jobs:
           "tag_name"         = "$env:NEXT_VERSION"
           "target_commitish" = "$target_commitish"
           "name"             = "Model Viewer for Modflow 6 Version " + $version
-          "name"             = "Model Viewer for Modflow 6 Version " + $version
+          "body"             = "Model Viewer for Modflow 6 Version " + $version
           "draft"            = $true
           # "prerelease"       = $true
         }
