@@ -8,7 +8,7 @@
   "configurePresets": [
     {
       "name": "vs2017",
-      "displayName": "Build using Visual Studio 2017 x64",
+      "displayName": "vs2017 x64 with vtk-6.0.0-vs2010 (builds in _vs2017)",
       "generator": "Visual Studio 15 2017",
       "architecture": "x64",
       "binaryDir": "${sourceDir}/_vs2017",
@@ -17,20 +17,56 @@
       }
     },
     {
+      "name": "vs2017-vtk-6.3.0",
+      "displayName": "vs2017 x64 with vtk-6.3.0-vs2017 (builds in _vs2017-vtk-6.3.0)",
+      "generator": "Visual Studio 15 2017",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/_vs2017-vtk-6.3.0",
+      "cacheVariables": {
+        "VTK_DIR" : "C:/VTK-6.3.0_build64_vs2017"
+      }
+    },
+    {
       "name": "vs2019",
-      "displayName": "Build using Visual Studio 2019 x64",
+      "displayName": "vs2019 x64 with vtk-6.0.0-vs2010 (builds in _vs2019)",
       "generator": "Visual Studio 16 2019",
       "binaryDir": "${sourceDir}/_vs2019",
       "cacheVariables": {
         "VTK_DIR" : "C:/VTK6.0.0_build64"
+      }
+    },
+    {
+      "name": "vs2019-vtk-6.3.0",
+      "displayName": "vs2019 x64 with vtk-6.3.0-vs2017 (builds in _vs2019-vtk-6.3.0)",
+      "generator": "Visual Studio 16 2019",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/_vs2019-vtk-6.3.0",
+      "cacheVariables": {
+        "VTK_DIR" : "C:/VTK-6.3.0_build64_vs2017"
       }
     }
   ]
   ,
   "buildPresets": [
     {
+      "name": "vs2017",
+      "configurePreset": "vs2017"
+    },
+    {
+      "name": "vs2017-vtk-6.3.0",
+      "configurePreset": "vs2017-vtk-6.3.0"
+    },
+    {
       "name": "vs2019",
       "configurePreset": "vs2019"
+    },
+    {
+      "name": "vs2019-vtk-6.3.0",
+      "configurePreset": "vs2019-vtk-6.3.0"
     }
-  ]
+  ],
+  "vendor": {
+    "Note-0": "C:/VTK6.0.0_build64 was compiled using vs2010 x64",
+    "Note-1": "Couldn't get vtk-6.3.0 to compile with vs2019 x64"
+  }
 }
