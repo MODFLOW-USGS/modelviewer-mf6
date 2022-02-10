@@ -9,11 +9,6 @@ on:
 env:
   VTK_VERSION: 6.3.0
 
-  zipfile: v${{env.VTK_VERSION}}.zip
-  instdir: C:/VTK-${{env.VTK_VERSION}}-vs2017-x64
-  builddir: C:/VTK-${{env.VTK_VERSION}}-vs2017-x64-build
-  srcdir: C:/VTK-${{env.VTK_VERSION}}
-
 jobs:
 
   cache-vtk-debug:
@@ -21,6 +16,10 @@ jobs:
     runs-on: windows-2016
     env:
       type: debug
+      zipfile: v${{env.VTK_VERSION}}.zip
+      instdir: C:/VTK-${{env.VTK_VERSION}}-vs2017-x64
+      builddir: C:/VTK-${{env.VTK_VERSION}}-vs2017-x64-build
+      srcdir: C:/VTK-${{env.VTK_VERSION}}
 
     steps:
       - uses: actions/checkout@v2
@@ -63,6 +62,10 @@ jobs:
     runs-on: windows-2016
     env:
       type: release
+      zipfile: v${{env.VTK_VERSION}}.zip
+      instdir: C:/VTK-${{env.VTK_VERSION}}-vs2017-x64
+      builddir: C:/VTK-${{env.VTK_VERSION}}-vs2017-x64-build
+      srcdir: C:/VTK-${{env.VTK_VERSION}}
 
     steps:
       - uses: actions/checkout@v2
