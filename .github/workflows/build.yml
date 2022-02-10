@@ -27,11 +27,8 @@ jobs:
       id: cache-vtk-6-3-0
       uses: actions/cache@v2
       with:
-        path: |
-          C:\VTK-6.3.0
-          C:\VTK-6.3.0-vs2017-x64
-          C:\VTK-6.3.0-vs2017-x64-Install
-        key: vtk-6.3.0-vs2017-x64   # @todo -${{hashFiles('./misc/CMakePresets.json')}}
+        path: C:\VTK-6.3.0-vs2017-x64
+        key: vtk-6.3.0-vs2017-x64-${{hashFiles('./misc/CMakePresets.json')}}
 
     - name: Download vtk-6.3.0
       if: steps.cache-vtk-6-3-0.outputs.cache-hit != 'true'
@@ -50,8 +47,25 @@ jobs:
         cp misc\CMakePresets.json C:\VTK-6.3.0\.
         cd C:\VTK-6.3.0
         cmake --preset vs2017
+        cmake --build --preset vs2017 --config debug
         cmake --build --preset vs2017 --config release
-        cmake --install C:/VTK-6.3.0-vs2017-x64 --prefix C:/VTK-6.3.0-vs2017-x64-Install --config release
+        cmake --install C:/VTK-6.3.0-vs2017-x64-build --prefix C:/VTK-6.3.0-vs2017-x64 --config debug
+        cmake --install C:/VTK-6.3.0-vs2017-x64-build --prefix C:/VTK-6.3.0-vs2017-x64 --config release
+        7z a ${{ github.workspace }}\vtk-6.3.0-vs2017-x64.7z C:\VTK-6.3.0-vs2017-x64
+
+    - name: upload-artifact 7z
+      if: steps.cache-vtk-6-3-0.outputs.cache-hit != 'true'
+      uses: actions/upload-artifact@v2
+      with:
+        name: vtk-6.3.0-vs2017-x64.7z
+        path: ${{ github.workspace }}/vtk-6.3.0-vs2017-x64.7z
+
+    - name: upload-artifact CMakeCache.txt
+      if: steps.cache-vtk-6-3-0.outputs.cache-hit != 'true'
+      uses: actions/upload-artifact@v2
+      with:
+        name: CMakeCache.txt
+        path: C:/VTK-6.3.0-vs2017-x64-build/CMakeCache.txt
 
   build:
     runs-on: windows-2019

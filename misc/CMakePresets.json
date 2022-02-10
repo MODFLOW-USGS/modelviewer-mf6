@@ -11,7 +11,7 @@
         "displayName": "vs2017 x64 with vtk-6.3.0-vs2017",
         "generator": "Visual Studio 15 2017",
         "architecture": "x64",
-        "binaryDir": "C:/VTK-6.3.0-vs2017-x64",
+        "binaryDir": "C:/VTK-6.3.0-vs2017-x64-build",
         "cacheVariables": {
           "BUILD_TESTING": {
             "type": "BOOL",
@@ -27,7 +27,8 @@
           "Notes": "This file should be placed in the root directory of C:/VTK-6.3.0",
           "Configure": "cmake --preset vs2017",
           "Build": "cmake --build --preset vs2017 --config release",
-          "Install": "cmake --install C:/VTK-6.3.0-vs2017-x64 --prefix <PREFIX> --config release"
+          "Install-debug": "cmake --install C:/VTK-6.3.0-vs2017-x64-build --prefix C:/VTK-6.3.0-vs2017-x64 --config debug",
+          "Install-release": "cmake --install C:/VTK-6.3.0-vs2017-x64-build --prefix C:/VTK-6.3.0-vs2017-x64 --config release"
         }
       },
       {
@@ -35,7 +36,7 @@
         "displayName": "vs2017 x64 with vtk-6.3.0-vs2017 with VTK_DEBUG_LEAKS=ON",
         "generator": "Visual Studio 15 2017",
         "architecture": "x64",
-        "binaryDir": "C:/VTK-6.3.0-vs2017-x64-Leaks",
+        "binaryDir": "C:/VTK-6.3.0-leaks-vs2017-x64-build",
         "cacheVariables": {
           "BUILD_TESTING": {
             "type": "BOOL",
@@ -55,7 +56,8 @@
           "Notes": "This file should be placed in the root directory of C:/VTK-6.3.0",
           "Configure": "cmake --preset vs2017-leaks",
           "Build": "cmake --build --preset vs2017-leaks --config release",
-          "Install": "cmake --install C:/VTK-6.3.0-vs2017-x64-Leaks --prefix <PREFIX> --config release"
+          "Install-debug": "cmake --install C:/VTK-6.3.0-leaks-vs2017-x64-build --prefix C:/VTK-6.3.0-leaks-vs2017-x64 --config debug",
+          "Install-release": "cmake --install C:/VTK-6.3.0-leaks-vs2017-x64-build --prefix C:/VTK-6.3.0-leaks-vs2017-x64 --config release"
         }
       }
     ],
@@ -63,6 +65,10 @@
       {
         "name": "vs2017",
         "configurePreset": "vs2017"
+      },
+      {
+        "name": "vs2017-leaks",
+        "configurePreset": "vs2017-leaks"
       }
     ],
     "vendor": {
