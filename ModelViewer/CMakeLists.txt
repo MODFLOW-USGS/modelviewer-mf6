@@ -142,6 +142,9 @@ add_executable(ModelViewer WIN32
   VectorThresholdPage.h
 )
 
+# reqdVTKLibs are the required libraries for vtk-6.0.0
+# vtk-6.3.0 didn't work with this list
+# now all vtk dlls copied ${VTK_LIBRARIES}
 set(reqdVTKLibs
   vtkalglib
   vtkCommonComputationalGeometry
@@ -183,6 +186,7 @@ set(reqdVTKLibs
   vtkzlib
 )
 
+# modify ModelViewer executable name
 set_target_properties(ModelViewer PROPERTIES OUTPUT_NAME mvmf6)
 
 target_include_directories(ModelViewer PRIVATE ../mv)
@@ -212,12 +216,12 @@ if(MSVC_VERSION EQUAL 1900)
 endif()
 
 
-# copy required dlls
+# copy dlls into ModelViewer directory
 if (MSVC)
   add_custom_command(TARGET ModelViewer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo Copying VTK dlls...
   )
-  foreach(_lib ${reqdVTKLibs})
+  foreach(_lib ${VTK_LIBRARIES})
     add_custom_command(TARGET ModelViewer POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${_lib}> $<TARGET_FILE_DIR:ModelViewer>
     )
@@ -229,9 +233,12 @@ install(TARGETS ModelViewer
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-# install vtk
-foreach(_lib ${reqdVTKLibs})
+# install vtk dlls
+foreach(_lib ${VTK_LIBRARIES})
   install(FILES $<TARGET_FILE:${_lib}>
     DESTINATION ${CMAKE_INSTALL_BINDIR}
   )
 endforeach()
+
+# install VS runtimes
+include (InstallRequiredSystemLibraries)
