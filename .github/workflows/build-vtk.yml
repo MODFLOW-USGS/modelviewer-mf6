@@ -140,7 +140,7 @@ jobs:
           instdir:  C:/VTK-${{env.VTK_VERSION}}-vs2017-x64
           builddir: C:/VTK-${{env.VTK_VERSION}}-vs2017-x64-build
           srcdir:   C:/VTK-${{env.VTK_VERSION}}
-          tag:      vtk-${{env.VTK_VERSION}}-vs2017-x64-build
+          tag:      vtk-${{env.VTK_VERSION}}-vs2017-x64
         shell: pwsh
         run: |
           echo "zipfile=$env:zipfile"   >> $env:GITHUB_ENV
@@ -186,7 +186,6 @@ jobs:
       #     releases_url: ${{github.api_url}}/repos/${{github.repository}}/releases
       #   run: |
       #     # create tag
-      #     $tag_name = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH.mm.ssK')
 
       - name: Delete tag
         shell: pwsh
@@ -197,7 +196,7 @@ jobs:
         env:
           releases_url: ${{github.api_url}}/repos/${{github.repository}}/releases
         run: |
-          # create tag
+          # setup json variables
           $tag_name = "${{env.tag}}"
           $filename = "${{env.tag}}.7z"
           $hash = (Get-FileHash $filename).Hash
