@@ -5,6 +5,10 @@ on:
     branches:
       - main
       - main-cmake
+    paths-ignore:
+      - .github/workflows/build-vtk.yml
+      - misc/CMakePresets.json
+      - README.md
 
 env:
   VTK_VERSION: 6.3.0
