@@ -215,7 +215,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{env.instdir}}
-          key: ${{runner.os}}-vtk ## -${{hashFiles('.github/workflows/build-vtk.yml, misc/CMakePresets.json')}}
+          key: ${{runner.os}}-vtk-${{hashFiles('misc/CMakePresets.json')}}
 
       - name: Check cache
         shell: pwsh
