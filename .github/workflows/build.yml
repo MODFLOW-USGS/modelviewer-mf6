@@ -198,13 +198,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Check cache before
-        shell: pwsh
-        run: |
-          dir c:\vtk-6.3.0-vs2017-x64
-          dir c:\vtk-6.3.0-vs2017-x64\bin
-          dir c:\vtk-6.3.0-vs2017-x64\include
-
       - name: Cache vtk
         id: cache-vtk
         uses: actions/cache@v2
