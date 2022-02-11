@@ -42,7 +42,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{env.instdir}}
-          key: ${{runner.os}}-vtk-${{env.type}}-${{hashFiles('misc/CMakePresets.json')}}-FORCE
+          key: ${{runner.os}}-vtk-${{env.type}}-${{hashFiles('misc/CMakePresets.json')}}
 
       - name: Download vtk
         if: steps.cache-vtk-debug.outputs.cache-hit != 'true'
@@ -140,7 +140,7 @@ jobs:
           dir c:\vtk-6.3.0-vs2017-x64\include
 
   cache-vtk:
-    runs-on: windows-2019
+    runs-on: windows-2016
     needs: [cache-vtk-debug, cache-vtk-release]
 
     steps:
