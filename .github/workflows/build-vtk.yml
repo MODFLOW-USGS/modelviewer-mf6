@@ -181,11 +181,30 @@ jobs:
         run: |
           7z a ${{env.tag}}.7z ${{env.instdir}}
 
-      # - name: Delete release
-      #   env:
-      #     releases_url: ${{github.api_url}}/repos/${{github.repository}}/releases
-      #   run: |
-      #     # create tag
+      - name: Delete release
+        env:
+          releases_url: ${{github.api_url}}/repos/${{github.repository}}/releases
+        run: |
+          # create headers dictionary
+          $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
+
+          try {
+              #  Get a release by tag name 
+              # https://docs.github.com/rest/reference/repos#get-a-release-by-tag-name
+              # get /repos/{owner}/{repo}/releases/tags/{tag}
+              $response = Invoke-WebRequest -Uri ${{env.releases_url}}/tags/${{env.tag}} -Headers $h -Method GET
+              $hashtable = $response.Content | ConvertFrom-Json -AsHashtable
+
+              # Delete a release
+              # https://docs.github.com/en/rest/reference/releases#delete-a-release
+              # delete /repos/{owner}/{repo}/releases/{release_id}
+              $id = $hashtable.id.ToString()
+              $response = Invoke-WebRequest -Uri ${{env.releases_url}}/$id -Headers $h -Method GET
+          }
+          catch {
+            Write-Output "An error occured:"
+            Write-Output $_
+          }
 
       - name: Delete tag
         shell: pwsh
