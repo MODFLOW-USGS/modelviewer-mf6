@@ -42,7 +42,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{env.instdir}}
-          key: ${{runner.os}}-vtk-${{env.type}}-${{hashFiles('misc/CMakePresets.json')}}
+          key: ${{runner.os}}-vtk-${{env.type}}-${{hashFiles('misc/CMakePresets.json')}}-FORCE
 
       - name: Download vtk
         if: steps.cache-vtk-debug.outputs.cache-hit != 'true'
@@ -69,6 +69,13 @@ jobs:
           mkdir ${{env.instdir}}\include
           mkdir ${{env.instdir}}\include\vtk-6.3
           cp "C:\VTK-6.3.0\Rendering\Core\vtkActor.h" "${{env.instdir}}\include"
+
+      - name: Check cache
+        shell: pwsh
+        run: |
+          dir c:\vtk-6.3.0-vs2017-x64
+          dir c:\vtk-6.3.0-vs2017-x64\bin
+          dir c:\vtk-6.3.0-vs2017-x64\include
 
   cache-vtk-release:
 
@@ -124,6 +131,13 @@ jobs:
           mkdir ${{env.instdir}}\include
           mkdir ${{env.instdir}}\include\vtk-6.3
           cp "C:\VTK-6.3.0\Rendering\Core\vtkActor.h" "${{env.instdir}}\include"
+
+      - name: Check cache
+        shell: pwsh
+        run: |
+          dir c:\vtk-6.3.0-vs2017-x64
+          dir c:\vtk-6.3.0-vs2017-x64\bin
+          dir c:\vtk-6.3.0-vs2017-x64\include
 
   cache-vtk:
     runs-on: windows-2019
