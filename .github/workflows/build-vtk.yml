@@ -1,0 +1,168 @@
+name: build-vtk
+
+on:
+  push:
+    branches:
+      - main
+      - main-cmake
+
+env:
+  VTK_VERSION: 6.3.0
+
+jobs:
+
+  cache-vtk-debug:
+
+    runs-on: windows-2016
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Export env
+        env:
+          type:     debug
+          zipfile:  v${{env.VTK_VERSION}}.zip
+          instdir:  C:/VTK-${{env.VTK_VERSION}}-vs2017-x64
+          builddir: C:/VTK-${{env.VTK_VERSION}}-vs2017-x64-build
+          srcdir:   C:/VTK-${{env.VTK_VERSION}}
+        run: |
+          echo "type=$env:type"         | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "zipfile=$env:zipfile"   | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "instdir=$env:instdir"   | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "builddir=$env:builddir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "srcdir=$env:srcdir"     | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Cache vtk
+        id: cache-vtk-debug
+        uses: actions/cache@v2
+        with:
+          path: ${{env.instdir}}
+          key: windows-2016-vtk-${{env.type}}-${{hashFiles('misc/CMakePresets.json', '.github/workflows/build-vtk.yml')}}
+
+      - name: Download vtk
+        if: steps.cache-vtk-debug.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          curl -L -O "https://github.com/Kitware/VTK/archive/refs/tags/${{env.zipfile}}"
+          Get-FileHash ${{env.zipfile}}
+          cd C:\
+          7z x ${{github.workspace}}\${{env.zipfile}}
+          rm ${{github.workspace}}\${{env.zipfile}}
+
+      - name: Build vtk
+        if: steps.cache-vtk-debug.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          cp misc\CMakePresets.json ${{env.srcdir}}
+          cd ${{env.srcdir}}
+          cmake --preset vs2017
+          cmake --build --preset vs2017 --config ${{env.type}}
+          cmake --install ${{env.builddir}} --prefix ${{env.instdir}} --config ${{env.type}}
+
+      - name: Check debug cache
+        shell: pwsh
+        run: |
+          dir ${{env.instdir}}\bin
+
+  cache-vtk-release:
+
+    runs-on: windows-2016
+
+    steps:
+    
+      - uses: actions/checkout@v2
+
+      - name: Export env
+        env:
+          type:     release
+          zipfile:  v${{env.VTK_VERSION}}.zip
+          instdir:  C:/VTK-${{env.VTK_VERSION}}-vs2017-x64
+          builddir: C:/VTK-${{env.VTK_VERSION}}-vs2017-x64-build
+          srcdir:   C:/VTK-${{env.VTK_VERSION}}
+        run: |
+          echo "type=$env:type"         | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "zipfile=$env:zipfile"   | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "instdir=$env:instdir"   | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "builddir=$env:builddir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "srcdir=$env:srcdir"     | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Cache vtk
+        id: cache-vtk-release
+        uses: actions/cache@v2
+        with:
+          path: ${{env.instdir}}
+          key: windows-2016-vtk-${{env.type}}-${{hashFiles('misc/CMakePresets.json', '.github/workflows/build-vtk.yml')}}
+
+      - name: Download vtk
+        if: steps.cache-vtk-release.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          curl -L -O "https://github.com/Kitware/VTK/archive/refs/tags/${{env.zipfile}}"
+          Get-FileHash ${{env.zipfile}}
+          cd C:\
+          7z x ${{github.workspace}}\${{env.zipfile}}
+          rm ${{github.workspace}}\${{env.zipfile}}
+
+      - name: Build vtk
+        if: steps.cache-vtk-release.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          cp misc\CMakePresets.json ${{env.srcdir}}
+          cd ${{env.srcdir}}
+          cmake --preset vs2017
+          cmake --build --preset vs2017 --config ${{env.type}}
+          cmake --install ${{env.builddir}} --prefix ${{env.instdir}} --config ${{env.type}}
+
+      - name: Check release cache
+        shell: pwsh
+        run: |
+          dir ${{env.instdir}}\bin
+
+  cache-vtk:
+    runs-on: windows-2016
+    needs: [cache-vtk-debug, cache-vtk-release]
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Export env
+        env:
+          zipfile:  v${{env.VTK_VERSION}}.zip
+          instdir:  C:/VTK-${{env.VTK_VERSION}}-vs2017-x64
+          builddir: C:/VTK-${{env.VTK_VERSION}}-vs2017-x64-build
+          srcdir:   C:/VTK-${{env.VTK_VERSION}}
+        run: |
+          echo "zipfile=$env:zipfile"   | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "instdir=$env:instdir"   | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "builddir=$env:builddir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "srcdir=$env:srcdir"     | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Cache vtk
+        id: cache-vtk
+        uses: actions/cache@v2
+        with:
+          path: ${{env.instdir}}
+          key: windows-2016-vtk-${{hashFiles('misc/CMakePresets.json', '.github/workflows/build-vtk.yml')}}
+
+      - name: Cache vtk debug
+        if: steps.cache-vtk.outputs.cache-hit != 'true'
+        id: cache-vtk-debug
+        uses: actions/cache@v2
+        with:
+          path: ${{env.instdir}}
+          key: windows-2016-vtk-debug-${{hashFiles('misc/CMakePresets.json', '.github/workflows/build-vtk.yml')}}
+
+      - name: Cache vtk release
+        if: steps.cache-vtk.outputs.cache-hit != 'true'
+        uses: actions/cache@v2
+        with:
+          path: ${{env.instdir}}
+          key: windows-2016-vtk-release-${{hashFiles('misc/CMakePresets.json', '.github/workflows/build-vtk.yml')}}
+
+      - name: Check merged cache
+        shell: pwsh
+        run: |
+          dir ${{env.instdir}}\bin
