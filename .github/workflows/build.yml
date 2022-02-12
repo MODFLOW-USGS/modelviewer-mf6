@@ -61,7 +61,11 @@ jobs:
         cmd /c start /wait .\tmp\setup.exe
         Remove-Item -Recurse -Force .\tmp
         Remove-Item -Recurse -Force .\htmlhelp.exe
-        Write-Output 'C:\Program Files (x86)\HTML Help Workshop' >> ${{env.GITHUB_PATH}}
+        # neither of the next two lines seems to work (supposed to set the path)
+        # echo 'C:\Program Files (x86)\HTML Help Workshop' >> $GITHUB_PATH
+        # Write-Output 'C:\Program Files (x86)\HTML Help Workshop' >> ${{env.GITHUB_PATH}}
+        echo "GITHUB_PATH=${{env.GITHUB_PATH}}"
+        echo "GITHUB_PATH=$env:GITHUB_PATH"
 
     - name: Compile chm
       shell: bash
@@ -69,7 +73,7 @@ jobs:
         pushd Help
         # hhc returns 1 on success
         set +e
-        hhc mvmf6.hhp | tee mvmf6.out
+        'C:\Program Files (x86)\HTML Help Workshop\hhc' mvmf6.hhp | tee mvmf6.out
         status=${PIPESTATUS[0]}
         set -e
         if [ "$status" -eq 1 ]; then
