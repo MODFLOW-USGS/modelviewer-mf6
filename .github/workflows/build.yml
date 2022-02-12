@@ -47,7 +47,7 @@ jobs:
     - name: Install htmlhelp
       shell: pwsh
       run: |
-        curl -L -O "${{env.HTMLHELP_URL}}"
+        curl -L -O http://web.archive.org/web/20160201063255/http://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe
         cmd /c start /wait .\htmlhelp.exe /q /c /t:$(Get-Location)\tmp
         # These changes allow htmlhelp to be installed without user input
         $file = "$(Get-Location)\tmp\htmlhelp.inf"
