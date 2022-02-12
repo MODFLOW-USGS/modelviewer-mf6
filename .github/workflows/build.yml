@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - main-cmake
+      - main-vtk_6.3.0
     paths-ignore:
       - .github/workflows/build-vtk.yml
       - misc/CMakePresets.json
