@@ -218,8 +218,9 @@ jobs:
           # setup json variables
           $tag_name = "${{env.tag}}"
           $filename = "${{env.tag}}.7z"
-          $hash = (Get-FileHash $filename).Hash
-          $body = "$hash  $filename"
+          $hash = (Get-FileHash $filename).Hash.ToLower()
+          # format using markdown
+          $body = "```````nsha256`n$hash $filename`n``````"
 
           # store commit
           $target_commitish = "${{github.sha}}"
@@ -268,5 +269,6 @@ jobs:
           Write-Output "::group::Results"
           Write-Output "$((($release.Content | ConvertFrom-Json).assets).browser_download_url)"
           Write-Output "${{github.sha}}"
+          Write-Output "sha256"
           Write-Output "$hash  $filename"
           Write-Output "::endgroup::"
