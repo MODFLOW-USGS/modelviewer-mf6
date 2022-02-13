@@ -10,7 +10,6 @@ set(CMAKE_MFC_FLAG 2)
 
 set(ModelViewer_COMPILE_DATE $ENV{ModelViewer_COMPILE_DATE})
 
-configure_file(Version.h.in Version.h)
 configure_file(ModelViewer.rc ModelViewer.rc)
 configure_file(resource.h resource.h COPYONLY)
 configure_file(res/ModelViewer.ico res/ModelViewer.ico COPYONLY)
