@@ -14,6 +14,7 @@ configure_file(ModelViewer.rc ModelViewer.rc)
 configure_file(resource.h resource.h COPYONLY)
 configure_file(res/ModelViewer.ico res/ModelViewer.ico COPYONLY)
 configure_file(res/MvDoc.ico res/MvDoc.ico COPYONLY)
+configure_file(res/ModelViewer.rc2 res/ModelViewer.rc2 COPYONLY)
 
 add_executable(ModelViewer WIN32
   AnimationControlsPage.cpp
