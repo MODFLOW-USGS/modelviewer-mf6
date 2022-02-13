@@ -66,11 +66,13 @@ jobs:
         # Write-Output 'C:\Program Files (x86)\HTML Help Workshop' >> ${{env.GITHUB_PATH}}
         echo "GITHUB_PATH=${{env.GITHUB_PATH}}"
         echo "GITHUB_PATH=$env:GITHUB_PATH"
+        Write-Output 'C:\Program Files (x86)\HTML Help Workshop' >> $env:GITHUB_PATH
 
     - name: Compile chm
       shell: bash
       run: |
         pushd Help
+        which hhc
         # hhc returns 1 on success
         set +e
         'C:\Program Files (x86)\HTML Help Workshop\hhc' mvmf6.hhp | tee mvmf6.out
@@ -100,7 +102,7 @@ jobs:
             $tag_name = "0.0"
         }
 
-        $next_version = "0.0.0"
+        $next_version = "1.0.0"
         if ($tag_name -match '(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))?$') {
             if ($Matches.ContainsKey('patch')) {
               $patch = 1 + $Matches['patch']
