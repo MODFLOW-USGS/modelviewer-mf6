@@ -88,6 +88,7 @@ jobs:
         popd
 
     - name: Export next mvmf6 version
+      shell: pwsh
       run: |
         # create headers dictionary
         $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
@@ -112,7 +113,11 @@ jobs:
             }
             $next_version = $Matches['major'] + "." + $Matches['minor'] + "." + $patch
         }
-        Write-Output "NEXT_VERSION=$next_version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        Write-Output "NEXT_VERSION=$next_version" >> $env:GITHUB_ENV
+
+    - name: Export date
+      shell: pwsh
+      run: Write-Output "ModelViewer_COMPILE_DATE=$((Get-Date -UFormat '%D (compiled %b %d %Y %T)'))" >> $env:GITHUB_ENV
 
     - name: Configure
       shell: pwsh

@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(mv CXX C)
+project (
+  mv
+  VERSION ${MvProject_VERSION_MAJOR}.${MvProject_VERSION_MINOR}.${MvProject_VERSION_PATCH}
+  LANGUAGES CXX C
+)
 
 add_library(mv SHARED
     Modflow6DataSource.cpp
