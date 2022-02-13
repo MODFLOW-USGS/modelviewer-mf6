@@ -141,7 +141,7 @@ jobs:
         branch: main
 
     - name: Commit and push branch
-      if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6' )
+      if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6') )
       uses: actions-js/push@master
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
