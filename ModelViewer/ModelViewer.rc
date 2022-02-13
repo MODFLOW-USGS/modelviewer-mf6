@@ -769,7 +769,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,161,7,50,14,WS_GROUP
     ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
     LTEXT           "Model Viewer for Modflow 6",IDC_MV_VERSION,45,7,107,10,SS_NOPREFIX
-    LTEXT           "Version @ModelViewer_VERSION_MAJOR@.@MvProject_VERSION_MINOR@.@MvProject_VERSION_PATCH@",IDC_STATIC,45,20,107,10
+    LTEXT           "Version 1.0.0",IDC_STATIC,45,20,107,10
     LTEXT           "@ModelViewer_COMPILE_DATE@",IDC_MV_RELEASE,45,33,129,8
     GROUPBOX        "Notice",IDC_STATIC,7,47,204,49
     LTEXT           "This software uses the Visualization Toolkit (vtk), written and copyrighted by Ken Martin, Will Schroeder and Bill Lorensen. The authors of vtk have granted permission to use, copy, and distribute vtk while retaining their copyright. ",IDC_STATIC,15,59,191,34
