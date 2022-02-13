@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - main-vtk_6.3.0
+      - main-vtk_6.3.0-sed
     paths-ignore:
       - .github/workflows/build-vtk.yml
       - misc/CMakePresets.json
@@ -107,7 +108,44 @@ jobs:
             }
             $next_version = $Matches['major'] + "." + $Matches['minor'] + "." + $patch
         }
+
+        # major.minor.patch.build
+        $build = ${{github.run_number}}
+        $fullversion = "$next_version.$build"
+        $fullversion_commas = $fullversion.Replace(".", ",")
+
+        # sed CMakeLists.txt
+        $file = ".\CMakeLists.txt"
+        (Get-Content $file) | Foreach-Object {
+           $_ -replace 'VERSION (?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))', "VERSION $next_version"
+        } | Set-Content $file
+
+        # sed ModelViewer.rc
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace 'Version (?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))',                                    "Version $next_version"`
+             -replace 'FILEVERSION (?<major>0|[1-9]\d*),(?<minor>0|[1-9]\d*),(?<patch>0|[1-9]\d*),(?<build>0|[1-9]\d*)',                 "FILEVERSION $fullversion_commas"`
+             -replace 'PRODUCTVERSION (?<major>0|[1-9]\d*),(?<minor>0|[1-9]\d*),(?<patch>0|[1-9]\d*),(?<build>0|[1-9]\d*)',              "PRODUCTVERSION $fullversion_commas"`
+             -replace 'VALUE "FileVersion", "(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d)\.(?<patch>0|[1-9]\d*)\.(?<build>0|[1-9]\d*)"',    "VALUE ""FileVersion"", ""$fullversion"""`
+             -replace 'VALUE "ProductVersion", "(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d)\.(?<patch>0|[1-9]\d*)\.(?<build>0|[1-9]\d*)"', "VALUE ""ProductVersion"", ""$fullversion"""`
+        } | Set-Content $file
+
+        # set env for remaining steps
         Write-Output "NEXT_VERSION=$next_version" >> $env:GITHUB_ENV
+
+    - name: Commit and push
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
+      uses: actions-js/push@master
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        branch: main
+
+    - name: Commit and push branch
+      if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6' )
+      uses: actions-js/push@master
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        branch: __${{env.NEXT_VERSION}}.${{github.run_id}}
 
     - name: Export date
       shell: pwsh
@@ -130,7 +168,9 @@ jobs:
         Copy-Item .\Help\mvmf6.chm mvmf6-${{env.NEXT_VERSION}}\bin\.
         7z a -tzip mvmf6-${{env.NEXT_VERSION}}.zip .\mvmf6-${{env.NEXT_VERSION}}\
 
+    # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
     - name: Create release
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch') || (github.repository != 'MODFLOW-USGS/modelviewer-mf6'
       run: |
         # store new commit
         $target_commitish = (git log -n1 --format=format:"%H")
