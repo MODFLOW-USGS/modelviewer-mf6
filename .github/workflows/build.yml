@@ -145,11 +145,11 @@ jobs:
       uses: actions-js/push@master
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
-        branch: __${{env.NEXT_VERSION}}.${{github.run_id}}
+        branch: __${{env.NEXT_VERSION}}.${{github.run_number}}
 
     - name: Export date
       shell: pwsh
-      run: Write-Output "ModelViewer_COMPILE_DATE=$((Get-Date -UFormat '%D (compiled %b %d %Y %T)'))" >> $env:GITHUB_ENV
+      run: Write-Output "ModelViewer_COMPILE_DATE=$((Get-Date -UFormat '%m/%d/%Y (compiled %b %d %Y %T)'))" >> $env:GITHUB_ENV
 
     - name: Configure
       shell: pwsh
