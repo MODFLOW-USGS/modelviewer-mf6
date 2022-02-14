@@ -113,6 +113,7 @@ jobs:
         $build = ${{github.run_number}}
         $fullversion = "$next_version.$build"
         $fullversion_commas = $fullversion.Replace(".", ",")
+        $date_compiled = "$((Get-Date -UFormat '%m/%d/%Y (compiled %b %d %Y %T)'))"
 
         # sed CMakeLists.txt
         $file = ".\CMakeLists.txt"
@@ -128,6 +129,7 @@ jobs:
              -replace 'PRODUCTVERSION (?<major>0|[1-9]\d*),(?<minor>0|[1-9]\d*),(?<patch>0|[1-9]\d*),(?<build>0|[1-9]\d*)',              "PRODUCTVERSION $fullversion_commas"`
              -replace 'VALUE "FileVersion", "(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d)\.(?<patch>0|[1-9]\d*)\.(?<build>0|[1-9]\d*)"',    "VALUE ""FileVersion"", ""$fullversion"""`
              -replace 'VALUE "ProductVersion", "(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d)\.(?<patch>0|[1-9]\d*)\.(?<build>0|[1-9]\d*)"', "VALUE ""ProductVersion"", ""$fullversion"""`
+             -replace '"(?<month>[0-1][1-9])\/(?<day>[0-3][1-9])\/(?<year>\d{4}) \(.*\)"',                                               """$date_compiled"""`
         } | Set-Content $file
 
         # set env for remaining steps
@@ -146,10 +148,6 @@ jobs:
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         branch: __${{env.NEXT_VERSION}}.${{github.run_number}}
-
-    - name: Export date
-      shell: pwsh
-      run: Write-Output "ModelViewer_COMPILE_DATE=$((Get-Date -UFormat '%m/%d/%Y (compiled %b %d %Y %T)'))" >> $env:GITHUB_ENV
 
     - name: Configure
       shell: pwsh

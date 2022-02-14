@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.20)
 
 project (
   ModelViewer
@@ -7,14 +7,6 @@ project (
 )
 
 set(CMAKE_MFC_FLAG 2)
-
-set(ModelViewer_COMPILE_DATE $ENV{ModelViewer_COMPILE_DATE})
-
-configure_file(ModelViewer.rc ModelViewer.rc)
-configure_file(resource.h resource.h COPYONLY)
-configure_file(res/ModelViewer.ico res/ModelViewer.ico COPYONLY)
-configure_file(res/MvDoc.ico res/MvDoc.ico COPYONLY)
-configure_file(res/ModelViewer.rc2 res/ModelViewer.rc2 COPYONLY)
 
 add_executable(ModelViewer WIN32
   AnimationControlsPage.cpp
@@ -93,7 +85,7 @@ add_executable(ModelViewer WIN32
   ModelFeaturesDlg.h
   ModelViewer.cpp
   ModelViewer.h
-  ${PROJECT_BINARY_DIR}/ModelViewer.rc
+  ModelViewer.rc
   Modflow6DataFilesDlg.cpp
   Modflow6DataFilesDlg.h
   MvDoc.cpp
