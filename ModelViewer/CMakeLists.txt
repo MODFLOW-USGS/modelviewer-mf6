@@ -1,6 +1,10 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.20)
 
-project(ModelViewer CXX)
+project (
+  ModelViewer
+  VERSION ${MvProject_VERSION_MAJOR}.${MvProject_VERSION_MINOR}.${MvProject_VERSION_PATCH}
+  LANGUAGES CXX
+)
 
 set(CMAKE_MFC_FLAG 2)
 

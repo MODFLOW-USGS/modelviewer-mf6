@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main
-      - main-cmake
+      - main-vtk_6.3.0
+      - main-vtk_6.3.0-sed
     paths-ignore:
       - .github/workflows/build-vtk.yml
       - misc/CMakePresets.json
@@ -13,6 +14,8 @@ on:
 env:
   VTK_VERSION: 6.3.0
   RELEASES_URL: ${{github.api_url}}/repos/${{github.repository}}/releases
+  VTK_6_3_0_VS2017_X64_URL: https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/vtk-6.3.0-vs2017-x64/vtk-6.3.0-vs2017-x64.7z
+  HTMLHELP_URL: http://web.archive.org/web/20160201063255/http://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe
 
 jobs:
 
@@ -28,21 +31,22 @@ jobs:
       id: cache-vtk
       uses: actions/cache@v2
       with:
-        path: |
-          C:\VTK6.0.0
-          C:\VTK6.0.0_build64
-        key: ${{runner.os}}-vtk-6.0.0
+        path: C:\VTK-6.3.0-vs2017-x64
+        key: windows-2016-vtk-${{hashFiles('misc/CMakePresets.json')}}
 
     - name: Download and install vtk
       if: steps.cache-vtk.outputs.cache-hit != 'true'
       shell: pwsh
       run: |
-        pip install gdown
-        gdown https://drive.google.com/uc?id=1FHn0dSghDXuVt3OvxrxtJP4KYtLap9be
-        7z x -oC:\ vtk6.zip
-        Remove-Item vtk6.zip
+        $file = "vtk-6.3.0-vs2017-x64.7z"
+        curl -L -O "${{env.VTK_6_3_0_VS2017_X64_URL}}"
+        Get-FileHash $file
+        cd C:\
+        7z x ${{github.workspace}}\$file
+        rm ${{github.workspace}}\$file
 
     - name: Install htmlhelp
+      shell: pwsh
       run: |
         curl -L -O http://web.archive.org/web/20160201063255/http://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe
         cmd /c start /wait .\htmlhelp.exe /q /c /t:$(Get-Location)\tmp
@@ -58,8 +62,7 @@ jobs:
         cmd /c start /wait .\tmp\setup.exe
         Remove-Item -Recurse -Force .\tmp
         Remove-Item -Recurse -Force .\htmlhelp.exe
-        # the next line doesn't seem to work (supposed to set the path)
-        # echo 'C:\Program Files (x86)\HTML Help Workshop' >> $GITHUB_PATH
+        Write-Output 'C:\Program Files (x86)\HTML Help Workshop' >> $env:GITHUB_PATH
 
     - name: Compile chm
       shell: bash
@@ -67,7 +70,7 @@ jobs:
         pushd Help
         # hhc returns 1 on success
         set +e
-        'C:\Program Files (x86)\HTML Help Workshop\hhc' mvmf6.hhp | tee mvmf6.out
+        hhc mvmf6.hhp | tee mvmf6.out
         status=${PIPESTATUS[0]}
         set -e
         if [ "$status" -eq 1 ]; then
@@ -80,6 +83,7 @@ jobs:
         popd
 
     - name: Export next mvmf6 version
+      shell: pwsh
       run: |
         # create headers dictionary
         $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
@@ -94,7 +98,7 @@ jobs:
             $tag_name = "0.0"
         }
 
-        $next_version = "0.0.0"
+        $next_version = "1.0.0"
         if ($tag_name -match '(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))?$') {
             if ($Matches.ContainsKey('patch')) {
               $patch = 1 + $Matches['patch']
@@ -104,51 +108,67 @@ jobs:
             }
             $next_version = $Matches['major'] + "." + $Matches['minor'] + "." + $patch
         }
-        Write-Output "NEXT_VERSION=$next_version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-    # - name: Configure vs2017
-    #   shell: pwsh
-    #   run: cmake --preset vs2017
+        # major.minor.patch.build
+        $build = ${{github.run_number}}
+        $fullversion = "$next_version.$build"
+        $fullversion_commas = $fullversion.Replace(".", ",")
+        $date_compiled = "$((Get-Date -UFormat '%m/%d/%Y (compiled %b %d %Y %T)'))"
 
-    # - name: Build vs2017
-    #   shell: pwsh
-    #   run: cmake --build _vs2017 --config release
+        # sed CMakeLists.txt
+        $file = ".\CMakeLists.txt"
+        (Get-Content $file) | Foreach-Object {
+           $_ -replace 'VERSION (?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))', "VERSION $next_version"
+        } | Set-Content $file
 
-    # - name: Install vs2017
-    #   shell: pwsh
-    #   run: cmake --install _vs2017 --prefix mvmf6-${{env.NEXT_VERSION}}-vs2017 --config release
+        # sed ModelViewer.rc
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace 'Version (?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))',                                    "Version $next_version"`
+             -replace 'FILEVERSION (?<major>0|[1-9]\d*),(?<minor>0|[1-9]\d*),(?<patch>0|[1-9]\d*),(?<build>0|[1-9]\d*)',                 "FILEVERSION $fullversion_commas"`
+             -replace 'PRODUCTVERSION (?<major>0|[1-9]\d*),(?<minor>0|[1-9]\d*),(?<patch>0|[1-9]\d*),(?<build>0|[1-9]\d*)',              "PRODUCTVERSION $fullversion_commas"`
+             -replace 'VALUE "FileVersion", "(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d)\.(?<patch>0|[1-9]\d*)\.(?<build>0|[1-9]\d*)"',    "VALUE ""FileVersion"", ""$fullversion"""`
+             -replace 'VALUE "ProductVersion", "(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d)\.(?<patch>0|[1-9]\d*)\.(?<build>0|[1-9]\d*)"', "VALUE ""ProductVersion"", ""$fullversion"""`
+             -replace '"(?<month>[0-1][1-9])\/(?<day>[0-3][1-9])\/(?<year>\d{4}) \(.*\)"',                                               """$date_compiled"""`
+        } | Set-Content $file
 
-    # - name: Build mvmf6-vs2017-x.x.x.zip
-    #   run: |
-    #     Copy-Item .\Help\mvmf6.chm mvmf6-${{env.NEXT_VERSION}}-vs2017\bin\.
-    #     7z a -tzip mvmf6-${{env.NEXT_VERSION}}-vs2017.zip .\mvmf6-${{env.NEXT_VERSION}}-vs2017\
+        # set env for remaining steps
+        Write-Output "NEXT_VERSION=$next_version" >> $env:GITHUB_ENV
 
-    - name: Build mvmf6-vs2017-x.x.x.zip
+    - name: Commit and push
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
+      uses: actions-js/push@master
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        branch: main
+
+    - name: Commit and push branch
+      if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6') )
+      uses: actions-js/push@master
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        branch: __${{env.NEXT_VERSION}}.${{github.run_number}}
+
+    - name: Configure
+      shell: pwsh
+      run: cmake --preset vs2019-vtk-6.3.0
+
+    - name: Build
+      shell: pwsh
+      run: cmake --build --preset vs2019-vtk-6.3.0 --config release
+
+    - name: Install
+      shell: pwsh
+      run: cmake --install _vs2019-vtk-6.3.0 --prefix mvmf6-${{env.NEXT_VERSION}} --config release
+
+    - name: Build mvmf6-x.x.x.zip
       run: |
-        # Testing multiple asset upload (only htmlhelp file)
-        mkdir mvmf6-${{env.NEXT_VERSION}}-vs2017
-        mkdir mvmf6-${{env.NEXT_VERSION}}-vs2017\bin
-        Copy-Item .\Help\mvmf6.chm mvmf6-${{env.NEXT_VERSION}}-vs2017\bin\.
-        7z a -tzip mvmf6-${{env.NEXT_VERSION}}-vs2017.zip .\mvmf6-${{env.NEXT_VERSION}}-vs2017\
+        Copy-Item .\Help\mvmf6.chm mvmf6-${{env.NEXT_VERSION}}\bin\.
+        7z a -tzip mvmf6-${{env.NEXT_VERSION}}.zip .\mvmf6-${{env.NEXT_VERSION}}\
 
-    - name: Configure vs2019
-      shell: pwsh
-      run: cmake --preset vs2019
-
-    - name: Build vs2019
-      shell: pwsh
-      run: cmake --build _vs2019 --config release
-
-    - name: Install vs2019
-      shell: pwsh
-      run: cmake --install _vs2019 --prefix mvmf6-${{env.NEXT_VERSION}}-vs2019 --config release
-
-    - name: Build mvmf6-vs2019-x.x.x.zip
-      run: |
-        Copy-Item .\Help\mvmf6.chm mvmf6-${{env.NEXT_VERSION}}-vs2019\bin\.
-        7z a -tzip mvmf6-${{env.NEXT_VERSION}}-vs2019.zip .\mvmf6-${{env.NEXT_VERSION}}-vs2019\
-
+    # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
     - name: Create release
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch') || (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
       run: |
         # store new commit
         $target_commitish = (git log -n1 --format=format:"%H")
@@ -189,16 +209,10 @@ jobs:
           throw "Bad upload_url"
         }
 
-        # vs2017
-        $upload_uri = $Matches[1] + "?name=mvmf6-$version-vs2017.zip"
+        # upload
+        $upload_uri = $Matches[1] + "?name=mvmf6-$version.zip"
         $h["Content-type"] = "application/zip"
-        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-$version-vs2017.zip")
-        $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method POST -Body $bytes
-
-        # vs2019
-        $upload_uri = $Matches[1] + "?name=mvmf6-$version-vs2019.zip"
-        $h["Content-type"] = "application/zip"
-        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-$version-vs2019.zip")
+        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-$version.zip")
         $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method POST -Body $bytes
 
         # update release
@@ -211,13 +225,8 @@ jobs:
         $update_json = $update | ConvertTo-Json
         $release = Invoke-WebRequest -Uri "$releases_url/$release_id" -Headers $h -Method PATCH -Body $update_json
 
-        # display download url vs2017
-        Write-Output "$((($release.Content | ConvertFrom-Json).assets[0]).browser_download_url)"
-        Get-FileHash "mvmf6-$version-vs2017.zip"
-        Remove-Item mvmf6-$version-vs2017.zip
-
-        # display download url vs2019
-        Write-Output "$((($release.Content | ConvertFrom-Json).assets[1]).browser_download_url)"
-        Get-FileHash "mvmf6-$version-vs2019.zip"
-        Remove-Item mvmf6-$version-vs2019.zip
+        # display download url
+        Write-Output "$((($release.Content | ConvertFrom-Json).assets).browser_download_url)"
+        Get-FileHash "mvmf6-$version.zip"
+        Remove-Item mvmf6-$version.zip
 

@@ -11,7 +11,7 @@
       "displayName": "vs2017 x64 with vtk-6.0.0-vs2010 (builds in _vs2017)",
       "generator": "Visual Studio 15 2017",
       "architecture": "x64",
-      "binaryDir": "${sourceDir}/_vs2017",
+      "binaryDir": "${sourceDir}/_${presetName}",
       "cacheVariables": {
         "VTK_DIR" : "C:/VTK6.0.0_build64"
       }
@@ -21,7 +21,7 @@
       "displayName": "vs2017 x64 with vtk-6.3.0-vs2017 (builds in _vs2017-vtk-6.3.0)",
       "generator": "Visual Studio 15 2017",
       "architecture": "x64",
-      "binaryDir": "${sourceDir}/_vs2017-vtk-6.3.0",
+      "binaryDir": "${sourceDir}/_${presetName}",
       "cacheVariables": {
         "VTK_DIR" : "C:/VTK-6.3.0_build64_vs2017"
       }
@@ -31,7 +31,7 @@
       "displayName": "vs2019 x64 with vtk-6.0.0-vs2010 (builds in _vs2019)",
       "generator": "Visual Studio 16 2019",
       "architecture": "x64",
-      "binaryDir": "${sourceDir}/_vs2019",
+      "binaryDir": "${sourceDir}/_${presetName}",
       "cacheVariables": {
         "VTK_DIR" : "C:/VTK6.0.0_build64"
       }
@@ -41,9 +41,9 @@
       "displayName": "vs2019 x64 with vtk-6.3.0-vs2017 (builds in _vs2019-vtk-6.3.0)",
       "generator": "Visual Studio 16 2019",
       "architecture": "x64",
-      "binaryDir": "${sourceDir}/_vs2019-vtk-6.3.0",
+      "binaryDir": "${sourceDir}/_${presetName}",
       "cacheVariables": {
-        "VTK_DIR" : "C:/VTK-6.3.0_build64_vs2017"
+        "VTK_DIR" : "C:/VTK-6.3.0-vs2017-x64/lib/cmake/vtk-6.3"
       }
     }
   ]
