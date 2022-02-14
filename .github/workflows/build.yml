@@ -2,16 +2,23 @@ name: build
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - main-vtk_6.3.0
+      - main-vtk_6.3.0-sed
+    paths-ignore:
+      - .github/workflows/build-vtk.yml
+      - misc/CMakePresets.json
+      - README.md
 
 env:
-  # vtk version
-  VTK_VERSION: 6.0.0
-
-  # releases api
+  VTK_VERSION: 6.3.0
   RELEASES_URL: ${{github.api_url}}/repos/${{github.repository}}/releases
+  VTK_6_3_0_VS2017_X64_URL: https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/vtk-6.3.0-vs2017-x64/vtk-6.3.0-vs2017-x64.7z
+  HTMLHELP_URL: http://web.archive.org/web/20160201063255/http://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe
 
 jobs:
+
   build:
     runs-on: windows-2019
 
@@ -24,33 +31,26 @@ jobs:
       id: cache-vtk
       uses: actions/cache@v2
       with:
-        path: |
-          C:\VTK6.0.0
-          C:\VTK6.0.0_build64
-        key: ${{runner.os}}-vtk-${{env.VTK_VERSION}}
+        path: C:\VTK-6.3.0-vs2017-x64
+        key: windows-2016-vtk-${{hashFiles('misc/CMakePresets.json')}}
 
     - name: Download and install vtk
       if: steps.cache-vtk.outputs.cache-hit != 'true'
       shell: pwsh
       run: |
-        pip install gdown
-        gdown https://drive.google.com/uc?id=1FHn0dSghDXuVt3OvxrxtJP4KYtLap9be
-        7z x -oC:\ vtk6.zip
-        Remove-Item vtk6.zip
-
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.1
-      with:
-        msbuild-architecture: x64
-        vs-version: '[16.9,17)'
-
-    - name: Build modelviewer
-      run: msbuild MvProject.sln -property:Platform=x64 -property:Configuration=Release
+        $file = "vtk-6.3.0-vs2017-x64.7z"
+        curl -L -O "${{env.VTK_6_3_0_VS2017_X64_URL}}"
+        Get-FileHash $file
+        cd C:\
+        7z x ${{github.workspace}}\$file
+        rm ${{github.workspace}}\$file
 
     - name: Install htmlhelp
+      shell: pwsh
       run: |
         curl -L -O http://web.archive.org/web/20160201063255/http://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe
         cmd /c start /wait .\htmlhelp.exe /q /c /t:$(Get-Location)\tmp
+        # These changes allow htmlhelp to be installed without user input
         $file = "$(Get-Location)\tmp\htmlhelp.inf"
         (Get-Content $file) | Foreach-Object { $_ `
           -replace '^BeginPrompt',                                               ';;BeginPrompt' `
@@ -62,8 +62,7 @@ jobs:
         cmd /c start /wait .\tmp\setup.exe
         Remove-Item -Recurse -Force .\tmp
         Remove-Item -Recurse -Force .\htmlhelp.exe
-        # the next line doesn't seem to work (supposed to set the path)
-        # echo 'C:\Program Files (x86)\HTML Help Workshop' >> $GITHUB_PATH
+        Write-Output 'C:\Program Files (x86)\HTML Help Workshop' >> $env:GITHUB_PATH
 
     - name: Compile chm
       shell: bash
@@ -71,7 +70,7 @@ jobs:
         pushd Help
         # hhc returns 1 on success
         set +e
-        'C:\Program Files (x86)\HTML Help Workshop\hhc' mvmf6.hhp | tee mvmf6.out
+        hhc mvmf6.hhp | tee mvmf6.out
         status=${PIPESTATUS[0]}
         set -e
         if [ "$status" -eq 1 ]; then
@@ -84,6 +83,7 @@ jobs:
         popd
 
     - name: Export next mvmf6 version
+      shell: pwsh
       run: |
         # create headers dictionary
         $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
@@ -98,7 +98,7 @@ jobs:
             $tag_name = "0.0"
         }
 
-        $next_version = "0.0.0"
+        $next_version = "1.0.0"
         if ($tag_name -match '(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))?$') {
             if ($Matches.ContainsKey('patch')) {
               $patch = 1 + $Matches['patch']
@@ -108,59 +108,67 @@ jobs:
             }
             $next_version = $Matches['major'] + "." + $Matches['minor'] + "." + $patch
         }
-        Write-Output "NEXT_VERSION=$next_version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-    - name: Build mvmf6.zip
+        # major.minor.patch.build
+        $build = ${{github.run_number}}
+        $fullversion = "$next_version.$build"
+        $fullversion_commas = $fullversion.Replace(".", ",")
+        $date_compiled = "$((Get-Date -UFormat '%m/%d/%Y (compiled %b %d %Y %T)'))"
+
+        # sed CMakeLists.txt
+        $file = ".\CMakeLists.txt"
+        (Get-Content $file) | Foreach-Object {
+           $_ -replace 'VERSION (?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))', "VERSION $next_version"
+        } | Set-Content $file
+
+        # sed ModelViewer.rc
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace 'Version (?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))',                                    "Version $next_version"`
+             -replace 'FILEVERSION (?<major>0|[1-9]\d*),(?<minor>0|[1-9]\d*),(?<patch>0|[1-9]\d*),(?<build>0|[1-9]\d*)',                 "FILEVERSION $fullversion_commas"`
+             -replace 'PRODUCTVERSION (?<major>0|[1-9]\d*),(?<minor>0|[1-9]\d*),(?<patch>0|[1-9]\d*),(?<build>0|[1-9]\d*)',              "PRODUCTVERSION $fullversion_commas"`
+             -replace 'VALUE "FileVersion", "(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d)\.(?<patch>0|[1-9]\d*)\.(?<build>0|[1-9]\d*)"',    "VALUE ""FileVersion"", ""$fullversion"""`
+             -replace 'VALUE "ProductVersion", "(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d)\.(?<patch>0|[1-9]\d*)\.(?<build>0|[1-9]\d*)"', "VALUE ""ProductVersion"", ""$fullversion"""`
+             -replace '"(?<month>[0-1][1-9])\/(?<day>[0-3][1-9])\/(?<year>\d{4}) \(.*\)"',                                               """$date_compiled"""`
+        } | Set-Content $file
+
+        # set env for remaining steps
+        Write-Output "NEXT_VERSION=$next_version" >> $env:GITHUB_ENV
+
+    - name: Commit and push
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
+      uses: actions-js/push@master
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        branch: main
+
+    - name: Commit and push branch
+      if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6') )
+      uses: actions-js/push@master
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        branch: __${{env.NEXT_VERSION}}.${{github.run_number}}
+
+    - name: Configure
+      shell: pwsh
+      run: cmake --preset vs2019-vtk-6.3.0
+
+    - name: Build
+      shell: pwsh
+      run: cmake --build --preset vs2019-vtk-6.3.0 --config release
+
+    - name: Install
+      shell: pwsh
+      run: cmake --install _vs2019-vtk-6.3.0 --prefix mvmf6-${{env.NEXT_VERSION}} --config release
+
+    - name: Build mvmf6-x.x.x.zip
       run: |
-        $version="${{env.NEXT_VERSION}}"
-        mkdir mvmf6-$version
-        mkdir mvmf6-$version\bin
-        Push-Location mvmf6-$version\bin
-        Copy-Item ..\..\ModelViewer\x64\Release\mvmf6.exe .
-        Copy-Item ..\..\mv\x64\Release\mv.dll .
-        Copy-Item ..\..\Help\mvmf6.chm .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkalglib-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonComputationalGeometry-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonCore-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonDataModel-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonExecutionModel-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonMath-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonMisc-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonSystem-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkCommonTransforms-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkDICOMParser-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkexpat-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersCore-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersExtraction-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersGeneral-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersGeometry-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersModeling-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersSources-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkFiltersStatistics-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkfreetype-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkftgl-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkImagingCore-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkImagingFourier-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkImagingHybrid-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkInteractionStyle-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkIOCore-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkIOImage-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkIOXMLParser-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkjpeg-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkmetaio-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkpng-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkRenderingCore-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkRenderingFreeType-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkRenderingFreeTypeOpenGL-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkRenderingLOD-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkRenderingOpenGL-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtksys-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtktiff-6.0.dll .
-        Copy-Item C:\VTK6.0.0_build64\bin\Release\vtkzlib-6.0.dll .
-        Pop-Location
-        7z a -tzip mvmf6-$version.zip .\mvmf6-$version\
+        Copy-Item .\Help\mvmf6.chm mvmf6-${{env.NEXT_VERSION}}\bin\.
+        7z a -tzip mvmf6-${{env.NEXT_VERSION}}.zip .\mvmf6-${{env.NEXT_VERSION}}\
 
+    # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
     - name: Create release
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch') || (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
       run: |
         # store new commit
         $target_commitish = (git log -n1 --format=format:"%H")
@@ -182,8 +190,8 @@ jobs:
         $create = @{
           "tag_name"         = "$env:NEXT_VERSION"
           "target_commitish" = "$target_commitish"
-          "name"             = "Model Viewer for Modflow 6 Beta Version " + $version
-          "body"             = "This is a beta test version of USGS Model Viewer for Modflow 6."
+          "name"             = "Model Viewer for Modflow 6 Version " + $version
+          "body"             = "Model Viewer for Modflow 6 Version " + $version
           "draft"            = $true
           # "prerelease"       = $true
         }
@@ -200,6 +208,8 @@ jobs:
           # ie https://uploads.github.com/repos/MODFLOW-USGS/modelviewer-mf6/releases/24058628/assets{?name,label}
           throw "Bad upload_url"
         }
+
+        # upload
         $upload_uri = $Matches[1] + "?name=mvmf6-$version.zip"
         $h["Content-type"] = "application/zip"
         $bytes = [System.IO.File]::ReadAllBytes("mvmf6-$version.zip")

@@ -2,8 +2,10 @@
 .vs/
 
 # Build results
+Help/mvmf6.out
 ModelViewer/x64/
 mv/x64/
+_*/
 
 # User-specific files
 *.suo
