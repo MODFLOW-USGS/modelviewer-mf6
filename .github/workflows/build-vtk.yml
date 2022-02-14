@@ -71,6 +71,8 @@ jobs:
           dir ${{env.instdir}}\bin
 
   cache-vtk-release:
+    # uncomment the next line if you want to compile vtk
+    if: github.repository == 'MODFLOW-USGS/modelviewer-mf6'
 
     runs-on: windows-2016
 
@@ -126,6 +128,9 @@ jobs:
           dir ${{env.instdir}}\bin
 
   cache-vtk:
+    # uncomment the next line if you want to compile vtk
+    if: github.repository == 'MODFLOW-USGS/modelviewer-mf6'
+
     runs-on: windows-2016
     needs: [cache-vtk-debug, cache-vtk-release]
 
