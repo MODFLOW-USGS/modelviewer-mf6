@@ -4,8 +4,23 @@ on:
   push:
     branches:
       - main
+      - develop
     paths-ignore:
       - .github/workflows/build-vtk.yml
+      - CODE_OF_CONDUCT.md
+      - code.json
+      - DISCLAIMER.md
+      - misc/CMakePresets.json
+      - README.md
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths-ignore:
+      - .github/workflows/build-vtk.yml
+      - CODE_OF_CONDUCT.md
+      - code.json
+      - DISCLAIMER.md
       - misc/CMakePresets.json
       - README.md
 
@@ -149,15 +164,15 @@ jobs:
 
     - name: Configure
       shell: pwsh
-      run: cmake --preset vs2019-vtk-6.3.0
+      run: cmake --preset vs2019
 
     - name: Build
       shell: pwsh
-      run: cmake --build --preset vs2019-vtk-6.3.0 --config release
+      run: cmake --build --preset vs2019 --config release
 
     - name: Install
       shell: pwsh
-      run: cmake --install _vs2019-vtk-6.3.0 --prefix mvmf6-${{env.NEXT_VERSION}} --config release
+      run: cmake --install _vs2019 --prefix mvmf6-${{env.NEXT_VERSION}} --config release
 
     - name: Build mvmf6-x.x.x.zip
       run: |
@@ -227,4 +242,3 @@ jobs:
         Write-Output "$((($release.Content | ConvertFrom-Json).assets).browser_download_url)"
         Get-FileHash "mvmf6-$version.zip"
         Remove-Item mvmf6-$version.zip
-
