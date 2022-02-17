@@ -4,8 +4,23 @@ on:
   push:
     branches:
       - main
+      - develop
     paths-ignore:
       - .github/workflows/build-vtk.yml
+      - CODE_OF_CONDUCT.md
+      - code.json
+      - DISCLAIMER.md
+      - misc/CMakePresets.json
+      - README.md
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths-ignore:
+      - .github/workflows/build-vtk.yml
+      - CODE_OF_CONDUCT.md
+      - code.json
+      - DISCLAIMER.md
       - misc/CMakePresets.json
       - README.md
 
@@ -131,6 +146,11 @@ jobs:
         } | Set-Content $file
 
         # set env for remaining steps
+        if ($env:GITHUB_REPOSITORY -eq 'MODFLOW-USGS/modelviewer-mf6') {
+          Write-Output "DIST_DIR=mvmf6-$next_version" >> $env:GITHUB_ENV
+        } else {
+          Write-Output "DIST_DIR=mvmf6-$env:GITHUB_REPOSITORY_OWNER-$next_version" >> $env:GITHUB_ENV
+        }
         Write-Output "NEXT_VERSION=$next_version" >> $env:GITHUB_ENV
 
     - name: Commit and push
@@ -149,20 +169,20 @@ jobs:
 
     - name: Configure
       shell: pwsh
-      run: cmake --preset vs2019-vtk-6.3.0
+      run: cmake --preset vs2019
 
     - name: Build
       shell: pwsh
-      run: cmake --build --preset vs2019-vtk-6.3.0 --config release
+      run: cmake --build --preset vs2019 --config release
 
     - name: Install
       shell: pwsh
-      run: cmake --install _vs2019-vtk-6.3.0 --prefix mvmf6-${{env.NEXT_VERSION}} --config release
+      run: cmake --install _vs2019 --prefix ${{env.DIST_DIR}} --config release
 
-    - name: Build mvmf6-x.x.x.zip
+    - name: Build mvmf6 zip
       run: |
-        Copy-Item .\Help\mvmf6.chm mvmf6-${{env.NEXT_VERSION}}\bin\.
-        7z a -tzip mvmf6-${{env.NEXT_VERSION}}.zip .\mvmf6-${{env.NEXT_VERSION}}\
+        Copy-Item .\Help\mvmf6.chm ${{env.DIST_DIR}}\bin\.
+        7z a -tzip ${{env.DIST_DIR}}.zip .\${{env.DIST_DIR}}\
 
     # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
     - name: Create release
@@ -186,12 +206,11 @@ jobs:
         # see https://docs.github.com/en/rest/reference/repos#create-a-release
         #
         $create = @{
-          "tag_name"         = "$env:NEXT_VERSION"
+          "tag_name"         = $version
           "target_commitish" = "$target_commitish"
           "name"             = "Model Viewer for Modflow 6 Version " + $version
           "body"             = "Model Viewer for Modflow 6 Version " + $version
           "draft"            = $true
-          # "prerelease"       = $true
         }
         $create_json = $create | ConvertTo-Json
         $release = Invoke-WebRequest -Uri $releases_url -Headers $h -Method POST -Body $create_json
@@ -208,9 +227,9 @@ jobs:
         }
 
         # upload
-        $upload_uri = $Matches[1] + "?name=mvmf6-$version.zip"
+        $upload_uri = $Matches[1] + "?name=$env:DIST_DIR.zip"
         $h["Content-type"] = "application/zip"
-        $bytes = [System.IO.File]::ReadAllBytes("mvmf6-$version.zip")
+        $bytes = [System.IO.File]::ReadAllBytes("$env:DIST_DIR.zip")
         $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method POST -Body $bytes
 
         # update release
@@ -225,6 +244,5 @@ jobs:
 
         # display download url
         Write-Output "$((($release.Content | ConvertFrom-Json).assets).browser_download_url)"
-        Get-FileHash "mvmf6-$version.zip"
-        Remove-Item mvmf6-$version.zip
-
+        Get-FileHash "$env:DIST_DIR.zip"
+        Remove-Item "$env:DIST_DIR.zip"
