@@ -7,16 +7,38 @@ This is the development repository for the USGS Model Viewer for MODFLOW 6 Graph
 
 ## Prerequisite Software
 
-* 7zip 
+* 7-Zip 
 * CMake 3.20 or newer
 * Git 2.31 or newer
 * Microsoft Visual Studio 2019
-* VTK 6.3.0 libraries
 
-### VTK 6.3.0 libraries
+## Building
 
-Precompiled VTK 6.3.0 libraries can be downloaded here [vtk-6.3.0-vs2017-x64.7z](https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/vtk-6.3.0-vs2017-x64/vtk-6.3.0-vs2017-x64.7z).  To build VTK yourself use the following procedure.
+Open a command prompt window and download the precompiled VTK 6.3.0 libraries
+      
+      cd %USERPROFILE%\Downloads
+      curl -L -O https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/vtk-6.3.0-vs2017-x64/vtk-6.3.0-vs2017-x64.7z
 
+Using 7-zip unzip the vtk libraries
+
+      cd /D C:\
+      7z x %USERPROFILE%\Downloads\vtk-6.3.0-vs2017-x64.7z
+      
+Clone your fork of modelviewer-mf6
+
+      mkdir %USERPROFILE%\source\repos
+      cd %USERPROFILE%\source\repos
+      git clone git@github.com:<YOUR-GITHUB-USER-NAME>/modelviewer-mf6.git
+
+Use CMake to configure
+
+      cd modelviewer-mf6
+      cmake --preset vs2019
+      
+Use CMake to build
+
+      cmake --build --preset vs2019
+      
 Disclaimer
 ----------
 
