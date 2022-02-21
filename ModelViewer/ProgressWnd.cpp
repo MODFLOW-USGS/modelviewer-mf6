@@ -31,7 +31,6 @@
 //         Dec 18 1998 - added WS_EX_TOPMOST to the creation flag
 
 
-#include "stdafx.h"
 #include "ProgressWnd.h"
 
 #ifdef _DEBUG

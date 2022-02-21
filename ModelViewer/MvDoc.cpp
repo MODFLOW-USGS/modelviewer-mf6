@@ -1,7 +1,6 @@
 // MvDoc.cpp : implementation of the CMvDoc class
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include <time.h>
 #include <direct.h>

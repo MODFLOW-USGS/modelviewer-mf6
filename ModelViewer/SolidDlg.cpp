@@ -1,7 +1,6 @@
 // SolidDlg.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "SolidDlg.h"
 #include "MvDoc.h"

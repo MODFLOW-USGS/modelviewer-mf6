@@ -1,7 +1,6 @@
 // CustomIsosurfacePage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "CustomIsosurfacePage.h"
 #include "MvDoc.h"

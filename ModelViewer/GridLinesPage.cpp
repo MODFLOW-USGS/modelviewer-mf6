@@ -1,7 +1,6 @@
 // GridLinesPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "GridLinesPage.h"
 #include "MvDoc.h"

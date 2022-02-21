@@ -1,7 +1,6 @@
 // OverlayControlsPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "OverlayControlsPage.h"
 #include "OverlayDlg.h"

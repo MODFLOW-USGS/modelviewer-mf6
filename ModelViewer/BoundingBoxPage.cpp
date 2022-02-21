@@ -1,7 +1,6 @@
 // BoundingBoxPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "BoundingBoxPage.h"
 #include "MvDoc.h"

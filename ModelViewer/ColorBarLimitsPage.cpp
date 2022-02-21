@@ -1,7 +1,6 @@
 // ColorBarLimitsPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "ColorBarLimitsPage.h"
 #include "MvDoc.h"

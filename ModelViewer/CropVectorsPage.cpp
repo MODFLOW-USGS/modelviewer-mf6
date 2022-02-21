@@ -1,7 +1,6 @@
 // CropVectorsPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "CropVectorsPage.h"
 #include "VectorDlg.h"

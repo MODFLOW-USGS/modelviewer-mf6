@@ -1,7 +1,6 @@
 // OverlayFilePage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "OverlayFilePage.h"
 #include "mvUtil.h"

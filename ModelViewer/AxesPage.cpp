@@ -1,7 +1,6 @@
 // AxesPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "AxesPage.h"
 #include "MvDoc.h"

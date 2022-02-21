@@ -1,7 +1,6 @@
 // RegularIsosurfacePage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "RegularIsosurfacePage.h"
 #include "MvDoc.h"

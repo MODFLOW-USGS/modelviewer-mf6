@@ -15,8 +15,6 @@ add_executable(ModelViewer WIN32
   AnimationDlg.h
   AnimationOptionsPage.cpp
   AnimationOptionsPage.h
-  # AxesDlg.cpp
-  # AxesDlg.h
   AxesPage.cpp
   AxesPage.h
   BackgroundPage.cpp
@@ -92,8 +90,6 @@ add_executable(ModelViewer WIN32
   MvDoc.h
   MvView.cpp
   MvView.h
-  # MvView_x.cpp
-  # MvView_x.h
   OverlayBoundsPage.cpp
   OverlayBoundsPage.h
   OverlayControlsPage.cpp
@@ -128,8 +124,6 @@ add_executable(ModelViewer WIN32
   ScalePage.h
   SolidDlg.cpp
   SolidDlg.h
-  # StdAfx.cpp
-  # StdAfx.h
   SubgridPage.cpp
   SubgridPage.h
   SurfacePage.cpp
@@ -144,50 +138,6 @@ add_executable(ModelViewer WIN32
   VectorOptionsPage.h
   VectorThresholdPage.cpp
   VectorThresholdPage.h
-)
-
-# reqdVTKLibs are the required libraries for vtk-6.0.0
-# vtk-6.3.0 didn't work with this list
-# now all vtk dlls copied ${VTK_LIBRARIES}
-set(reqdVTKLibs
-  vtkalglib
-  vtkCommonComputationalGeometry
-  vtkCommonCore
-  vtkCommonDataModel
-  vtkCommonExecutionModel
-  vtkCommonMath
-  vtkCommonMisc
-  vtkCommonSystem
-  vtkCommonTransforms
-  vtkDICOMParser
-  vtkexpat
-  vtkFiltersCore
-  vtkFiltersExtraction
-  vtkFiltersGeneral
-  vtkFiltersGeometry
-  vtkFiltersModeling
-  vtkFiltersSources
-  vtkFiltersStatistics
-  vtkfreetype
-  vtkftgl
-  vtkImagingCore
-  vtkImagingFourier
-  vtkImagingHybrid
-  vtkInteractionStyle
-  vtkIOCore
-  vtkIOImage
-  vtkIOXMLParser
-  vtkjpeg
-  vtkmetaio
-  vtkpng
-  vtkRenderingCore
-  vtkRenderingFreeType
-  vtkRenderingFreeTypeOpenGL
-  vtkRenderingLOD
-  vtkRenderingOpenGL
-  vtksys
-  vtktiff
-  vtkzlib
 )
 
 # modify ModelViewer executable name

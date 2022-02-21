@@ -1,7 +1,6 @@
 // OverlayDlg.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "OverlayDlg.h"
 #include "MvDoc.h"

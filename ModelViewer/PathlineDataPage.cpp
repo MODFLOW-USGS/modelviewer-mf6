@@ -1,7 +1,6 @@
 // PathlineDataPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "PathlineDataPage.h"
 

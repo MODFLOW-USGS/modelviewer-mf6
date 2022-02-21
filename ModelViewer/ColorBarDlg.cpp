@@ -1,7 +1,6 @@
 // ColorBarDlg.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "ColorBarDlg.h"
 #include "MvDoc.h"

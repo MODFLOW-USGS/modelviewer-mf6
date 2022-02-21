@@ -1,7 +1,6 @@
 // ScalePage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "ScalePage.h"
 #include "MvDoc.h"

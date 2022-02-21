@@ -1,7 +1,6 @@
 // GridShellPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "GridShellPage.h"
 #include "MvDoc.h"
