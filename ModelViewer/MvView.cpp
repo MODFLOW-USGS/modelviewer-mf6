@@ -1,7 +1,6 @@
 // MvView.cpp : implementation of the CMvView class
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include <afxpriv.h>
 #include <fstream>

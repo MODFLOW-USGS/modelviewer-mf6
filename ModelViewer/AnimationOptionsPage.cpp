@@ -1,7 +1,6 @@
 // AnimationOptionsPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "AnimationOptionsPage.h"
 

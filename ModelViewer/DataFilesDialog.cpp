@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "DataFilesDialog.h"
 #include <fstream>

@@ -1,7 +1,6 @@
 // ModelViewer.cpp : Defines the class behaviors for the application.
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 
 #include "MainFrm.h"

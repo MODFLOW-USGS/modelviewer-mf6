@@ -1,7 +1,6 @@
 // PathlinesClippingPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "PathlinesClippingPage.h"
 #include "PathlinesDlg.h"

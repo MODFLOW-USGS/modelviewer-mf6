@@ -1,7 +1,6 @@
 // ScalarDataPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "ScalarDataPage.h"
 #include "MvDoc.h"

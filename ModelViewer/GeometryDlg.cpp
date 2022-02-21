@@ -1,7 +1,6 @@
 // GeometryDlg.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "GeometryDlg.h"
 #include "MvDoc.h"

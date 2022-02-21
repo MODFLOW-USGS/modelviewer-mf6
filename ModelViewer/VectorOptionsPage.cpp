@@ -1,7 +1,6 @@
 // VectorOptionsPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "VectorOptionsPage.h"
 #include "MvDoc.h"

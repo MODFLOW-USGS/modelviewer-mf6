@@ -1,7 +1,6 @@
 // OverlayBoundsPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "OverlayBoundsPage.h"
 
