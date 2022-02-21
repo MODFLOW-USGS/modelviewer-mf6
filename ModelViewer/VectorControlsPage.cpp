@@ -1,7 +1,6 @@
 // VectorControlsPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "VectorControlsPage.h"
 #include "MvDoc.h"

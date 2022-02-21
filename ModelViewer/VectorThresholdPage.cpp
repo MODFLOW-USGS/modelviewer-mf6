@@ -1,7 +1,6 @@
 // VectorThresholdPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "VectorThresholdPage.h"
 #include "MvDoc.h"

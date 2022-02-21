@@ -1,7 +1,6 @@
 // PathlinesColorPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "PathlinesColorPage.h"
 #include "PathlinesDlg.h"

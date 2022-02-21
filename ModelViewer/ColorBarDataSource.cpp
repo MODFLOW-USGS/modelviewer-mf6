@@ -1,7 +1,6 @@
 // ColorBarDataSource.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "ColorBarDataSource.h"
 #include "MvDoc.h"

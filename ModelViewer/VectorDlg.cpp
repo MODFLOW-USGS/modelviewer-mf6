@@ -1,7 +1,6 @@
 // VectorDlg.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "VectorDlg.h"
 #include "MvDoc.h"

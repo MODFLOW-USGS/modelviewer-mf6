@@ -1,7 +1,6 @@
 // AnimationDlg.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "AnimationDlg.h"
 #include "MvDoc.h"

@@ -1,7 +1,6 @@
 // CropOptionsPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "CropOptionsPage.h"
 #include "MvDoc.h"

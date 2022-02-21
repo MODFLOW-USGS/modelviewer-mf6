@@ -1,7 +1,6 @@
 // ModelFeaturesDlg.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "ModelFeaturesDlg.h"
 #include "MvDoc.h"

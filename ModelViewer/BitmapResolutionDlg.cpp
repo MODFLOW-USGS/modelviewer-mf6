@@ -1,7 +1,6 @@
 // BitmapResolutionDlg.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "BitmapResolutionDlg.h"
 

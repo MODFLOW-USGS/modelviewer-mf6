@@ -1,7 +1,6 @@
 // ColorBarPreviewListBox.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "ColorBarPreviewListBox.h"
 

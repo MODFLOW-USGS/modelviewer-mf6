@@ -1,7 +1,6 @@
 // MainFrm.cpp : implementation of the CMainFrame class
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "DisplaySizeDlg.h"
 

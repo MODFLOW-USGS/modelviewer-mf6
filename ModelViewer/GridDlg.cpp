@@ -1,7 +1,6 @@
 // GridDlg.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "GridDlg.h"
 #include "MvDoc.h"

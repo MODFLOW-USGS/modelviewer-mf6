@@ -1,7 +1,6 @@
 // Modflow6DataFilesDlg.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "Modflow6DataFilesDlg.h"
 #include "afxdialogex.h"

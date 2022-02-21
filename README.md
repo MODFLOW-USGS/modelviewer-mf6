@@ -38,6 +38,10 @@ Use CMake to configure
 Use CMake to build
 
       cmake --build --preset vs2019
+
+Use CMake to open the project in visual studio
+
+      cmake --open _vs2019
       
 Disclaimer
 ----------

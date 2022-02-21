@@ -1,7 +1,6 @@
 // IsosurfaceDlg.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "ModelViewer.h"
 #include "IsosurfaceDlg.h"
 #include "MvDoc.h"

@@ -1,7 +1,6 @@
 // ColorBarTextPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "ColorBarTextPage.h"
 #include "MvDoc.h"

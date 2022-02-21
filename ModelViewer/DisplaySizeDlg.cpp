@@ -1,7 +1,6 @@
 // DisplaySizeDlg.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "DisplaySizeDlg.h"
 
