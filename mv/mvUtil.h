@@ -31,6 +31,10 @@ public:
 
 	static void ToLowerCase(char *aString);
 
+	static void RemoveQuotes(char* sString);
+
+	static void RemoveDoubleQuotes(char* sString);
+
    static void ReplaceTabWithWhiteSpace(char *aString);
 
     static double mvUtil::Fortran_atof(char *aString);
