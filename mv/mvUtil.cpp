@@ -394,3 +394,21 @@ void mvUtil::Wavelength2RGBA(double wavelength, double *RGBA)
       RGBA[2] = 0.5;
    }
 }
+
+void mvUtil::RemoveQuotes(char* aString)
+{
+	size_t len = strlen(aString);
+	if (aString[0] == '\'' && aString[len - 1] == '\'') {
+		aString[len - 1] = '\0';
+		memmove(aString, aString + 1, len - 1);
+	}
+}
+
+void mvUtil::RemoveDoubleQuotes(char* aString)
+{
+	size_t len = strlen(aString);
+	if (aString[0] == '"' && aString[len - 1] == '"') {
+		aString[len - 1] = '\0';
+		memmove(aString, aString + 1, len - 1);
+	}
+}

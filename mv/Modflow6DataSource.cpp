@@ -440,6 +440,8 @@ char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
             {
                strcpy(headFile, p+8);
                mvUtil::TrimLeft(headFile);
+               mvUtil::RemoveQuotes(headFile);
+               mvUtil::RemoveDoubleQuotes(headFile);
             }
          }
          if (!_strnicmp(aline, "budget ", 7))
@@ -449,6 +451,8 @@ char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
             {
                strcpy(budgetFile, p+8);
                mvUtil::TrimLeft(budgetFile);
+               mvUtil::RemoveQuotes(budgetFile);
+               mvUtil::RemoveDoubleQuotes(budgetFile);
             }
          }
          if (!_strnicmp(aline, "end ", 4))
