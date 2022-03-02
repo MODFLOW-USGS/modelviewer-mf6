@@ -9,10 +9,10 @@
 #endif // _MSC_VER > 1000
 
 #ifndef __AFXWIN_H__
-	#error include 'stdafx.h' before including this file for PCH
+#error There's a problem with the cmake target_precompile_headers
 #endif
 
-#include "resource.h"       // main symbols
+#include "resource.h" // main symbols
 
 /////////////////////////////////////////////////////////////////////////////
 // CModelViewerApp:
@@ -22,27 +22,26 @@
 class CModelViewerApp : public CWinApp
 {
 protected:
-	BOOL m_Startup;
+    BOOL m_Startup;
 
 public:
-	CModelViewerApp();
+    CModelViewerApp();
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CModelViewerApp)
-	public:
-	virtual BOOL InitInstance();
-	virtual BOOL OnIdle(LONG lCount);
-	//}}AFX_VIRTUAL
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CModelViewerApp)
+public:
+    virtual BOOL InitInstance();
+    virtual BOOL OnIdle(LONG lCount);
+    //}}AFX_VIRTUAL
 
-// Implementation
-	//{{AFX_MSG(CModelViewerApp)
-	afx_msg void OnAppAbout();
-	afx_msg void OnCustomFileClose();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+    //{{AFX_MSG(CModelViewerApp)
+    afx_msg void OnAppAbout();
+    afx_msg void OnCustomFileClose();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
-
 
 /////////////////////////////////////////////////////////////////////////////
 

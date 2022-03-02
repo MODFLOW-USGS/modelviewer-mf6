@@ -13,51 +13,51 @@ class CMvDoc;
 
 class CSolidDlg : public CDialog
 {
-// Construction
+    // Construction
 public:
-	CSolidDlg(CWnd* pParent, CMvDoc *pDoc);
-	BOOL Create();
-	void Reinitialize();
-	void Activate(BOOL b);
+    CSolidDlg(CWnd* pParent, CMvDoc* pDoc);
+    BOOL Create();
+    void Reinitialize();
+    void Activate(BOOL b);
 
-// Dialog Data
-	//{{AFX_DATA(CSolidDlg)
-	enum { IDD = IDD_SOLID };
-	double	m_SolidThresholdMin;
-	double	m_SolidThresholdMax;
-	BOOL	m_ApplyThreshold;
-	int		m_SolidDisplayMode;
-	int		m_NumberOfColorBands;
-	//}}AFX_DATA
-	int m_PrimaryScalarMode;
+    // Dialog Data
+    //{{AFX_DATA(CSolidDlg)
+    enum { IDD = IDD_SOLID };
+    double m_SolidThresholdMin;
+    double m_SolidThresholdMax;
+    BOOL   m_ApplyThreshold;
+    int    m_SolidDisplayMode;
+    int    m_NumberOfColorBands;
+    //}}AFX_DATA
+    int    m_PrimaryScalarMode;
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CSolidDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual void PostNcDestroy();
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CSolidDlg)
 protected:
-	CWnd* m_pParent;
-	CMvDoc *m_pDoc;
-	int m_nID;
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    virtual void PostNcDestroy();
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CSolidDlg)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnSolidDisplaySmooth();
-	afx_msg void OnSolidDisplayBlocky();
-	afx_msg void OnApplyThreshold();
-	afx_msg void OnFullSolid();
-	afx_msg void OnApply();
-	afx_msg void OnDone();
-	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
-	afx_msg void OnSolidDisplayBanded();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    CWnd*        m_pParent;
+    CMvDoc*      m_pDoc;
+    int          m_nID;
+
+    // Generated message map functions
+    //{{AFX_MSG(CSolidDlg)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnSolidDisplaySmooth();
+    afx_msg void OnSolidDisplayBlocky();
+    afx_msg void OnApplyThreshold();
+    afx_msg void OnFullSolid();
+    afx_msg void OnApply();
+    afx_msg void OnDone();
+    afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
+    afx_msg void OnSolidDisplayBanded();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

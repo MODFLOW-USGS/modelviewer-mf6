@@ -18,52 +18,51 @@ class CMvDoc;
 
 class CColorBarDlg : public CDialog
 {
-// Construction
+    // Construction
 public:
-	CColorBarDlg(CWnd* pParent, CMvDoc *pDoc);
-	~CColorBarDlg();
-	BOOL Create();
-	void Reinitialize();
-	void Activate(BOOL b);
+    CColorBarDlg(CWnd *pParent, CMvDoc *pDoc);
+    ~CColorBarDlg();
+    BOOL                 Create();
+    void                 Reinitialize();
+    void                 Activate(BOOL b);
 
-	CPropertySheet *m_PropertySheet;
-	CColorBarLimitsPage *m_LimitsPage;
-	CColorBarSizePage *m_SizePage;
-	CColorBarTextPage *m_TextPage;
-	CColorBarColorsPage *m_ColorsPage;
-	CColorBarDataSource *m_DataSource;
+    CPropertySheet      *m_PropertySheet;
+    CColorBarLimitsPage *m_LimitsPage;
+    CColorBarSizePage   *m_SizePage;
+    CColorBarTextPage   *m_TextPage;
+    CColorBarColorsPage *m_ColorsPage;
+    CColorBarDataSource *m_DataSource;
 
-// Dialog Data
-	//{{AFX_DATA(CColorBarDlg)
-	enum { IDD = IDD_COLOR_BAR };
-	CButton	m_DefaultButton;
-	CButton	m_ApplyButton;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CColorBarDlg)
+    enum { IDD = IDD_COLOR_BAR };
+    CButton m_DefaultButton;
+    CButton m_ApplyButton;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CColorBarDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual void PostNcDestroy();
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CColorBarDlg)
 protected:
-	CWnd* m_pParent;
-	CMvDoc *m_pDoc;
-	int m_nID;
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+    virtual void PostNcDestroy();
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CColorBarDlg)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDefault();
-	afx_msg void OnApply();
-	afx_msg void OnDone();
-	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    CWnd        *m_pParent;
+    CMvDoc      *m_pDoc;
+    int          m_nID;
+
+    // Generated message map functions
+    //{{AFX_MSG(CColorBarDlg)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnDefault();
+    afx_msg void OnApply();
+    afx_msg void OnDone();
+    afx_msg BOOL OnHelpInfo(HELPINFO *pHelpInfo);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

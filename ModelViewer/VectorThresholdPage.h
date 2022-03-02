@@ -13,48 +13,46 @@ class CMvDoc;
 
 class CVectorThresholdPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CVectorThresholdPage)
+    DECLARE_DYNCREATE(CVectorThresholdPage)
 
-// Construction
+    // Construction
 public:
-	CVectorThresholdPage();
-	~CVectorThresholdPage();
-	void Reinitialize();
-	void Activate(BOOL b);
-	BOOL CustomUpdateData(BOOL b);
-	void Apply();
-	void OnDefault();
-	CMvDoc *m_pDoc;
+    CVectorThresholdPage();
+    ~CVectorThresholdPage();
+    void    Reinitialize();
+    void    Activate(BOOL b);
+    BOOL    CustomUpdateData(BOOL b);
+    void    Apply();
+    void    OnDefault();
+    CMvDoc* m_pDoc;
 
-	BOOL m_ApplyThreshold;
-	double m_VectorMin;
-	double m_VectorMax;
+    BOOL    m_ApplyThreshold;
+    double  m_VectorMin;
+    double  m_VectorMax;
 
-// Dialog Data
-	//{{AFX_DATA(CVectorThresholdPage)
-	enum { IDD = IDD_VECTOR_THRESHOLD };
-	CButton	m_VectorThresholdCheckBox;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CVectorThresholdPage)
+    enum { IDD = IDD_VECTOR_THRESHOLD };
+    CButton m_VectorThresholdCheckBox;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CVectorThresholdPage)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(CVectorThresholdPage)
 protected:
-	BOOL m_ExchangeData;
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CVectorThresholdPage)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnApplyVectorThreshold();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    BOOL         m_ExchangeData;
 
+    // Generated message map functions
+    //{{AFX_MSG(CVectorThresholdPage)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnApplyVectorThreshold();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

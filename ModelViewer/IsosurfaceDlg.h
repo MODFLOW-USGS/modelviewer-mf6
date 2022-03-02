@@ -16,46 +16,45 @@ class CMvDoc;
 
 class CIsosurfaceDlg : public CDialog
 {
-// Construction
+    // Construction
 public:
-	CIsosurfaceDlg(CWnd* pParent, CMvDoc *pDoc);
-	~CIsosurfaceDlg();
-	BOOL Create();
-	void Reinitialize();
-	void Activate(BOOL b);
+    CIsosurfaceDlg(CWnd *pParent, CMvDoc *pDoc);
+    ~CIsosurfaceDlg();
+    BOOL                    Create();
+    void                    Reinitialize();
+    void                    Activate(BOOL b);
 
-	CPropertySheet *m_PropertySheet;
-	CRegularIsosurfacePage *m_RegularIsosurfacePage;
-	CCustomIsosurfacePage *m_CustomIsosurfacePage;
+    CPropertySheet         *m_PropertySheet;
+    CRegularIsosurfacePage *m_RegularIsosurfacePage;
+    CCustomIsosurfacePage  *m_CustomIsosurfacePage;
 
-// Dialog Data
-	//{{AFX_DATA(CIsosurfaceDlg)
-	enum { IDD = IDD_ISOSURFACE };
-		// NOTE: the ClassWizard will add data members here
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CIsosurfaceDlg)
+    enum { IDD = IDD_ISOSURFACE };
+    // NOTE: the ClassWizard will add data members here
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CIsosurfaceDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual void PostNcDestroy();
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CIsosurfaceDlg)
 protected:
-	CWnd* m_pParent;
-	CMvDoc *m_pDoc;
-	int m_nID;
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+    virtual void PostNcDestroy();
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CIsosurfaceDlg)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnApply();
-	afx_msg void OnDone();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    CWnd        *m_pParent;
+    CMvDoc      *m_pDoc;
+    int          m_nID;
+
+    // Generated message map functions
+    //{{AFX_MSG(CIsosurfaceDlg)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnApply();
+    afx_msg void OnDone();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

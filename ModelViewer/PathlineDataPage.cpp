@@ -1,7 +1,6 @@
 // PathlineDataPage.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "modelviewer.h"
 #include "PathlineDataPage.h"
 
@@ -16,11 +15,12 @@ static char THIS_FILE[] = __FILE__;
 
 IMPLEMENT_DYNCREATE(CPathlineDataPage, CPropertyPage)
 
-CPathlineDataPage::CPathlineDataPage() : CPropertyPage(CPathlineDataPage::IDD)
+CPathlineDataPage::CPathlineDataPage()
+    : CPropertyPage(CPathlineDataPage::IDD)
 {
-	//{{AFX_DATA_INIT(CPathlineDataPage)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
+    //{{AFX_DATA_INIT(CPathlineDataPage)
+    // NOTE: the ClassWizard will add member initialization here
+    //}}AFX_DATA_INIT
 }
 
 CPathlineDataPage::~CPathlineDataPage()
@@ -29,17 +29,16 @@ CPathlineDataPage::~CPathlineDataPage()
 
 void CPathlineDataPage::DoDataExchange(CDataExchange* pDX)
 {
-	CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CPathlineDataPage)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
-	//}}AFX_DATA_MAP
+    CPropertyPage::DoDataExchange(pDX);
+    //{{AFX_DATA_MAP(CPathlineDataPage)
+    // NOTE: the ClassWizard will add DDX and DDV calls here
+    //}}AFX_DATA_MAP
 }
 
-
 BEGIN_MESSAGE_MAP(CPathlineDataPage, CPropertyPage)
-	//{{AFX_MSG_MAP(CPathlineDataPage)
-		// NOTE: the ClassWizard will add message map macros here
-	//}}AFX_MSG_MAP
+    //{{AFX_MSG_MAP(CPathlineDataPage)
+    // NOTE: the ClassWizard will add message map macros here
+    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -47,23 +46,23 @@ END_MESSAGE_MAP()
 
 void CPathlineDataPage::Reinitialize()
 {
-	GetDlgItem(IDC_MIN)->SetWindowText("");
-	GetDlgItem(IDC_MAX)->SetWindowText("");
+    GetDlgItem(IDC_MIN)->SetWindowText("");
+    GetDlgItem(IDC_MAX)->SetWindowText("");
 }
 
-void CPathlineDataPage::SetRange(double *range)
+void CPathlineDataPage::SetRange(double* range)
 {
-	if (range != 0)
-	{
-		char buff[20];
-		sprintf(buff, "%g", range[0]);
-		GetDlgItem(IDC_MIN)->SetWindowText(buff);
-		sprintf(buff, "%g", range[1]);
-		GetDlgItem(IDC_MAX)->SetWindowText(buff);
-	}
-	else
-	{
-		GetDlgItem(IDC_MIN)->SetWindowText("");
-		GetDlgItem(IDC_MAX)->SetWindowText("");
-	}
+    if (range != 0)
+    {
+        char buff[20];
+        sprintf(buff, "%g", range[0]);
+        GetDlgItem(IDC_MIN)->SetWindowText(buff);
+        sprintf(buff, "%g", range[1]);
+        GetDlgItem(IDC_MAX)->SetWindowText(buff);
+    }
+    else
+    {
+        GetDlgItem(IDC_MIN)->SetWindowText("");
+        GetDlgItem(IDC_MAX)->SetWindowText("");
+    }
 }

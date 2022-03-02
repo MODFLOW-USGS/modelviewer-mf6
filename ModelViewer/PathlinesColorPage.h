@@ -14,50 +14,49 @@ class CPathlinesDlg;
 
 class CPathlinesColorPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CPathlinesColorPage)
+    DECLARE_DYNCREATE(CPathlinesColorPage)
 
-// Construction
+    // Construction
 public:
-	CPathlinesColorPage();
-	~CPathlinesColorPage();
-	void Reinitialize();
-	void Activate(BOOL b);
-	BOOL CustomUpdateData(BOOL b);
-	void Apply();
-	void OnDefault();
-	CMvDoc *m_pDoc;
-	CPathlinesDlg *m_Parent;
-	double	m_ValueBlue;
-	double	m_ValueRed;
-	BOOL m_IsActive;
+    CPathlinesColorPage();
+    ~CPathlinesColorPage();
+    void           Reinitialize();
+    void           Activate(BOOL b);
+    BOOL           CustomUpdateData(BOOL b);
+    void           Apply();
+    void           OnDefault();
+    CMvDoc        *m_pDoc;
+    CPathlinesDlg *m_Parent;
+    double         m_ValueBlue;
+    double         m_ValueRed;
+    BOOL           m_IsActive;
 
-// Dialog Data
-	//{{AFX_DATA(CPathlinesColorPage)
-	enum { IDD = IDD_PATHLINES_COLOR };
-	BOOL	m_LogTransport;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CPathlinesColorPage)
+    enum { IDD = IDD_PATHLINES_COLOR };
+    BOOL m_LogTransport;
+    //}}AFX_DATA
 
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(CPathlinesColorPage)
+public:
+    virtual BOOL OnSetActive();
 
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CPathlinesColorPage)
-	public:
-	virtual BOOL OnSetActive();
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
 protected:
-	BOOL m_ExchangeData;
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CPathlinesColorPage)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnCheckLogTransport();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    BOOL         m_ExchangeData;
 
+    // Generated message map functions
+    //{{AFX_MSG(CPathlinesColorPage)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnCheckLogTransport();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

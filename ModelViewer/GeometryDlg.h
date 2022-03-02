@@ -16,47 +16,46 @@ class CMvDoc;
 
 class CGeometryDlg : public CDialog
 {
-// Construction
+    // Construction
 public:
-	CGeometryDlg(CWnd* pParent, CMvDoc *pDoc);
-	~CGeometryDlg();
-	BOOL Create();
-	void Reinitialize();
-	void Activate(BOOL b);
+    CGeometryDlg(CWnd *pParent, CMvDoc *pDoc);
+    ~CGeometryDlg();
+    BOOL              Create();
+    void              Reinitialize();
+    void              Activate(BOOL b);
 
-	CPropertySheet *m_PropertySheet;
-	CScalePage *m_ScalePage;
-	CAxesPage *m_AxesPage;
-	CBoundingBoxPage *m_BoundingBoxPage;
+    CPropertySheet   *m_PropertySheet;
+    CScalePage       *m_ScalePage;
+    CAxesPage        *m_AxesPage;
+    CBoundingBoxPage *m_BoundingBoxPage;
 
-// Dialog Data
-	//{{AFX_DATA(CGeometryDlg)
-	enum { IDD = IDD_GEOMETRY };
-	CButton	m_ApplyButton;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CGeometryDlg)
+    enum { IDD = IDD_GEOMETRY };
+    CButton m_ApplyButton;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CGeometryDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual void PostNcDestroy();
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CGeometryDlg)
 protected:
-	CWnd* m_pParent;
-	int m_nID;
-	CMvDoc *m_pDoc;
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+    virtual void PostNcDestroy();
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CGeometryDlg)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnApply();
-	afx_msg void OnDone();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    CWnd        *m_pParent;
+    int          m_nID;
+    CMvDoc      *m_pDoc;
+
+    // Generated message map functions
+    //{{AFX_MSG(CGeometryDlg)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnApply();
+    afx_msg void OnDone();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -13,52 +13,50 @@ class CMvDoc;
 
 class CBackgroundPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CBackgroundPage)
+    DECLARE_DYNCREATE(CBackgroundPage)
 
-// Construction
+    // Construction
 public:
-	CBackgroundPage();
-	~CBackgroundPage();
-	void Reinitialize();
-	void Activate(BOOL b);
-	void OnDefault();
-	void UpdateLabels();
-	CMvDoc *m_pDoc;
+    CBackgroundPage();
+    ~CBackgroundPage();
+    void    Reinitialize();
+    void    Activate(BOOL b);
+    void    OnDefault();
+    void    UpdateLabels();
+    CMvDoc* m_pDoc;
 
-// Dialog Data
-	//{{AFX_DATA(CBackgroundPage)
-	enum { IDD = IDD_BACKGROUND };
-	CSliderCtrl	m_BlueSlider;
-	CSliderCtrl	m_GreenSlider;
-	CSliderCtrl	m_RedSlider;
-	int		m_Red;
-	int		m_Green;
-	int		m_Blue;
-	int		m_Background;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CBackgroundPage)
+    enum { IDD = IDD_BACKGROUND };
+    CSliderCtrl m_BlueSlider;
+    CSliderCtrl m_GreenSlider;
+    CSliderCtrl m_RedSlider;
+    int         m_Red;
+    int         m_Green;
+    int         m_Blue;
+    int         m_Background;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CBackgroundPage)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(CBackgroundPage)
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CBackgroundPage)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnWhiteBackground();
-	afx_msg void OnCustomBackground();
-	afx_msg void OnReleasedcaptureRedSlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReleasedcaptureGreenSlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReleasedcaptureBlueSlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CBackgroundPage)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnWhiteBackground();
+    afx_msg void OnCustomBackground();
+    afx_msg void OnReleasedcaptureRedSlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnReleasedcaptureGreenSlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnReleasedcaptureBlueSlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -14,54 +14,53 @@ class CGridDlg;
 
 class CGridShellPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CGridShellPage)
+    DECLARE_DYNCREATE(CGridShellPage)
 
-// Construction
+    // Construction
 public:
-	CGridShellPage();
-	~CGridShellPage();
-	void Reinitialize();
-	void Activate(BOOL b);
-	void UpdateLabels();
-	CMvDoc *m_pDoc;
-	CGridDlg *m_Parent;
+    CGridShellPage();
+    ~CGridShellPage();
+    void      Reinitialize();
+    void      Activate(BOOL b);
+    void      UpdateLabels();
+    CMvDoc*   m_pDoc;
+    CGridDlg* m_Parent;
 
-// Dialog Data
-	//{{AFX_DATA(CGridShellPage)
-	enum { IDD = IDD_GRID_SHELL };
-	CSliderCtrl	m_OpacitySlider;
-	CSliderCtrl	m_BlueSlider;
-	CSliderCtrl	m_GreenSlider;
-	CSliderCtrl	m_RedSlider;
-	int		m_Red;
-	int		m_Green;
-	int		m_Blue;
-	int		m_Opacity;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CGridShellPage)
+    enum { IDD = IDD_GRID_SHELL };
+    CSliderCtrl m_OpacitySlider;
+    CSliderCtrl m_BlueSlider;
+    CSliderCtrl m_GreenSlider;
+    CSliderCtrl m_RedSlider;
+    int         m_Red;
+    int         m_Green;
+    int         m_Blue;
+    int         m_Opacity;
+    //}}AFX_DATA
 
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(CGridShellPage)
+public:
+    virtual BOOL OnSetActive();
 
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CGridShellPage)
-	public:
-	virtual BOOL OnSetActive();
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CGridShellPage)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnReleasedcaptureRedSlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReleasedcaptureGreenSlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReleasedcaptureBlueSlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReleasedcaptureOpacitySlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CGridShellPage)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnReleasedcaptureRedSlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnReleasedcaptureGreenSlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnReleasedcaptureBlueSlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnReleasedcaptureOpacitySlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -14,50 +14,49 @@ class CMvDoc;
 
 class CCustomIsosurfacePage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CCustomIsosurfacePage)
+    DECLARE_DYNCREATE(CCustomIsosurfacePage)
 
-// Construction
+    // Construction
 public:
-	CCustomIsosurfacePage();
-	~CCustomIsosurfacePage();
-	void Reinitialize();
-	void Activate(BOOL b);
-	void Apply();
-	BOOL CustomUpdateData(BOOL b);
-	CMvDoc *m_pDoc;
-	BOOL m_IsActive;
+    CCustomIsosurfacePage();
+    ~CCustomIsosurfacePage();
+    void    Reinitialize();
+    void    Activate(BOOL b);
+    void    Apply();
+    BOOL    CustomUpdateData(BOOL b);
+    CMvDoc* m_pDoc;
+    BOOL    m_IsActive;
 
-// Dialog Data
-	//{{AFX_DATA(CCustomIsosurfacePage)
-	enum { IDD = IDD_CUSTOM_ISOSURFACE };
-	CListBox	m_IsosurfaceList;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CCustomIsosurfacePage)
+    enum { IDD = IDD_CUSTOM_ISOSURFACE };
+    CListBox m_IsosurfaceList;
+    //}}AFX_DATA
 
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(CCustomIsosurfacePage)
+public:
+    virtual BOOL OnSetActive();
 
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CCustomIsosurfacePage)
-	public:
-	virtual BOOL OnSetActive();
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
 protected:
-	BOOL m_ExchangeData;
-	double m_Value;
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CCustomIsosurfacePage)
-	afx_msg void OnAdd();
-	afx_msg void OnDelete();
-	afx_msg void OnSetfocusValue();
-	afx_msg void OnSetfocusIsosurfaceList();
-	virtual BOOL OnInitDialog();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    BOOL         m_ExchangeData;
+    double       m_Value;
 
+    // Generated message map functions
+    //{{AFX_MSG(CCustomIsosurfacePage)
+    afx_msg void OnAdd();
+    afx_msg void OnDelete();
+    afx_msg void OnSetfocusValue();
+    afx_msg void OnSetfocusIsosurfaceList();
+    virtual BOOL OnInitDialog();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}
