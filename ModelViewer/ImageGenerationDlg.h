@@ -12,32 +12,30 @@
 
 class CImageGenerationDlg : public CDialog
 {
-// Construction
+    // Construction
 public:
-	CImageGenerationDlg(CWnd* pParent = NULL);   // standard constructor
+    CImageGenerationDlg(CWnd* pParent = NULL); // standard constructor
 
-// Dialog Data
-	//{{AFX_DATA(CImageGenerationDlg)
-	enum { IDD = IDD_IMAGE_GENERATION };
-	int		m_ImageQuality;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CImageGenerationDlg)
+    enum { IDD = IDD_IMAGE_GENERATION };
+    int m_ImageQuality;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CImageGenerationDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CImageGenerationDlg)
 protected:
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CImageGenerationDlg)
-	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CImageGenerationDlg)
+    afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

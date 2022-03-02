@@ -17,47 +17,46 @@ class CMvDoc;
 
 class CLightingDlg : public CDialog
 {
-// Construction
+    // Construction
 public:
-	CLightingDlg(CWnd* pParent, CMvDoc *pDoc);
-	~CLightingDlg();
-	BOOL Create();
-	void Reinitialize();
-	void Activate(BOOL b);
+    CLightingDlg(CWnd *pParent, CMvDoc *pDoc);
+    ~CLightingDlg();
+    BOOL             Create();
+    void             Reinitialize();
+    void             Activate(BOOL b);
 
-	CPropertySheet *m_PropertySheet;
-	CLightsPage *m_LightsPage;
-	CSurfacePage *m_SurfacePage;
-	CBackgroundPage *m_BackgroundPage;
+    CPropertySheet  *m_PropertySheet;
+    CLightsPage     *m_LightsPage;
+    CSurfacePage    *m_SurfacePage;
+    CBackgroundPage *m_BackgroundPage;
 
-// Dialog Data
-	//{{AFX_DATA(CLightingDlg)
-	enum { IDD = IDD_LIGHTING };
-	CButton	m_DefaultButton;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CLightingDlg)
+    enum { IDD = IDD_LIGHTING };
+    CButton m_DefaultButton;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CLightingDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual void PostNcDestroy();
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CLightingDlg)
 protected:
-	CWnd* m_pParent;
-	CMvDoc *m_pDoc;
-	int m_nID;
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+    virtual void PostNcDestroy();
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CLightingDlg)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDefault();
-	afx_msg void OnDone();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    CWnd        *m_pParent;
+    CMvDoc      *m_pDoc;
+    int          m_nID;
+
+    // Generated message map functions
+    //{{AFX_MSG(CLightingDlg)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnDefault();
+    afx_msg void OnDone();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -12,51 +12,49 @@
 
 class CExportAnimationDlg : public CDialog
 {
-// Construction
+    // Construction
 public:
-	CExportAnimationDlg(CWnd* pParent = NULL);   // standard constructor
-	int m_NumberOfTimePoints;
-	char **m_TimePointLabels;
-	int m_SpaceUsagePerFile;
-	BOOL m_Preview;
+    CExportAnimationDlg(CWnd* pParent = NULL); // standard constructor
+    int    m_NumberOfTimePoints;
+    char** m_TimePointLabels;
+    int    m_SpaceUsagePerFile;
+    BOOL   m_Preview;
 
-// Dialog Data
-	//{{AFX_DATA(CExportAnimationDlg)
-	enum { IDD = IDD_EXPORT_ANIMATION };
-	double	m_Elevate;
-	int		m_EndIndex;
-	CString	m_FilePrefix;
-	CString	m_FileStartNumber;
-	CString	m_OutputFolder;
-	double	m_Rotate;
-	int		m_StartIndex;
-	int		m_NumberOfSteps;
-	int		m_AnimationType;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CExportAnimationDlg)
+    enum { IDD = IDD_EXPORT_ANIMATION };
+    double  m_Elevate;
+    int     m_EndIndex;
+    CString m_FilePrefix;
+    CString m_FileStartNumber;
+    CString m_OutputFolder;
+    double  m_Rotate;
+    int     m_StartIndex;
+    int     m_NumberOfSteps;
+    int     m_AnimationType;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CExportAnimationDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CExportAnimationDlg)
 protected:
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CExportAnimationDlg)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnBrowse();
-	afx_msg void OnPreview();
-	afx_msg void OnSelchangeStartIndex();
-	afx_msg void OnSelchangeEndIndex();
-	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
-	afx_msg void OnSelchangeComboExportAnimationType();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-	void DoAnimationTypeChange();
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CExportAnimationDlg)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnBrowse();
+    afx_msg void OnPreview();
+    afx_msg void OnSelchangeStartIndex();
+    afx_msg void OnSelchangeEndIndex();
+    afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
+    afx_msg void OnSelchangeComboExportAnimationType();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
+    void DoAnimationTypeChange();
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -14,57 +14,56 @@ class CCropDlg;
 
 class CCropOptionsPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CCropOptionsPage)
+    DECLARE_DYNCREATE(CCropOptionsPage)
 
-// Construction
+    // Construction
 public:
-	CCropOptionsPage();
-	~CCropOptionsPage();
-	void Reinitialize();
-	void Activate(BOOL b);
-	void UpdateLabels();
-	void OnDefault();
-	CMvDoc *m_pDoc;
-	CCropDlg *m_Parent;
+    CCropOptionsPage();
+    ~CCropOptionsPage();
+    void      Reinitialize();
+    void      Activate(BOOL b);
+    void      UpdateLabels();
+    void      OnDefault();
+    CMvDoc*   m_pDoc;
+    CCropDlg* m_Parent;
 
-// Dialog Data
-	//{{AFX_DATA(CCropOptionsPage)
-	enum { IDD = IDD_CROP_OPTIONS };
-	CSliderCtrl	m_OpacitySlider;
-	CSliderCtrl	m_BlueSlider;
-	CSliderCtrl	m_GreenSlider;
-	CSliderCtrl	m_RedSlider;
-	int		m_Red;
-	int		m_Green;
-	int		m_Blue;
-	int		m_Opacity;
-	BOOL	m_ShowCroppedAwayPieces;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CCropOptionsPage)
+    enum { IDD = IDD_CROP_OPTIONS };
+    CSliderCtrl m_OpacitySlider;
+    CSliderCtrl m_BlueSlider;
+    CSliderCtrl m_GreenSlider;
+    CSliderCtrl m_RedSlider;
+    int         m_Red;
+    int         m_Green;
+    int         m_Blue;
+    int         m_Opacity;
+    BOOL        m_ShowCroppedAwayPieces;
+    //}}AFX_DATA
 
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(CCropOptionsPage)
+public:
+    virtual BOOL OnSetActive();
 
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CCropOptionsPage)
-	public:
-	virtual BOOL OnSetActive();
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CCropOptionsPage)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnReleasedcaptureRedSlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReleasedcaptureGreenSlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReleasedcaptureBlueSlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReleasedcaptureOpacitySlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg void OnShowCroppedAway();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CCropOptionsPage)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnReleasedcaptureRedSlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnReleasedcaptureGreenSlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnReleasedcaptureBlueSlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnReleasedcaptureOpacitySlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+    afx_msg void OnShowCroppedAway();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

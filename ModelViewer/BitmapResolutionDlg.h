@@ -12,41 +12,40 @@
 
 class CBitmapResolutionDlg : public CDialog
 {
-// Construction
+    // Construction
 public:
-	CBitmapResolutionDlg(CWnd* pParent = NULL);   // standard constructor
+    CBitmapResolutionDlg(CWnd* pParent = NULL); // standard constructor
 
-// Dialog Data
-	//{{AFX_DATA(CBitmapResolutionDlg)
-	enum { IDD = IDD_BITMAP_RESOLUTION };
-	int		m_SideOption;
-	int		m_ResolutionOption;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CBitmapResolutionDlg)
+    enum { IDD = IDD_BITMAP_RESOLUTION };
+    int    m_SideOption;
+    int    m_ResolutionOption;
+    //}}AFX_DATA
 
-	double m_WidthInInches;
-	double m_HeightInInches;
+    double m_WidthInInches;
+    double m_HeightInInches;
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CBitmapResolutionDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CBitmapResolutionDlg)
 protected:
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CBitmapResolutionDlg)
-	afx_msg void OnBmpHeightOption();
-	afx_msg void OnBmpWidthOption();
-	afx_msg void OnResolution150();
-	afx_msg void OnResolution300();
-	afx_msg void OnResolutionScreen();
-	virtual BOOL OnInitDialog();
-	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CBitmapResolutionDlg)
+    afx_msg void OnBmpHeightOption();
+    afx_msg void OnBmpWidthOption();
+    afx_msg void OnResolution150();
+    afx_msg void OnResolution300();
+    afx_msg void OnResolutionScreen();
+    virtual BOOL OnInitDialog();
+    afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

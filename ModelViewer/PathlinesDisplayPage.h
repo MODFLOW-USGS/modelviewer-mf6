@@ -14,50 +14,49 @@ class CPathlinesDlg;
 
 class CPathlinesDisplayPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CPathlinesDisplayPage)
+    DECLARE_DYNCREATE(CPathlinesDisplayPage)
 
-// Construction
+    // Construction
 public:
-	CPathlinesDisplayPage();
-	~CPathlinesDisplayPage();
-	void Reinitialize();
-	void Activate(BOOL b);
-	BOOL CustomUpdateData(BOOL b);
-	void Apply();
-	void OnDefault();
-	CMvDoc *m_pDoc;
-	double	m_TubeDiameter;
-	int		m_PathlineRepresentation;
-	CPathlinesDlg *m_Parent;
-	BOOL m_IsActive;
+    CPathlinesDisplayPage();
+    ~CPathlinesDisplayPage();
+    void           Reinitialize();
+    void           Activate(BOOL b);
+    BOOL           CustomUpdateData(BOOL b);
+    void           Apply();
+    void           OnDefault();
+    CMvDoc        *m_pDoc;
+    double         m_TubeDiameter;
+    int            m_PathlineRepresentation;
+    CPathlinesDlg *m_Parent;
+    BOOL           m_IsActive;
 
-// Dialog Data
-	//{{AFX_DATA(CPathlinesDisplayPage)
-	enum { IDD = IDD_PATHLINES_DISPLAY };
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CPathlinesDisplayPage)
+    enum { IDD = IDD_PATHLINES_DISPLAY };
+    //}}AFX_DATA
 
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(CPathlinesDisplayPage)
+public:
+    virtual BOOL OnSetActive();
 
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CPathlinesDisplayPage)
-	public:
-	virtual BOOL OnSetActive();
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
 protected:
-	BOOL m_ExchangeData;
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CPathlinesDisplayPage)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnLine();
-	afx_msg void OnTube();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    BOOL         m_ExchangeData;
 
+    // Generated message map functions
+    //{{AFX_MSG(CPathlinesDisplayPage)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnLine();
+    afx_msg void OnTube();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

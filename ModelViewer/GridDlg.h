@@ -19,49 +19,48 @@ class CMvDoc;
 
 class CGridDlg : public CDialog
 {
-// Construction
+    // Construction
 public:
-	CGridDlg(CWnd* pParent, CMvDoc *pDoc);
-	~CGridDlg();
-	BOOL Create();
-	void Reinitialize();
-	void Activate(BOOL Activate);
+    CGridDlg(CWnd *pParent, CMvDoc *pDoc);
+    ~CGridDlg();
+    BOOL              Create();
+    void              Reinitialize();
+    void              Activate(BOOL Activate);
 
-	CPropertySheet *m_PropertySheet;
-	CGridLinesPage *m_GridLinesPage;
-	CGridShellPage *m_GridShellPage;
-	CSubgridPage *m_SubgridPage;
-	CGridDisplayPage *m_GridDisplayPage;
+    CPropertySheet   *m_PropertySheet;
+    CGridLinesPage   *m_GridLinesPage;
+    CGridShellPage   *m_GridShellPage;
+    CSubgridPage     *m_SubgridPage;
+    CGridDisplayPage *m_GridDisplayPage;
 
-// Dialog Data
-	//{{AFX_DATA(CGridDlg)
-	enum { IDD = IDD_GRID };
-	CButton	m_ApplyButton;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CGridDlg)
+    enum { IDD = IDD_GRID };
+    CButton m_ApplyButton;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CGridDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual void PostNcDestroy();
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CGridDlg)
 protected:
-	CWnd* m_pParent;
-	CMvDoc *m_pDoc;
-	int m_nID;
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+    virtual void PostNcDestroy();
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CGridDlg)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDone();
-	afx_msg void OnApply();
-	afx_msg void OnCaptureChanged(CWnd *pWnd);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    CWnd        *m_pParent;
+    CMvDoc      *m_pDoc;
+    int          m_nID;
+
+    // Generated message map functions
+    //{{AFX_MSG(CGridDlg)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnDone();
+    afx_msg void OnApply();
+    afx_msg void OnCaptureChanged(CWnd *pWnd);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}
