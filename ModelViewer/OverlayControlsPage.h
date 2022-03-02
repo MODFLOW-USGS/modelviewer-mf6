@@ -14,53 +14,52 @@ class CMvDoc;
 
 class COverlayControlsPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(COverlayControlsPage)
+    DECLARE_DYNCREATE(COverlayControlsPage)
 
-// Construction
+    // Construction
 public:
-	COverlayControlsPage();
-	~COverlayControlsPage();
-	void Reinitialize();
-	void Activate(BOOL b);
+    COverlayControlsPage();
+    ~COverlayControlsPage();
+    void Reinitialize();
+    void Activate(BOOL b);
 
-// Dialog Data
-	//{{AFX_DATA(COverlayControlsPage)
-	enum { IDD = IDD_OVERLAY_CONTROLS };
-	CButton	m_FlatRadioButton;
-	CButton	m_TrimCheckBox;
-	double	m_XOrig;
-	double	m_YOrig;
-	double	m_Scale;
-	double	m_Elev;
-	double	m_DrapeGap;
-	BOOL	m_Trim;
-	double	m_Angle;
-	int		m_Drape;
-	BOOL	m_Crop;
-	BOOL    m_StructuredGrid;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(COverlayControlsPage)
+    enum { IDD = IDD_OVERLAY_CONTROLS };
+    CButton      m_FlatRadioButton;
+    CButton      m_TrimCheckBox;
+    double       m_XOrig;
+    double       m_YOrig;
+    double       m_Scale;
+    double       m_Elev;
+    double       m_DrapeGap;
+    BOOL         m_Trim;
+    double       m_Angle;
+    int          m_Drape;
+    BOOL         m_Crop;
+    BOOL         m_StructuredGrid;
+    //}}AFX_DATA
 
-	COverlayDlg *m_Parent;
-	CMvDoc *m_pDoc;
+    COverlayDlg *m_Parent;
+    CMvDoc      *m_pDoc;
 
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(COverlayControlsPage)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(COverlayControlsPage)
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(COverlayControlsPage)
-	afx_msg void OnDrape();
-	afx_msg void OnFlat();
-	afx_msg void OnOverlayTrim();
-	afx_msg void OnOverlayCrop();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(COverlayControlsPage)
+    afx_msg void OnDrape();
+    afx_msg void OnFlat();
+    afx_msg void OnOverlayTrim();
+    afx_msg void OnOverlayCrop();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

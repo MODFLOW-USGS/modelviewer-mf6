@@ -5,18 +5,18 @@
 
 class vtkOutlineSource;
 
-class MV_EXPORT mvBoundingBox : public mvDisplayObject  
+class MV_EXPORT mvBoundingBox : public mvDisplayObject
 {
 public:
-	mvBoundingBox();
-	virtual ~mvBoundingBox();
+    mvBoundingBox();
+    virtual ~mvBoundingBox();
 
-	void SetBounds(const double *bounds);
-	const double *GetBounds() const;
-	void GetBounds(double *bounds) const;
+    void          SetBounds(const double *bounds);
+    const double *GetBounds() const;
+    void          GetBounds(double *bounds) const;
 
 protected:
-	vtkOutlineSource *m_Outline;
+    vtkOutlineSource *m_Outline;
 };
 
 #endif

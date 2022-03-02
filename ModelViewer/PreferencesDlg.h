@@ -12,32 +12,30 @@
 
 class CPreferencesDlg : public CDialog
 {
-// Construction
+    // Construction
 public:
-	CPreferencesDlg(CWnd* pParent = NULL);   // standard constructor
+    CPreferencesDlg(CWnd* pParent = NULL); // standard constructor
 
-// Dialog Data
-	//{{AFX_DATA(CPreferencesDlg)
-	enum { IDD = IDD_PREFERENCES };
-	int		m_InteractorStyle;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CPreferencesDlg)
+    enum { IDD = IDD_PREFERENCES };
+    int m_InteractorStyle;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CPreferencesDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CPreferencesDlg)
 protected:
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CPreferencesDlg)
-	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CPreferencesDlg)
+    afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

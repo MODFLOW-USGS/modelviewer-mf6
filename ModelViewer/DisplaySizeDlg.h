@@ -12,33 +12,31 @@
 
 class CDisplaySizeDlg : public CDialog
 {
-// Construction
+    // Construction
 public:
-	CDisplaySizeDlg(CWnd* pParent = NULL);   // standard constructor
+    CDisplaySizeDlg(CWnd* pParent = NULL); // standard constructor
 
-// Dialog Data
-	//{{AFX_DATA(CDisplaySizeDlg)
-	enum { IDD = IDD_DISPLAY_SIZE };
-	int		m_DisplayHeight;
-	int		m_DisplayWidth;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CDisplaySizeDlg)
+    enum { IDD = IDD_DISPLAY_SIZE };
+    int m_DisplayHeight;
+    int m_DisplayWidth;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDisplaySizeDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CDisplaySizeDlg)
 protected:
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CDisplaySizeDlg)
-	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CDisplaySizeDlg)
+    afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

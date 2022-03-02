@@ -14,48 +14,46 @@ class CMvDoc;
 
 class CColorBarColorsPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CColorBarColorsPage)
+    DECLARE_DYNCREATE(CColorBarColorsPage)
 
-// Construction
+    // Construction
 public:
-	CColorBarColorsPage();
-	~CColorBarColorsPage();
-	void Reinitialize();
-	void Activate(BOOL b);
-	void OnDefault();
-	void Apply();
-	void InitializeDialog();
+    CColorBarColorsPage();
+    ~CColorBarColorsPage();
+    void     Reinitialize();
+    void     Activate(BOOL b);
+    void     OnDefault();
+    void     Apply();
+    void     InitializeDialog();
 
-	CMvDoc *m_pDoc;
-	COLORREF m_FirstColor;
-	COLORREF m_LastColor;
-// Dialog Data
-	//{{AFX_DATA(CColorBarColorsPage)
-	enum { IDD = IDD_COLOR_BAR_COLORS };
-	CColorBarPreviewListBox	m_Last;
-	CColorBarPreviewListBox	m_First;
-	CComboBox	m_ColorSchemeCombo;
-	//}}AFX_DATA
+    CMvDoc*  m_pDoc;
+    COLORREF m_FirstColor;
+    COLORREF m_LastColor;
+    // Dialog Data
+    //{{AFX_DATA(CColorBarColorsPage)
+    enum { IDD = IDD_COLOR_BAR_COLORS };
+    CColorBarPreviewListBox m_Last;
+    CColorBarPreviewListBox m_First;
+    CComboBox               m_ColorSchemeCombo;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CColorBarColorsPage)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(CColorBarColorsPage)
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CColorBarColorsPage)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnSelchangeComboColorScheme();
-	afx_msg void OnLowerColorButton();
-	afx_msg void OnUpperColorButton();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CColorBarColorsPage)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnSelchangeComboColorScheme();
+    afx_msg void OnLowerColorButton();
+    afx_msg void OnUpperColorButton();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -14,39 +14,37 @@ class CMvDoc;
 
 class CModelFeatureListBox : public CListBox
 {
-// Construction
+    // Construction
 public:
-	CModelFeatureListBox();
+    CModelFeatureListBox();
 
-// Attributes
+    // Attributes
 public:
-	int m_Type;
-	CMvDoc *m_pDoc;
+    int     m_Type;
+    CMvDoc *m_pDoc;
 
-// Operations
+    // Operations
 public:
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CModelFeatureListBox)
-	public:
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CModelFeatureListBox)
 public:
-	virtual ~CModelFeatureListBox();
+    virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+    virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
+    //}}AFX_VIRTUAL
+
+    // Implementation
+public:
+    virtual ~CModelFeatureListBox();
 
 protected:
-
-	// Generated message map functions
+    // Generated message map functions
 protected:
-	//{{AFX_MSG(CModelFeatureListBox)
-		// NOTE - the ClassWizard will add and remove member functions here.
-	//}}AFX_MSG
+    //{{AFX_MSG(CModelFeatureListBox)
+    // NOTE - the ClassWizard will add and remove member functions here.
+    //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

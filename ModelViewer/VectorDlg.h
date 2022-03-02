@@ -17,50 +17,49 @@ class CMvDoc;
 
 class CVectorDlg : public CDialog
 {
-// Construction
+    // Construction
 public:
-	CVectorDlg(CWnd* pParent, CMvDoc *pDoc);
-	~CVectorDlg();
-	BOOL Create();
-	void Reinitialize();
-	void Activate(BOOL b);
+    CVectorDlg(CWnd *pParent, CMvDoc *pDoc);
+    ~CVectorDlg();
+    BOOL                  Create();
+    void                  Reinitialize();
+    void                  Activate(BOOL b);
 
-	CPropertySheet *m_PropertySheet;
-	CVectorControlsPage *m_ControlsPage;
-	CVectorOptionsPage *m_OptionsPage;
-	CVectorThresholdPage *m_ThresholdPage;
-	CCropVectorsPage *m_CropVectorsPage;
+    CPropertySheet       *m_PropertySheet;
+    CVectorControlsPage  *m_ControlsPage;
+    CVectorOptionsPage   *m_OptionsPage;
+    CVectorThresholdPage *m_ThresholdPage;
+    CCropVectorsPage     *m_CropVectorsPage;
 
-// Dialog Data
-	//{{AFX_DATA(CVectorDlg)
-	enum { IDD = IDD_VECTOR };
-	CButton	m_DefaultButton;
-	CButton	m_ApplyButton;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CVectorDlg)
+    enum { IDD = IDD_VECTOR };
+    CButton m_DefaultButton;
+    CButton m_ApplyButton;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CVectorDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual void PostNcDestroy();
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CVectorDlg)
 protected:
-	CWnd* m_pParent;
-	int m_nID;
-	CMvDoc *m_pDoc;
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+    virtual void PostNcDestroy();
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CVectorDlg)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnApply();
-	afx_msg void OnDone();
-	afx_msg void OnDefault();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    CWnd        *m_pParent;
+    int          m_nID;
+    CMvDoc      *m_pDoc;
+
+    // Generated message map functions
+    //{{AFX_MSG(CVectorDlg)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnApply();
+    afx_msg void OnDone();
+    afx_msg void OnDefault();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

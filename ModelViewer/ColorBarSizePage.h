@@ -13,44 +13,42 @@ class CMvDoc;
 
 class CColorBarSizePage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CColorBarSizePage)
+    DECLARE_DYNCREATE(CColorBarSizePage)
 
-// Construction
+    // Construction
 public:
-	CColorBarSizePage();
-	~CColorBarSizePage();
-	void Reinitialize();
-	void Activate(BOOL b);
-	BOOL CustomUpdateData(BOOL b);
-	void OnDefault();
-	void Apply();
-	CMvDoc *m_pDoc;
-	BOOL	m_ExchangeData;
-	int		m_Height;
-	int		m_Offset;
-	int		m_Width;
+    CColorBarSizePage();
+    ~CColorBarSizePage();
+    void    Reinitialize();
+    void    Activate(BOOL b);
+    BOOL    CustomUpdateData(BOOL b);
+    void    OnDefault();
+    void    Apply();
+    CMvDoc* m_pDoc;
+    BOOL    m_ExchangeData;
+    int     m_Height;
+    int     m_Offset;
+    int     m_Width;
 
-// Dialog Data
-	//{{AFX_DATA(CColorBarSizePage)
-	enum { IDD = IDD_COLOR_BAR_SIZE };
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CColorBarSizePage)
+    enum { IDD = IDD_COLOR_BAR_SIZE };
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CColorBarSizePage)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(CColorBarSizePage)
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CColorBarSizePage)
-	virtual BOOL OnInitDialog();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CColorBarSizePage)
+    virtual BOOL OnInitDialog();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

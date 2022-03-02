@@ -4,10 +4,10 @@
 class DataFilesDialog
 {
 public:
-	static char *GetDataFileList(char *model);
+    static char *GetDataFileList(char *model);
 
 private:
-	static char *GetModflow6DataFiles();
+    static char *GetModflow6DataFiles();
 };
 
 #endif

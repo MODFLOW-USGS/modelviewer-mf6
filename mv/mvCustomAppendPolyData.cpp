@@ -4,16 +4,14 @@
 
 mvCustomAppendPolyData::mvCustomAppendPolyData()
 {
-
 }
 
 mvCustomAppendPolyData::~mvCustomAppendPolyData()
 {
-
 }
 
 int mvCustomAppendPolyData::FillInputPortInformation(int port, vtkInformation *info)
 {
-	info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
-	return vtkAppendPolyData::FillInputPortInformation(port, info);
+    info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
+    return vtkAppendPolyData::FillInputPortInformation(port, info);
 }

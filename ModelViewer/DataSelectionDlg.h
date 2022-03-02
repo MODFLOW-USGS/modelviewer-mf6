@@ -12,41 +12,39 @@
 
 class CDataSelectionDlg : public CDialog
 {
-// Construction
+    // Construction
 public:
-	CDataSelectionDlg(CWnd* pParent = NULL);   // standard constructor
+    CDataSelectionDlg(CWnd* pParent = NULL); // standard constructor
 
-	int m_NumberOfTimePoints;
-	char **m_TimePointLabels;
-	int m_NumberOfScalarDataTypes;
-	char **m_DataTypeLabels;
-	int m_TimeLabelOption;
-	int m_InitialDisplayTimePoint;
+    int    m_NumberOfTimePoints;
+    char** m_TimePointLabels;
+    int    m_NumberOfScalarDataTypes;
+    char** m_DataTypeLabels;
+    int    m_TimeLabelOption;
+    int    m_InitialDisplayTimePoint;
 
-// Dialog Data
-	//{{AFX_DATA(CDataSelectionDlg)
-	enum { IDD = IDD_DATA_SELECTION };
-	int		m_SelectedDataType;
-	int		m_SelectedTimePoint;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CDataSelectionDlg)
+    enum { IDD = IDD_DATA_SELECTION };
+    int m_SelectedDataType;
+    int m_SelectedTimePoint;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDataSelectionDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CDataSelectionDlg)
 protected:
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CDataSelectionDlg)
-	virtual BOOL OnInitDialog();
-	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CDataSelectionDlg)
+    virtual BOOL OnInitDialog();
+    afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

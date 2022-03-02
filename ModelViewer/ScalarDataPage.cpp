@@ -16,11 +16,12 @@ static char THIS_FILE[] = __FILE__;
 
 IMPLEMENT_DYNCREATE(CScalarDataPage, CPropertyPage)
 
-CScalarDataPage::CScalarDataPage() : CPropertyPage(CScalarDataPage::IDD)
+CScalarDataPage::CScalarDataPage()
+    : CPropertyPage(CScalarDataPage::IDD)
 {
-	//{{AFX_DATA_INIT(CScalarDataPage)
-	m_DataType = -1;
-	//}}AFX_DATA_INIT
+    //{{AFX_DATA_INIT(CScalarDataPage)
+    m_DataType = -1;
+    //}}AFX_DATA_INIT
 }
 
 CScalarDataPage::~CScalarDataPage()
@@ -29,18 +30,17 @@ CScalarDataPage::~CScalarDataPage()
 
 void CScalarDataPage::DoDataExchange(CDataExchange* pDX)
 {
-	CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CScalarDataPage)
-	DDX_Control(pDX, IDC_DATA_TYPE_COMBO, m_DataTypeChooser);
-	DDX_CBIndex(pDX, IDC_DATA_TYPE_COMBO, m_DataType);
-	//}}AFX_DATA_MAP
+    CPropertyPage::DoDataExchange(pDX);
+    //{{AFX_DATA_MAP(CScalarDataPage)
+    DDX_Control(pDX, IDC_DATA_TYPE_COMBO, m_DataTypeChooser);
+    DDX_CBIndex(pDX, IDC_DATA_TYPE_COMBO, m_DataType);
+    //}}AFX_DATA_MAP
 }
 
-
 BEGIN_MESSAGE_MAP(CScalarDataPage, CPropertyPage)
-	//{{AFX_MSG_MAP(CScalarDataPage)
-	ON_CBN_SELCHANGE(IDC_DATA_TYPE_COMBO, OnSelchangeDataTypeCombo)
-	//}}AFX_MSG_MAP
+    //{{AFX_MSG_MAP(CScalarDataPage)
+    ON_CBN_SELCHANGE(IDC_DATA_TYPE_COMBO, OnSelchangeDataTypeCombo)
+    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -48,27 +48,27 @@ END_MESSAGE_MAP()
 
 void CScalarDataPage::Reinitialize()
 {
-	GetDlgItem(IDC_MIN)->SetWindowText("");
-	GetDlgItem(IDC_MAX)->SetWindowText("");
-	m_DataTypeChooser.ResetContent();
+    GetDlgItem(IDC_MIN)->SetWindowText("");
+    GetDlgItem(IDC_MAX)->SetWindowText("");
+    m_DataTypeChooser.ResetContent();
 }
 
 void CScalarDataPage::Activate(BOOL b)
 {
-	m_DataTypeChooser.EnableWindow(b);
+    m_DataTypeChooser.EnableWindow(b);
 }
 
-void CScalarDataPage::SetRange(double *range)
+void CScalarDataPage::SetRange(double* range)
 {
-	char buff[20];
-	sprintf(buff, "%g", range[0]);
-	GetDlgItem(IDC_MIN)->SetWindowText(buff);
-	sprintf(buff, "%g", range[1]);
-	GetDlgItem(IDC_MAX)->SetWindowText(buff);
+    char buff[20];
+    sprintf(buff, "%g", range[0]);
+    GetDlgItem(IDC_MIN)->SetWindowText(buff);
+    sprintf(buff, "%g", range[1]);
+    GetDlgItem(IDC_MAX)->SetWindowText(buff);
 }
 
-void CScalarDataPage::OnSelchangeDataTypeCombo() 
+void CScalarDataPage::OnSelchangeDataTypeCombo()
 {
-	// TODO: Add your control notification handler code here
-	m_pDoc->SetScalarDataTypeTo(m_DataTypeChooser.GetCurSel());
+    // TODO: Add your control notification handler code here
+    m_pDoc->SetScalarDataTypeTo(m_DataTypeChooser.GetCurSel());
 }

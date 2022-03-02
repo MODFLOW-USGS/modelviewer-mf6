@@ -11,19 +11,18 @@ class vtkThreshold;
 class MV_EXPORT mvGridLayer : public mvDisplayObject
 {
 public:
-	mvGridLayer();
-	virtual ~mvGridLayer();
-   void SetDataSource(mvDataSource *dataSource);
-   void Build();
-   void SetLayerPosition(int layerPosition);
-   int GetLayerPosition() const;
-
+    mvGridLayer();
+    virtual ~mvGridLayer();
+    void SetDataSource(mvDataSource *dataSource);
+    void Build();
+    void SetLayerPosition(int layerPosition);
+    int  GetLayerPosition() const;
 
 protected:
-   vtkExtractEdges *m_GridLayer;
-   mvDataSource *m_DataSource;
-   vtkThreshold *m_Threshold;
-   int m_LayerPosition;
+    vtkExtractEdges *m_GridLayer;
+    mvDataSource    *m_DataSource;
+    vtkThreshold    *m_Threshold;
+    int              m_LayerPosition;
 };
 
 #endif
