@@ -143,7 +143,7 @@ void CModflow6DataFilesDlg::OnBrowseGwfModelGridFile()
 void CModflow6DataFilesDlg::OnBrowseGwfModelHeadFile()
 {
     CFileDialog fileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-                        "Head Files (*.hds; *.hdb)|*.hds; *.hdb|All Files (*.*)|*.*||");
+                        "Head Files (*.bhd; *.hds; *.hdb)|*.bhd; *.hds; *.hdb|All Files (*.*)|*.*||");
     fileDlg.m_ofn.lpstrTitle = "GWF Model Head File";
     if (fileDlg.DoModal() != IDOK)
     {
