@@ -34,6 +34,7 @@ mvGridLayer::mvGridLayer()
 
 mvGridLayer::~mvGridLayer()
 {
+    m_Threshold->Delete();
     m_GridLayer->Delete();
 }
 
