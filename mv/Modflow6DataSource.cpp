@@ -434,17 +434,25 @@ char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
         {
             if (!_strnicmp(aline, "head ", 5))
             {
-               strcpy(headFile, p+8);
-               mvUtil::TrimLeft(headFile);
-               mvUtil::RemoveQuotes(headFile);
-               mvUtil::RemoveDoubleQuotes(headFile);
+                p = mvUtil::NextNonSpaceChar(aline + 5, (int)strlen(aline) - 5);
+                if (!_strnicmp(p, "fileout ", 8))
+                {
+                    strcpy(headFile, p + 8);
+                    mvUtil::TrimLeft(headFile);
+                    mvUtil::RemoveQuotes(headFile);
+                    mvUtil::RemoveDoubleQuotes(headFile);
+                }
             }
             if (!_strnicmp(aline, "budget ", 7))
             {
-               strcpy(budgetFile, p+8);
-               mvUtil::TrimLeft(budgetFile);
-               mvUtil::RemoveQuotes(budgetFile);
-               mvUtil::RemoveDoubleQuotes(budgetFile);
+                p = mvUtil::NextNonSpaceChar(aline + 7, (int)strlen(aline) - 7);
+                if (!_strnicmp(p, "fileout ", 8))
+                {
+                    strcpy(budgetFile, p + 8);
+                    mvUtil::TrimLeft(budgetFile);
+                    mvUtil::RemoveQuotes(budgetFile);
+                    mvUtil::RemoveDoubleQuotes(budgetFile);
+                }
             }
             if (!_strnicmp(aline, "end ", 4))
             {
