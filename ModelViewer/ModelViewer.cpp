@@ -46,7 +46,7 @@ CModelViewerApp theApp;
 /////////////////////////////////////////////////////////////////////////////
 // CModelViewerApp initialization
 
-BOOL            CModelViewerApp::InitInstance()
+BOOL CModelViewerApp::InitInstance()
 {
     AfxEnableControlContainer();
 
@@ -61,6 +61,18 @@ BOOL            CModelViewerApp::InitInstance()
     //#else
     //	Enable3dControlsStatic();	// Call this when linking to MFC statically
     //#endif
+
+#if defined(MV_DEBUG_MEMORY_LEAKS) && defined(_CRTDBG_MAP_ALLOC)
+    // Delay calling _CrtDumpMemoryLeaks until vtk SystemToolsManager dtor
+    // Requires modified VTK-6.3.0\Utilities\KWSys\vtksys\SystemTools.cxx
+    AfxEnableMemoryLeakDump(FALSE);
+    // Use the following to set breakpoint
+    // 
+    // _CrtSetBreakAlloc(1030);
+    // 
+    // This should be the only memory leak
+    char* ptr = new char[10];
+#endif
 
     // Change the registry key under which our settings are stored.
     // TODO: You should modify this string to be something appropriate
