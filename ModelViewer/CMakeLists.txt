@@ -6,6 +6,7 @@ project (
   LANGUAGES CXX
 )
 
+# This sets 'Use MFC in a Shared DLL' -- automatically sets _AFXDLL
 set(CMAKE_MFC_FLAG 2)
 
 add_executable(ModelViewer WIN32
@@ -143,9 +144,8 @@ add_executable(ModelViewer WIN32
 # modify ModelViewer executable name
 set_target_properties(ModelViewer PROPERTIES OUTPUT_NAME mvmf6)
 
-target_include_directories(ModelViewer PRIVATE ../mv)
-
-target_compile_definitions(ModelViewer PRIVATE _AFXDLL)
+target_include_directories(ModelViewer PRIVATE ${CMAKE_BINARY_DIR}/mv)
+target_include_directories(ModelViewer PRIVATE ${CMAKE_SOURCE_DIR}/mv)
 
 target_link_libraries(ModelViewer ${VTK_LIBRARIES})
 target_link_libraries(ModelViewer mv)

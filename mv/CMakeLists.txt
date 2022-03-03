@@ -63,8 +63,14 @@ add_library(mv SHARED
   shapefil.h
 )
 
-target_compile_definitions(mv PRIVATE MV_EXPORTS)
-target_compile_definitions(mv PRIVATE MV_DLL)
+# generate mvHeader for dll linkage
+include(GenerateExportHeader)
+generate_export_header(mv
+  EXPORT_FILE_NAME mvHeader.h
+)
+
+
+target_include_directories(mv PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(mv ${VTK_LIBRARIES})
 
