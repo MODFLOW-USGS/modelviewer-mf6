@@ -22,5 +22,12 @@ if(NOT MFC_FOUND)
   message(FATAL_ERROR "MFC not found, please install Visual Studio Community 2019 / C++ MFC for latest v142 build tools (x86 & x64).")
 endif()
 
+option(MV_DEBUG_MEMORY_LEAKS "Build for memory debugging" OFF)
+if(MV_DEBUG_MEMORY_LEAKS)
+  set(BUILD_SHARED_LIBS OFF)
+else()
+  set(BUILD_SHARED_LIBS ON)
+endif()
+
 add_subdirectory(mv)
 add_subdirectory(ModelViewer)

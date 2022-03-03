@@ -144,6 +144,13 @@ add_executable(ModelViewer WIN32
 # modify ModelViewer executable name
 set_target_properties(ModelViewer PROPERTIES OUTPUT_NAME mvmf6)
 
+if (MV_DEBUG_MEMORY_LEAKS)
+  # set for all configs
+  target_compile_definitions(ModelViewer PRIVATE MV_DEBUG_MEMORY_LEAKS)
+  # set only for debug config
+  target_compile_definitions(ModelViewer PRIVATE $<$<CONFIG:Debug>:_CRTDBG_MAP_ALLOC>)
+endif()
+
 target_include_directories(ModelViewer PRIVATE ${CMAKE_BINARY_DIR}/mv)
 target_include_directories(ModelViewer PRIVATE ${CMAKE_SOURCE_DIR}/mv)
 

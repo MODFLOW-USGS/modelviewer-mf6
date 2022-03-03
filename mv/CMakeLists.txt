@@ -6,7 +6,7 @@ project (
   LANGUAGES CXX C
 )
 
-add_library(mv SHARED
+add_library(mv
   Modflow6DataSource.cpp
   Modflow6DataSource.h
   ModpathReader.cpp
@@ -69,6 +69,12 @@ generate_export_header(mv
   EXPORT_FILE_NAME mvHeader.h
 )
 
+if (MV_DEBUG_MEMORY_LEAKS)
+  # set for all configs
+  target_compile_definitions(mv PRIVATE MV_DEBUG_MEMORY_LEAKS)
+  # set only for debug config
+  target_compile_definitions(mv PRIVATE $<$<CONFIG:Debug>:_CRTDBG_MAP_ALLOC>)
+endif()
 
 target_include_directories(mv PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -158,7 +164,7 @@ target_precompile_headers(mv
     "$<$<COMPILE_LANGUAGE:CXX>:<vtkWindow.h$<ANGLE-R>>"
 )
 
-if (MSVC)
+if (MSVC AND BUILD_SHARED_LIBS)
   add_custom_command(TARGET mv POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:ModelViewer>
   )
