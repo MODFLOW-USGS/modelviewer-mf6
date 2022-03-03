@@ -154,6 +154,14 @@ target_link_libraries(ModelViewer Htmlhelp)
 # converted StdAfx precompiled headers to cmake_pch
 target_precompile_headers(ModelViewer
   PRIVATE
+    # c/c++ headers
+    <direct.h>
+    <fstream>
+    <stdio.h>
+    <stdlib.h>
+    <string.h>
+    <time.h>
+    # mfc headers
     <afxwin.h>         # MFC core and standard components
     <afxext.h>         # MFC extensions
     <afxdisp.h>        # MFC Automation classes
@@ -161,6 +169,15 @@ target_precompile_headers(ModelViewer
     <afxcmn.h>         # MFC support for Windows Common Controls
     <htmlhelp.h>
     <afxdlgs.h>
+    # vtk headers
+    <vtkCamera.h>
+    <vtkInteractorStyleSwitch.h>
+    <vtkLight.h>
+    <vtkLightCollection.h>
+    <vtkRenderer.h>
+    <vtkSmartPointer.h>
+    <vtkWin32OpenGLRenderWindow.h>
+    <vtkWin32RenderWindowInteractor.h>
 )
 
 if(MSVC_VERSION EQUAL 1900)
@@ -168,7 +185,6 @@ if(MSVC_VERSION EQUAL 1900)
   target_compile_definitions(ModelViewer PRIVATE UNICODE)
   target_compile_definitions(ModelViewer PRIVATE _UNICODE)
 endif()
-
 
 # copy dlls into ModelViewer directory
 if (MSVC)
