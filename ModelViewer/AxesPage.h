@@ -14,53 +14,52 @@ class CGeometryDlg;
 
 class CAxesPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CAxesPage)
+    DECLARE_DYNCREATE(CAxesPage)
 
-// Construction
+    // Construction
 public:
-	CAxesPage();
-	~CAxesPage();
-	void Reinitialize();
-	void Activate(BOOL b);
-	BOOL CustomUpdateData(BOOL b);
-	void Apply();
-	CMvDoc *m_pDoc;
-	CGeometryDlg *m_Parent;
-	int		m_Representation;
-	double	m_AxesSize;
-	double	m_TubeDiameter;
-	double	m_XPos;
-	double	m_YPos;
-	double	m_ZPos;
-	BOOL m_IsActive;
+    CAxesPage();
+    ~CAxesPage();
+    void          Reinitialize();
+    void          Activate(BOOL b);
+    BOOL          CustomUpdateData(BOOL b);
+    void          Apply();
+    CMvDoc       *m_pDoc;
+    CGeometryDlg *m_Parent;
+    int           m_Representation;
+    double        m_AxesSize;
+    double        m_TubeDiameter;
+    double        m_XPos;
+    double        m_YPos;
+    double        m_ZPos;
+    BOOL          m_IsActive;
 
-// Dialog Data
-	//{{AFX_DATA(CAxesPage)
-	enum { IDD = IDD_AXES };
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CAxesPage)
+    enum { IDD = IDD_AXES };
+    //}}AFX_DATA
 
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(CAxesPage)
+public:
+    virtual BOOL OnSetActive();
 
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CAxesPage)
-	public:
-	virtual BOOL OnSetActive();
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
 protected:
-	BOOL m_ExchangeData;
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CAxesPage)
-	afx_msg void OnLine();
-	afx_msg void OnTube();
-	virtual BOOL OnInitDialog();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+protected:
+    BOOL         m_ExchangeData;
 
+    // Generated message map functions
+    //{{AFX_MSG(CAxesPage)
+    afx_msg void OnLine();
+    afx_msg void OnTube();
+    virtual BOOL OnInitDialog();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

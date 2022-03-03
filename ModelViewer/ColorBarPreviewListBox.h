@@ -13,37 +13,36 @@
 
 class CColorBarPreviewListBox : public CListBox
 {
-// Construction
+    // Construction
 public:
-	CColorBarPreviewListBox();
+    CColorBarPreviewListBox();
 
-// Attributes
+    // Attributes
 public:
-	// m_Color is the color that will be displayed.
-	COLORREF m_Color;
+    // m_Color is the color that will be displayed.
+    COLORREF m_Color;
 
-// Operations
+    // Operations
 public:
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CColorBarPreviewListBox)
-	public:
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CColorBarPreviewListBox)
 public:
-	virtual ~CColorBarPreviewListBox();
+    virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+    virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
+    //}}AFX_VIRTUAL
 
-	// Generated message map functions
+    // Implementation
+public:
+    virtual ~CColorBarPreviewListBox();
+
+    // Generated message map functions
 protected:
-	//{{AFX_MSG(CColorBarPreviewListBox)
-		// NOTE - the ClassWizard will add and remove member functions here.
-	//}}AFX_MSG
+    //{{AFX_MSG(CColorBarPreviewListBox)
+    // NOTE - the ClassWizard will add and remove member functions here.
+    //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -12,39 +12,37 @@
 
 class COverlayFilePage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(COverlayFilePage)
+    DECLARE_DYNCREATE(COverlayFilePage)
 
-// Construction
+    // Construction
 public:
-	COverlayFilePage();
-	~COverlayFilePage();
-	void Reinitialize();
-	void Activate(BOOL b);
+    COverlayFilePage();
+    ~COverlayFilePage();
+    void Reinitialize();
+    void Activate(BOOL b);
 
-// Dialog Data
-	//{{AFX_DATA(COverlayFilePage)
-	enum { IDD = IDD_OVERLAY_FILE };
-	CComboBox	m_TypeComboBox;
-	CString	m_Filename;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(COverlayFilePage)
+    enum { IDD = IDD_OVERLAY_FILE };
+    CComboBox m_TypeComboBox;
+    CString   m_Filename;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(COverlayFilePage)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(COverlayFilePage)
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(COverlayFilePage)
-	afx_msg void OnBrowseOverlay();
-	virtual BOOL OnInitDialog();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(COverlayFilePage)
+    afx_msg void OnBrowseOverlay();
+    virtual BOOL OnInitDialog();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

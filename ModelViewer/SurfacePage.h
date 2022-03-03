@@ -13,52 +13,50 @@ class CMvDoc;
 
 class CSurfacePage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CSurfacePage)
+    DECLARE_DYNCREATE(CSurfacePage)
 
-// Construction
+    // Construction
 public:
-	CSurfacePage();
-	~CSurfacePage();
-	void Reinitialize();
-	void Activate(BOOL b);
-	void OnDefault();
-	void UpdateLabels();
-	CMvDoc *m_pDoc;
+    CSurfacePage();
+    ~CSurfacePage();
+    void    Reinitialize();
+    void    Activate(BOOL b);
+    void    OnDefault();
+    void    UpdateLabels();
+    CMvDoc* m_pDoc;
 
-// Dialog Data
-	//{{AFX_DATA(CSurfacePage)
-	enum { IDD = IDD_SURFACE };
-	CSliderCtrl	m_SpecularPowerSlider;
-	CSliderCtrl	m_SpecularSlider;
-	CSliderCtrl	m_AmbientSlider;
-	CSliderCtrl	m_DiffuseSlider;
-	int		m_Diffuse;
-	int		m_Ambient;
-	int		m_Specular;
-	int		m_SpecularPower;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CSurfacePage)
+    enum { IDD = IDD_SURFACE };
+    CSliderCtrl m_SpecularPowerSlider;
+    CSliderCtrl m_SpecularSlider;
+    CSliderCtrl m_AmbientSlider;
+    CSliderCtrl m_DiffuseSlider;
+    int         m_Diffuse;
+    int         m_Ambient;
+    int         m_Specular;
+    int         m_SpecularPower;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CSurfacePage)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(CSurfacePage)
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CSurfacePage)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnReleasedcaptureDiffuseSlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReleasedcaptureAmbientSlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReleasedcaptureSpecularSlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnReleasedcaptureSpecularPowerSlider(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CSurfacePage)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnReleasedcaptureDiffuseSlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnReleasedcaptureAmbientSlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnReleasedcaptureSpecularSlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnReleasedcaptureSpecularPowerSlider(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -10,73 +10,70 @@
 class CMvDoc;
 class CVectorDlg;
 
-
 /////////////////////////////////////////////////////////////////////////////
 // CCropVectorsPage dialog
 
 class CCropVectorsPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CCropVectorsPage)
+    DECLARE_DYNCREATE(CCropVectorsPage)
 
-// Construction
+    // Construction
 public:
-	double	m_XDelta;
-	double	m_XMax;
-	double	m_XMin;
-	double	m_YDelta;
-	double	m_YMax;
-	double	m_YMin;
-	double	m_ZDelta;
-	double	m_ZMax;
-	double	m_ZMin;
-	int   m_CropAngle;
+    double m_XDelta;
+    double m_XMax;
+    double m_XMin;
+    double m_YDelta;
+    double m_YMax;
+    double m_YMin;
+    double m_ZDelta;
+    double m_ZMax;
+    double m_ZMin;
+    int    m_CropAngle;
 
-	void OnDefault();
-	void Activate(BOOL b);
-	void Reinitialize();
-	void Apply();
-	BOOL CustomUpdateData(BOOL b);
-	CCropVectorsPage();
-	~CCropVectorsPage();
-	CMvDoc *m_pDoc;
+    void   OnDefault();
+    void   Activate(BOOL b);
+    void   Reinitialize();
+    void   Apply();
+    BOOL   CustomUpdateData(BOOL b);
+    CCropVectorsPage();
+    ~CCropVectorsPage();
+    CMvDoc* m_pDoc;
 
-// Dialog Data
-	//{{AFX_DATA(CCropVectorsPage)
-	enum { IDD = IDD_CROP_VECTORS };
-		// NOTE - ClassWizard will add data members here.
-		//    DO NOT EDIT what you see in these blocks of generated code !
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CCropVectorsPage)
+    enum { IDD = IDD_CROP_VECTORS };
+    // NOTE - ClassWizard will add data members here.
+    //    DO NOT EDIT what you see in these blocks of generated code !
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CCropVectorsPage)
-	public:
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-//	CVectorDlg *m_Parent;
-	BOOL	m_ExchangeData;
-	BOOL m_IsActive;
-
-
-// Implementation
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(CCropVectorsPage)
+public:
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CCropVectorsPage)
-	afx_msg void OnDeltaposXminSpin(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnDeltaposXmaxSpin(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnDeltaposYminSpin(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnDeltaposYmaxSpin(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnDeltaposZminSpin(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnDeltaposZmaxSpin(NMHDR* pNMHDR, LRESULT* pResult);
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDeltaposCropAngleSpin(NMHDR* pNMHDR, LRESULT* pResult);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
-	void AssignDefaultValues();
+    //	CVectorDlg *m_Parent;
+    BOOL         m_ExchangeData;
+    BOOL         m_IsActive;
+
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CCropVectorsPage)
+    afx_msg void OnDeltaposXminSpin(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnDeltaposXmaxSpin(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnDeltaposYminSpin(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnDeltaposYmaxSpin(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnDeltaposZminSpin(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnDeltaposZmaxSpin(NMHDR* pNMHDR, LRESULT* pResult);
+    virtual BOOL OnInitDialog();
+    afx_msg void OnDeltaposCropAngleSpin(NMHDR* pNMHDR, LRESULT* pResult);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
+
+    void AssignDefaultValues();
 };
 
 //{{AFX_INSERT_LOCATION}}

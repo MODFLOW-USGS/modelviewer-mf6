@@ -12,38 +12,36 @@
 
 class COverlayBoundsPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(COverlayBoundsPage)
+    DECLARE_DYNCREATE(COverlayBoundsPage)
 
-// Construction
+    // Construction
 public:
-	COverlayBoundsPage();
-	~COverlayBoundsPage();
-	void Reinitialize();
-	void SetBounds(double xmin, double xmax, double ymin, double ymax);
+    COverlayBoundsPage();
+    ~COverlayBoundsPage();
+    void Reinitialize();
+    void SetBounds(double xmin, double xmax, double ymin, double ymax);
 
-// Dialog Data
-	//{{AFX_DATA(COverlayBoundsPage)
-	enum { IDD = IDD_OVERLAY_BOUNDS };
-		// NOTE - ClassWizard will add data members here.
-		//    DO NOT EDIT what you see in these blocks of generated code !
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(COverlayBoundsPage)
+    enum { IDD = IDD_OVERLAY_BOUNDS };
+    // NOTE - ClassWizard will add data members here.
+    //    DO NOT EDIT what you see in these blocks of generated code !
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(COverlayBoundsPage)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(COverlayBoundsPage)
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(COverlayBoundsPage)
-		// NOTE: the ClassWizard will add member functions here
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(COverlayBoundsPage)
+    // NOTE: the ClassWizard will add member functions here
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

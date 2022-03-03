@@ -6,13 +6,13 @@
 #include "vtkIdTypeArray.h"
 
 /**
- * Abstract base class to specify dataset behavior. 
+ * Abstract base class to specify dataset behavior.
  */
-class MV_EXPORT ModpathReader  
+class MV_EXPORT ModpathReader
 {
 public:
-	static void ReadData(char *pathlineFile, int &numPathlines, int &numCoordinates,
-			double *&coordinates, double *&scalarArrayTime,  double *&scalarArrayMaxTime, 
-			double *&scalarArrayMinTime, vtkIdType *&pointArray, bool backwards, double &minPositiveTime);
+    static void ReadData(char *pathlineFile, int &numPathlines, int &numCoordinates,
+                         double *&coordinates, double *&scalarArrayTime, double *&scalarArrayMaxTime,
+                         double *&scalarArrayMinTime, vtkIdType *&pointArray, bool backwards, double &minPositiveTime);
 };
 #endif

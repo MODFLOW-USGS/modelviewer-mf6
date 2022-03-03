@@ -13,46 +13,44 @@ class CMvDoc;
 
 class CColorBarLimitsPage : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CColorBarLimitsPage)
+    DECLARE_DYNCREATE(CColorBarLimitsPage)
 
-// Construction
+    // Construction
 public:
-	CColorBarLimitsPage();
-	~CColorBarLimitsPage();
-	void Reinitialize();
-	void Activate(BOOL b);
-	BOOL CustomUpdateData(BOOL b);
-	void OnDefault();
-	void Apply();
-	CMvDoc *m_pDoc;
-	BOOL	m_ExchangeData;
-	double m_ValueBlue;
-	double m_ValueRed;
+    CColorBarLimitsPage();
+    ~CColorBarLimitsPage();
+    void    Reinitialize();
+    void    Activate(BOOL b);
+    BOOL    CustomUpdateData(BOOL b);
+    void    OnDefault();
+    void    Apply();
+    CMvDoc* m_pDoc;
+    BOOL    m_ExchangeData;
+    double  m_ValueBlue;
+    double  m_ValueRed;
 
-// Dialog Data
-	//{{AFX_DATA(CColorBarLimitsPage)
-	enum { IDD = IDD_COLOR_BAR_LIMITS };
-	CButton	m_LogScaleCheckBox;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CColorBarLimitsPage)
+    enum { IDD = IDD_COLOR_BAR_LIMITS };
+    CButton m_LogScaleCheckBox;
+    //}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CColorBarLimitsPage)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
+    // Overrides
+    // ClassWizard generate virtual function overrides
+    //{{AFX_VIRTUAL(CColorBarLimitsPage)
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CColorBarLimitsPage)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnReverse();
-	afx_msg void OnLogScale();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+    //}}AFX_VIRTUAL
 
+    // Implementation
+protected:
+    // Generated message map functions
+    //{{AFX_MSG(CColorBarLimitsPage)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnReverse();
+    afx_msg void OnLogScale();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}
