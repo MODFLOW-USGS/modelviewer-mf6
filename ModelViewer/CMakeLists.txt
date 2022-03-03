@@ -6,6 +6,7 @@ project (
   LANGUAGES CXX
 )
 
+# This sets 'Use MFC in a Shared DLL' -- automatically sets _AFXDLL
 set(CMAKE_MFC_FLAG 2)
 
 add_executable(ModelViewer WIN32
@@ -143,9 +144,15 @@ add_executable(ModelViewer WIN32
 # modify ModelViewer executable name
 set_target_properties(ModelViewer PROPERTIES OUTPUT_NAME mvmf6)
 
-target_include_directories(ModelViewer PRIVATE ../mv)
+if (MV_DEBUG_MEMORY_LEAKS)
+  # set for all configs
+  target_compile_definitions(ModelViewer PRIVATE MV_DEBUG_MEMORY_LEAKS)
+  # set only for debug config
+  target_compile_definitions(ModelViewer PRIVATE $<$<CONFIG:Debug>:_CRTDBG_MAP_ALLOC>)
+endif()
 
-target_compile_definitions(ModelViewer PRIVATE _AFXDLL)
+target_include_directories(ModelViewer PRIVATE ${CMAKE_BINARY_DIR}/mv)
+target_include_directories(ModelViewer PRIVATE ${CMAKE_SOURCE_DIR}/mv)
 
 target_link_libraries(ModelViewer ${VTK_LIBRARIES})
 target_link_libraries(ModelViewer mv)
@@ -154,6 +161,14 @@ target_link_libraries(ModelViewer Htmlhelp)
 # converted StdAfx precompiled headers to cmake_pch
 target_precompile_headers(ModelViewer
   PRIVATE
+    # c/c++ headers
+    <direct.h>
+    <fstream>
+    <stdio.h>
+    <stdlib.h>
+    <string.h>
+    <time.h>
+    # mfc headers
     <afxwin.h>         # MFC core and standard components
     <afxext.h>         # MFC extensions
     <afxdisp.h>        # MFC Automation classes
@@ -161,6 +176,15 @@ target_precompile_headers(ModelViewer
     <afxcmn.h>         # MFC support for Windows Common Controls
     <htmlhelp.h>
     <afxdlgs.h>
+    # vtk headers
+    <vtkCamera.h>
+    <vtkInteractorStyleSwitch.h>
+    <vtkLight.h>
+    <vtkLightCollection.h>
+    <vtkRenderer.h>
+    <vtkSmartPointer.h>
+    <vtkWin32OpenGLRenderWindow.h>
+    <vtkWin32RenderWindowInteractor.h>
 )
 
 if(MSVC_VERSION EQUAL 1900)
@@ -168,7 +192,6 @@ if(MSVC_VERSION EQUAL 1900)
   target_compile_definitions(ModelViewer PRIVATE UNICODE)
   target_compile_definitions(ModelViewer PRIVATE _UNICODE)
 endif()
-
 
 # copy dlls into ModelViewer directory
 if (MSVC)

@@ -22,7 +22,7 @@ mvGridLines::mvGridLines()
     m_Threshold->SetInputArrayToProcess(0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_CELLS, vtkDataSetAttributes::SCALARS);
     m_GeometryFilter = vtkSmartPointer<vtkGeometryFilter>::New();
     m_GeometryFilter->SetInputConnection(m_Threshold->GetOutputPort());
-    m_WireFrame = vtkExtractEdges::New();
+    m_WireFrame = vtkSmartPointer<vtkExtractEdges>::New();
     m_WireFrame->SetInputConnection(m_GeometryFilter->GetOutputPort());
     SetMapperInputConnection(m_WireFrame->GetOutputPort());
     m_Mapper->ScalarVisibilityOff();
