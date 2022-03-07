@@ -10,6 +10,7 @@ on:
 
 env:
   VTK_VERSION: 6.3.0
+  PRESET: vs2017-leaks
 
 jobs:
 
@@ -61,8 +62,8 @@ jobs:
         run: |
           cp misc\CMakePresets-Leaks.json ${{env.srcdir}}\CMakePresets.json
           cd ${{env.srcdir}}
-          cmake --preset vs2017
-          cmake --build --preset vs2017 --config ${{env.type}}
+          cmake --preset ${{env.PRESET}}
+          cmake --build --preset ${{env.PRESET}} --config ${{env.type}}
           cmake --install ${{env.builddir}} --prefix ${{env.instdir}} --config ${{env.type}}
 
       - name: Check debug cache
@@ -118,8 +119,8 @@ jobs:
         run: |
           cp misc\CMakePresets.json ${{env.srcdir}}
           cd ${{env.srcdir}}
-          cmake --preset vs2017
-          cmake --build --preset vs2017 --config ${{env.type}}
+          cmake --preset ${{env.PRESET}}
+          cmake --build --preset ${{env.PRESET}} --config ${{env.type}}
           cmake --install ${{env.builddir}} --prefix ${{env.instdir}} --config ${{env.type}}
 
       - name: Check release cache
