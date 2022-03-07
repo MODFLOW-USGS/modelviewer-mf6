@@ -26,7 +26,8 @@
           "Name": "U.S. Geological Survey",
           "Notes": "This file should be placed in the root directory of C:/VTK-6.3.0",
           "Configure": "cmake --preset vs2017",
-          "Build": "cmake --build --preset vs2017 --config release",
+          "Build-debug": "cmake --build --preset vs2017 --config debug",
+          "Build-release": "cmake --build --preset vs2017 --config release",
           "Install-debug": "cmake --install C:/VTK-6.3.0-vs2017-x64-build --prefix C:/VTK-6.3.0-vs2017-x64 --config debug",
           "Install-release": "cmake --install C:/VTK-6.3.0-vs2017-x64-build --prefix C:/VTK-6.3.0-vs2017-x64 --config release"
         }
@@ -59,7 +60,8 @@
           "Name": "U.S. Geological Survey",
           "Notes": "This file should be placed in the root directory of C:/VTK-6.3.0",
           "Configure": "cmake --preset vs2017-leaks",
-          "Build": "cmake --build --preset vs2017-leaks --config release",
+          "Build-debug": "cmake --build --preset vs2017-leaks --config debug",
+          "Build-release": "cmake --build --preset vs2017-leaks --config release",
           "Install-debug": "cmake --install C:/VTK-6.3.0-leaks-vs2017-x64-build --prefix C:/VTK-6.3.0-leaks-vs2017-x64 --config debug",
           "Install-release": "cmake --install C:/VTK-6.3.0-leaks-vs2017-x64-build --prefix C:/VTK-6.3.0-leaks-vs2017-x64 --config release"
         }
