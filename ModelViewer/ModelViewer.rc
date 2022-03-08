@@ -1635,6 +1635,7 @@ END
 STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "Model Viewer for Modflow 6\n\nMvMf6\nMvMf6 Files (*.mvmf6)\n.mvmf6\nMvMf6.Document\nModel Viewer for Modflow 6 Document"
+    IDP_OLE_INIT_FAILED     "OLE initialization failed.  Make sure that the OLE libraries are the correct version."
 END
 
 STRINGTABLE
