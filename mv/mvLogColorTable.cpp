@@ -8,6 +8,14 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
+// This must be below vtkStandardNewMacro
+#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+#include <afx.h>
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 // Construct with (minimum,maximum) range 1 to 10 (based on
 // logarithmic values).
 mvLogColorTable::mvLogColorTable()
