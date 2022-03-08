@@ -160,10 +160,6 @@ target_link_libraries(ModelViewer ${VTK_LIBRARIES})
 target_link_libraries(ModelViewer mv)
 target_link_libraries(ModelViewer Htmlhelp)
 
-# IF(VTK_MFC_EXTRA_LIBS)
-#   TARGET_LINK_LIBRARIES(ModelViewer ${VTK_MFC_EXTRA_LIBS})
-# ENDIF()
-
 # converted StdAfx precompiled headers to cmake_pch
 target_precompile_headers(ModelViewer
   PRIVATE
