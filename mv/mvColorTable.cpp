@@ -4,9 +4,13 @@
 
 #include "mvColorTable.h"
 
+#include <vtkObjectFactory.h>
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
+
+vtkStandardNewMacro(mvColorTable);
 
 // This must be below vtkStandardNewMacro
 #if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
@@ -19,27 +23,12 @@ static char THIS_FILE[] = __FILE__;
 mvColorTable::mvColorTable()
 {
     SetDefaultColorScheme();
+    // Moved from ::New()
+    m_ColorScheme = MV_CT_UNDEFINED_COLOR_SCHEME;
 }
 
 mvColorTable::~mvColorTable()
 {
-}
-
-mvColorTable* mvColorTable::New()
-{
-    // First try to create the object from the vtkObjectFactory
-    //  vtkObject* ret = vtkObjectFactory::CreateInstance("mvColorTable");
-    //  if(ret)
-    //{
-    // return (mvColorTable*)ret;
-    //}
-    // If the factory was unable to create the object, then create it here.
-    mvColorTable* NewColorTable = new mvColorTable;
-    if (NewColorTable)
-    {
-        NewColorTable->m_ColorScheme = MV_CT_UNDEFINED_COLOR_SCHEME;
-    }
-    return NewColorTable;
 }
 
 // Generate lookup table from hue, saturation, value, alpha min/max values.

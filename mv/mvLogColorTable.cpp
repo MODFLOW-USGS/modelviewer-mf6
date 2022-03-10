@@ -4,9 +4,13 @@
 
 #include "mvLogColorTable.h"
 
+#include <vtkObjectFactory.h>
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
+
+vtkStandardNewMacro(mvLogColorTable);
 
 // This must be below vtkStandardNewMacro
 #if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
@@ -25,18 +29,6 @@ mvLogColorTable::mvLogColorTable()
 
 mvLogColorTable::~mvLogColorTable()
 {
-}
-
-mvLogColorTable* mvLogColorTable::New()
-{
-    // First try to create the object from the vtkObjectFactory
-    //  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkLogLookupTable");
-    //  if(ret)
-    //    {
-    //    return (vtkLogLookupTable*)ret;
-    //    }
-    // If the factory was unable to create the object, then create it here.
-    return new mvLogColorTable;
 }
 
 // Generate lookup table from hue, saturation, value, alpha min/max values.

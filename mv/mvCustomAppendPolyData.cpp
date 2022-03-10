@@ -2,6 +2,10 @@
 #include "vtkDoubleArray.h"
 #include "vtkInformation.h"
 
+#include <vtkObjectFactory.h>
+
+vtkStandardNewMacro(mvCustomAppendPolyData);
+
 // This must be below vtkStandardNewMacro
 #if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #include <afx.h>

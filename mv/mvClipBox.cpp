@@ -4,6 +4,10 @@
 
 #include "mvClipBox.h"
 
+#include <vtkObjectFactory.h>
+
+vtkStandardNewMacro(mvClipBox);
+
 // This must be below vtkStandardNewMacro
 #if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #include <afx.h>
