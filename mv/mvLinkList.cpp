@@ -23,6 +23,7 @@ mvLinkList::~mvLinkList()
     while (d)
     {
         linkListItem *nd = d->next;
+        delete[] d->item;
         delete d;
         d = nd;
     }

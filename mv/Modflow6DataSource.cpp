@@ -573,6 +573,11 @@ char *Modflow6DataSource::CreateDisGrid(char *gridFile)
         delete[] m_Idomain;
         delete[] m_Icelltype;
         delete[] m_NumFlowConn;
+        m_Ia          = 0;
+        m_Ja          = 0;
+        m_Idomain     = 0;
+        m_Icelltype   = 0;
+        m_NumFlowConn = 0;
         return "Error encountered while reading the binary grid file.";
     }
 
@@ -870,6 +875,8 @@ char *Modflow6DataSource::CreateDisGrid(char *gridFile)
     delete[] y;
     delete[] z;
     delete[] elev;
+    delete[] delr;
+    delete[] delc;
     return 0;
 }
 
@@ -1862,7 +1869,7 @@ char *Modflow6DataSource::CountBudgetAndFeatures()
                     pname = new char[16];
                     strncpy(pname, text, 16);
                     m_BudgetText->AddItem(pname);
-                    pm  = new int;
+                    pm = new int[1];
                     *pm = num_vtk_cells_for_this_flowType;
                     vtk_cell_count->AddItem(pm);
                 }
@@ -2037,10 +2044,8 @@ void Modflow6DataSource::SetTimePointTo(int timePointIndex)
             }
         }
     }
-    double  weight;
-    double *sumOfWeights = new double[m_NumberOfVTKPoints];
+    // initialize points
     memset(m_ScalarArray, 0, m_NumberOfVTKPoints * sizeof(double));
-    memset(sumOfWeights, 0, m_NumberOfVTKPoints * sizeof(double));
 
     int *modflow_active_cell = new int[m_NumberOfModflowCells];
     memset(modflow_active_cell, 0, m_NumberOfModflowCells * sizeof(int));
@@ -2087,10 +2092,14 @@ void Modflow6DataSource::SetTimePointTo(int timePointIndex)
     }
     else if (m_GridType == MV_LAYERED_GRID)
     {
-        int    p, q, ncpl;
-        double dx, dy, dz;
-        int    m           = 0;
-        int    node_offset = (m_NumberOfCellLayers + 1) * m_Nvert;
+        int     p, q, ncpl;
+        double  dx, dy, dz;
+        double  weight;
+        int     m            = 0;
+        int     node_offset  = (m_NumberOfCellLayers + 1) * m_Nvert;
+
+        double *sumOfWeights = new double[m_NumberOfVTKPoints];
+        memset(sumOfWeights, 0, m_NumberOfVTKPoints * sizeof(double));
         for (k = 0; k < m_NumberOfCellLayers; k++)
         {
             m_IfHead.read((char *)(&kstp), sizeof(int));
