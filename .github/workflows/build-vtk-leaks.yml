@@ -62,7 +62,8 @@ jobs:
         run: |
           cp ./misc/SystemTools.cxx.patch /c/VTK-6.3.0/Utilities/KWSys/vtksys/.
           cd /c/VTK-6.3.0/Utilities/KWSys/vtksys/.
-          md5sum SystemTools.cxx
+          md5sum SystemTools.cxx SystemTools.cxx.patch
+          file SystemTools.cxx SystemTools.cxx.patch
           git apply SystemTools.cxx.patch
           dos2unix SystemTools.cxx
           md5sum SystemTools.cxx
@@ -130,8 +131,9 @@ jobs:
         run: |
           cp ./misc/SystemTools.cxx.patch /c/VTK-6.3.0/Utilities/KWSys/vtksys/.
           cd /c/VTK-6.3.0/Utilities/KWSys/vtksys/.
-          md5sum SystemTools.cxx
-          git apply SystemTools.cxx.patch
+          md5sum SystemTools.cxx SystemTools.cxx.patch
+          file SystemTools.cxx SystemTools.cxx.patch
+          patch < SystemTools.cxx.patch
           dos2unix SystemTools.cxx
           md5sum SystemTools.cxx
 
