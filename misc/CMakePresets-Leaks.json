@@ -41,7 +41,7 @@
         "cacheVariables": {
           "BUILD_SHARED_LIBS": {
             "type": "BOOL",
-            "value": "OFF"
+            "value": "ON"
           },
           "BUILD_TESTING": {
             "type": "BOOL",

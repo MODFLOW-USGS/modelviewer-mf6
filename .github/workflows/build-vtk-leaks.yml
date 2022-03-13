@@ -56,6 +56,17 @@ jobs:
           7z x ${{github.workspace}}\${{env.zipfile}}
           rm ${{github.workspace}}\${{env.zipfile}}
 
+      - name: Patch vtk
+        if: steps.cache-vtk-release.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          cp ./misc/SystemTools.cxx.patch /c/VTK-6.3.0/Utilities/KWSys/vtksys/.
+          cd /c/VTK-6.3.0/Utilities/KWSys/vtksys/.
+          md5sum SystemTools.cxx
+          git apply SystemTools.cxx.patch
+          dos2unix SystemTools.cxx
+          md5sum SystemTools.cxx
+
       - name: Build vtk
         if: steps.cache-vtk-debug.outputs.cache-hit != 'true'
         shell: pwsh
@@ -112,6 +123,17 @@ jobs:
           cd C:\
           7z x ${{github.workspace}}\${{env.zipfile}}
           rm ${{github.workspace}}\${{env.zipfile}}
+
+      - name: Patch vtk
+        if: steps.cache-vtk-release.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          cp ./misc/SystemTools.cxx.patch /c/VTK-6.3.0/Utilities/KWSys/vtksys/.
+          cd /c/VTK-6.3.0/Utilities/KWSys/vtksys/.
+          md5sum SystemTools.cxx
+          git apply SystemTools.cxx.patch
+          dos2unix SystemTools.cxx
+          md5sum SystemTools.cxx
 
       - name: Build vtk
         if: steps.cache-vtk-release.outputs.cache-hit != 'true'
