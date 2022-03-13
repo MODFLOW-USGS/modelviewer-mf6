@@ -56,6 +56,7 @@ jobs:
           7z x ${{github.workspace}}\${{env.zipfile}}
           rm ${{github.workspace}}\${{env.zipfile}}
 
+      # it seems that 'patch' is more forgiving of line endings than 'git apply'
       - name: Patch vtk
         if: steps.cache-vtk-release.outputs.cache-hit != 'true'
         shell: bash
@@ -64,7 +65,7 @@ jobs:
           cd /c/VTK-6.3.0/Utilities/KWSys/vtksys/.
           md5sum SystemTools.cxx SystemTools.cxx.patch
           file SystemTools.cxx SystemTools.cxx.patch
-          git apply SystemTools.cxx.patch
+          patch < SystemTools.cxx.patch
           dos2unix SystemTools.cxx
           md5sum SystemTools.cxx
 
@@ -125,6 +126,7 @@ jobs:
           7z x ${{github.workspace}}\${{env.zipfile}}
           rm ${{github.workspace}}\${{env.zipfile}}
 
+      # it seems that 'patch' is more forgiving of line endings than 'git apply'
       - name: Patch vtk
         if: steps.cache-vtk-release.outputs.cache-hit != 'true'
         shell: bash
