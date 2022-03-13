@@ -22,8 +22,8 @@ protected:
     unsigned long m_LastCustomColor;
 
 public:
-    mvLogColorTable();
-    virtual ~mvLogColorTable();
+    vtkTypeMacro(mvLogColorTable, vtkLogLookupTable);
+
     virtual void            Build();
     static mvLogColorTable *New();
     bool                    GetTransformValues() { return m_TransformValues; };
@@ -40,6 +40,10 @@ public:
     unsigned long           GetLastCustomColor() { return m_LastCustomColor; };
     void                    SetFirstCustomColor(unsigned long value);
     void                    SetLastCustomColor(unsigned long value);
+
+protected:
+    mvLogColorTable();
+    virtual ~mvLogColorTable();
 };
 
 #endif // !defined mvLogColorTable_h

@@ -6,8 +6,8 @@
 class mvClipBox : public vtkImplicitFunction
 {
 public:
-    mvClipBox();
-    static mvClipBox *New() { return new mvClipBox; };
+    vtkTypeMacro(mvClipBox, vtkImplicitFunction);
+    static mvClipBox *New();
     void              SetModelBounds(double bounds[6]);
     void              SetBounds(double bounds[6]);
     virtual double    EvaluateFunction(double x[3]);
@@ -23,6 +23,9 @@ protected:
 private:
     double m_InternalBounds[6];
     double m_RadianAngle;
+
+protected:
+    mvClipBox();
 };
 
 #endif

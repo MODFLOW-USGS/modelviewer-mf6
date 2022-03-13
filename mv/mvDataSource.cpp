@@ -1,6 +1,14 @@
 #include "mvDataSource.h"
 #include <string.h>
 
+// This must be below vtkStandardNewMacro
+#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+#include <afx.h>
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 mvDataSource::mvDataSource()
 {
     m_DataFileList                = 0;

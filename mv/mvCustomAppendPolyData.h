@@ -7,13 +7,15 @@
 class MV_EXPORT mvCustomAppendPolyData : public vtkAppendPolyData
 {
 public:
-    mvCustomAppendPolyData();
-    ~mvCustomAppendPolyData();
-    static mvCustomAppendPolyData *New() { return new mvCustomAppendPolyData; };
+    vtkTypeMacro(mvCustomAppendPolyData, vtkAppendPolyData);
+
+    static mvCustomAppendPolyData *New();
     const char                    *GetClassName() { return "mvCustomAppendPolyData"; }
     // void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
+    mvCustomAppendPolyData();
+    ~mvCustomAppendPolyData();
     virtual int FillInputPortInformation(int, vtkInformation *);
 };
 

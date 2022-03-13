@@ -21,6 +21,14 @@
 #include "vtkIdTypeArray.h"
 #include "vtkCellArray.h"
 
+// This must be below vtkStandardNewMacro
+#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+#include <afx.h>
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 mvModelFeatures::mvModelFeatures()
 {
     m_DisplayMode      = MV_DISPLAY_MODEL_FEATURES_AS_CELLS;

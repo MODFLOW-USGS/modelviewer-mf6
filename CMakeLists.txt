@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project (
   MvProject
-  VERSION 1.0.4
+  VERSION 1.0.5
   LANGUAGES CXX C
 )
 
@@ -23,6 +23,7 @@ if(NOT MFC_FOUND)
 endif()
 
 option(MV_DEBUG_MEMORY_LEAKS "Build for memory debugging" OFF)
+mark_as_advanced(MV_DEBUG_MEMORY_LEAKS)
 if(MV_DEBUG_MEMORY_LEAKS)
   set(BUILD_SHARED_LIBS OFF)
 else()
