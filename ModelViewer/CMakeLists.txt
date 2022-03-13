@@ -144,6 +144,8 @@ add_executable(ModelViewer WIN32
 # modify ModelViewer executable name
 set_target_properties(ModelViewer PROPERTIES OUTPUT_NAME mvmf6)
 
+target_compile_definitions(ModelViewer PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
+
 if (MV_DEBUG_MEMORY_LEAKS)
   # set for all configs
   target_compile_definitions(ModelViewer PRIVATE MV_DEBUG_MEMORY_LEAKS)
@@ -187,11 +189,11 @@ target_precompile_headers(ModelViewer
     <vtkWin32RenderWindowInteractor.h>
 )
 
-if(MSVC_VERSION EQUAL 1900)
-  # set Unicode Character Set on VS2015
-  target_compile_definitions(ModelViewer PRIVATE UNICODE)
-  target_compile_definitions(ModelViewer PRIVATE _UNICODE)
-endif()
+# if(MSVC_VERSION EQUAL 1900)
+#   # set Unicode Character Set on VS2015
+#   target_compile_definitions(ModelViewer PRIVATE UNICODE)
+#   target_compile_definitions(ModelViewer PRIVATE _UNICODE)
+# endif()
 
 # copy dlls into ModelViewer directory
 if (MSVC)

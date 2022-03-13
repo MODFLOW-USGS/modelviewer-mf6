@@ -7,6 +7,14 @@
 
 using std::ifstream;
 
+// This must be below vtkStandardNewMacro
+#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+#include <afx.h>
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 void ModpathReader::ReadData(char *pathlineFile, int &numPathlines, int &numCoordinates,
                              double *&coordinates, double *&scalarArrayTime, double *&scalarArrayMaxTime,
                              double *&scalarArrayMinTime, vtkIdType *&pointArray, bool backwards, double &minPositiveTime)

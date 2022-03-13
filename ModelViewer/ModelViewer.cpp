@@ -62,14 +62,22 @@ BOOL CModelViewerApp::InitInstance()
     //	Enable3dControlsStatic();	// Call this when linking to MFC statically
     //#endif
 
+    // This is req'd to open files from the command line
+    // Initialize OLE libraries
+    if (!AfxOleInit())
+    {
+        AfxMessageBox(IDP_OLE_INIT_FAILED);
+        return FALSE;
+    }
+
 #if defined(MV_DEBUG_MEMORY_LEAKS) && defined(_CRTDBG_MAP_ALLOC)
     // Delay calling _CrtDumpMemoryLeaks until vtk SystemToolsManager dtor
     // Requires modified VTK-6.3.0\Utilities\KWSys\vtksys\SystemTools.cxx
     AfxEnableMemoryLeakDump(FALSE);
     // Use the following to set breakpoint
-    // 
+    //
     // _CrtSetBreakAlloc(1030);
-    // 
+    //
     // This should be the only memory leak
     char* ptr = new char[10];
 #endif

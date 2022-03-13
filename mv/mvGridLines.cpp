@@ -12,6 +12,14 @@
 #include "vtkIdList.h"
 #include "mvDefine.h"
 
+// This must be below vtkStandardNewMacro
+#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+#include <afx.h>
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 mvGridLines::mvGridLines()
 {
     m_SGGeometryFilter = 0;

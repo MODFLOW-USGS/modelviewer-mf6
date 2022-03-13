@@ -6,6 +6,11 @@ project (
   LANGUAGES CXX C
 )
 
+if (MV_DEBUG_MEMORY_LEAKS)
+  # This sets 'Use MFC in a Shared DLL' -- automatically sets _AFXDLL
+  set(CMAKE_MFC_FLAG 2)
+endif()
+
 add_library(mv
   Modflow6DataSource.cpp
   Modflow6DataSource.h
@@ -68,6 +73,8 @@ include(GenerateExportHeader)
 generate_export_header(mv
   EXPORT_FILE_NAME mvHeader.h
 )
+
+target_compile_definitions(mv PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
 
 if (MV_DEBUG_MEMORY_LEAKS)
   # set for all configs

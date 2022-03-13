@@ -14,7 +14,8 @@
 class MV_EXPORT mvColorBar : public vtkActor2D
 {
 public:
-    static mvColorBar *New() { return new mvColorBar; }
+    vtkTypeMacro(mvColorBar, vtkActor2D);
+    static mvColorBar *New();
 
     virtual void       SetLookupTable(vtkLookupTable *lut);
     vtkLookupTable    *GetLookupTable() const { return m_LookupTable; }

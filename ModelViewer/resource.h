@@ -5,6 +5,7 @@
 #define IDD_ABOUTBOX                    100
 #define IDR_MAINFRAME                   128
 #define IDR_MVTYPE                      129
+#define IDP_OLE_INIT_FAILED             130
 #define IDD_GRID                        132
 #define IDD_BOUNDING_BOX                133
 #define IDD_SCALAR_DATA                 135

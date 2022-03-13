@@ -23,6 +23,7 @@ if(NOT MFC_FOUND)
 endif()
 
 option(MV_DEBUG_MEMORY_LEAKS "Build for memory debugging" OFF)
+mark_as_advanced(MV_DEBUG_MEMORY_LEAKS)
 if(MV_DEBUG_MEMORY_LEAKS)
   set(BUILD_SHARED_LIBS OFF)
 else()
