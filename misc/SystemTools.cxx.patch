@@ -1,0 +1,12 @@
+diff --git a/SystemTools.cxx b/SystemTools.cxx
+index 6c4a7a6..a68efd7 100644
+--- a/SystemTools.cxx
++++ b/SystemTools.cxx
+@@ -5147,6 +5147,7 @@ SystemToolsManager::~SystemToolsManager()
+   if(--SystemToolsManagerCount == 0)
+     {
+     SystemTools::ClassFinalize();
++    _CrtDumpMemoryLeaks();
+     }
+ }
+ 
