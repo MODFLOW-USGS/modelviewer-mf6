@@ -2423,6 +2423,7 @@ int Modflow6DataSource::IsModelFeature(char *flowType)
             !strstr(flowType, "UZF-GWET") &&
             !strstr(flowType, "LAK") &&
             !strstr(flowType, "FLOW-JA-FACE") &&
+            !strstr(flowType, "CSUB") &&             //  @TODO fixes crash when loading ex-gwf-csub-p04
             !strstr(flowType, "DATA-SPDIS"));
 }
 
