@@ -160,12 +160,12 @@ jobs:
         github_token: ${{secrets.GITHUB_TOKEN}}
         branch: main
 
-    - name: Commit and push branch
-      if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6') )
-      uses: actions-js/push@master
-      with:
-        github_token: ${{secrets.GITHUB_TOKEN}}
-        branch: __${{env.NEXT_VERSION}}.${{github.run_number}}
+    # - name: Commit and push branch
+    #   if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6') )
+    #   uses: actions-js/push@master
+    #   with:
+    #     github_token: ${{secrets.GITHUB_TOKEN}}
+    #     branch: HEAD:refs/heads/__${{env.NEXT_VERSION}}.${{github.run_number}}
 
     - name: Configure
       shell: pwsh
