@@ -13,7 +13,7 @@
       "architecture": "x64",
       "binaryDir": "${sourceDir}/_${presetName}",
       "cacheVariables": {
-        "VTK_DIR" : "C:/VTK-6.3.0-leaks-vs2017-x64/lib/cmake/vtk-6.3"
+        "VTK_DIR" : "C:/VTK-6.3.0-vs2017-x64/lib/cmake/vtk-6.3"
       }
     },
     {
