@@ -30,5 +30,7 @@ else()
   set(BUILD_SHARED_LIBS ON)
 endif()
 
+add_subdirectory(doc)
+add_subdirectory(examples)
 add_subdirectory(mv)
 add_subdirectory(ModelViewer)
