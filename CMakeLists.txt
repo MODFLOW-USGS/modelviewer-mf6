@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project (
   MvProject
-  VERSION 1.0.8
+  VERSION 1.0.9
   LANGUAGES CXX C
 )
 
