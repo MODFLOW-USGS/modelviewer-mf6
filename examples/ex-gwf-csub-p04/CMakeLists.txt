@@ -1,0 +1,27 @@
+install(
+  FILES 
+    ex-gwf-csub-p04.cbc
+    ex-gwf-csub-p04.chd
+    ex-gwf-csub-p04.csub
+    ex-gwf-csub-p04.csub.obs
+    ex-gwf-csub-p04.csub.obs.csv
+    ex-gwf-csub-p04.dis
+    ex-gwf-csub-p04.dis.grb
+    ex-gwf-csub-p04.hds
+    ex-gwf-csub-p04.ic
+    ex-gwf-csub-p04.ims
+    ex-gwf-csub-p04.lst
+    ex-gwf-csub-p04.mvmf6
+    ex-gwf-csub-p04.nam
+    ex-gwf-csub-p04.npf
+    ex-gwf-csub-p04.obs
+    ex-gwf-csub-p04.oc
+    ex-gwf-csub-p04.rch
+    ex-gwf-csub-p04.sto
+    ex-gwf-csub-p04.tdis
+    ex-gwf-csub-p04.wel
+    gwf_obs.csv
+    mfsim.lst
+    mfsim.nam
+  DESTINATION examples/ex-gwf-csub-p04
+)
