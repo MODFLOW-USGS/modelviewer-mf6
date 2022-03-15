@@ -632,6 +632,8 @@ char *Modflow6DataSource::CreateDisGrid(char *gridFile)
         {
             for (i = 0; i < m_NumberOfCellColumns; i++)
             {
+                int idx = (m_NumberOfCellLayers - k - 1) * m_Ncpl + (m_NumberOfCellRows - j - 1) * m_NumberOfCellColumns + i;
+                assert(0 <= idx && idx < m_NumberOfCellColumns * m_NumberOfCellRows * (m_NumberOfCellLayers + 1));
                 m_Elev[(m_NumberOfCellLayers - k - 1) * m_Ncpl + (m_NumberOfCellRows - j - 1) * m_NumberOfCellColumns + i] = elev[(k + 1) * m_Ncpl + j * m_NumberOfCellColumns + i];
             }
         }
@@ -641,6 +643,8 @@ char *Modflow6DataSource::CreateDisGrid(char *gridFile)
     {
         for (i = 0; i < m_NumberOfCellColumns; i++)
         {
+            int idx = m_NumberOfModflowCells + (m_NumberOfCellRows - j - 1) * m_NumberOfCellColumns + i;
+            assert(0 <= idx && idx < m_NumberOfCellColumns * m_NumberOfCellRows * (m_NumberOfCellLayers + 1));
             m_Elev[m_NumberOfModflowCells + (m_NumberOfCellRows - j - 1) * m_NumberOfCellColumns + i] = elev[j * m_NumberOfCellColumns + i];
         }
     }
