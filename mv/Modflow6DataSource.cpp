@@ -2285,6 +2285,7 @@ void Modflow6DataSource::SetTimePointTo(int timePointIndex)
                 if (IsModelFeature(flowType))
                 {
                     np                      = ip;
+                    assert(0 <= np && np < m_ModelFeatureArraySize);
                     m_ModelFeatureArray[np] = 0; // this element holds the number of vtkcells associated with the feature
                     ip++;
                 }
@@ -2311,7 +2312,9 @@ void Modflow6DataSource::SetTimePointTo(int timePointIndex)
                             int row                 = (nm1 % ncpl) / m_NumberOfCellColumns + 1;
                             int col                 = ((nm1 % ncpl) % m_NumberOfCellColumns) + 1;
                             // find the VTK index for this node
+                            assert(0 <= ip && ip < m_ModelFeatureArraySize);
                             m_ModelFeatureArray[ip] = (m_NumberOfCellLayers - layer) * ncpl + (m_NumberOfCellRows - row) * m_NumberOfCellColumns + col - 1;
+                            assert(0 <= np && np < m_ModelFeatureArraySize);
                             m_ModelFeatureArray[np]++;
                             ip++;
                         }
@@ -2320,7 +2323,9 @@ void Modflow6DataSource::SetTimePointTo(int timePointIndex)
                             mf_cell_index = node - 1;
                             for (k = 1; k <= m_MfCell2VtkCells[mf_cell_index][0]; k++)
                             {
+                                assert(0 <= ip && ip < m_ModelFeatureArraySize);
                                 m_ModelFeatureArray[ip] = m_MfCell2VtkCells[mf_cell_index][k];
+                                assert(0 <= np && np < m_ModelFeatureArraySize);
                                 m_ModelFeatureArray[np]++;
                                 ip++;
                             }
@@ -2418,6 +2423,7 @@ int Modflow6DataSource::IsModelFeature(char *flowType)
             !strstr(flowType, "UZF-GWET") &&
             !strstr(flowType, "LAK") &&
             !strstr(flowType, "FLOW-JA-FACE") &&
+            !strstr(flowType, "CSUB") &&             //  @TODO fixes crash when loading ex-gwf-csub-p04
             !strstr(flowType, "DATA-SPDIS"));
 }
 
