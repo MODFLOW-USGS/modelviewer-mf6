@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project (
   MvProject
-  VERSION 1.0.7
+  VERSION 1.0.10
   LANGUAGES CXX C
 )
 
@@ -30,5 +30,7 @@ else()
   set(BUILD_SHARED_LIBS ON)
 endif()
 
+add_subdirectory(doc)
+add_subdirectory(examples)
 add_subdirectory(mv)
 add_subdirectory(ModelViewer)

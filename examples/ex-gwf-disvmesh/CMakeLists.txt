@@ -1,0 +1,20 @@
+install(
+  FILES 
+    ex-gwf-disvmesh.cbc
+    ex-gwf-disvmesh.disv
+    ex-gwf-disvmesh.disv.grb
+    ex-gwf-disvmesh.ghb
+    ex-gwf-disvmesh.hds
+    ex-gwf-disvmesh.ic
+    ex-gwf-disvmesh.ims
+    ex-gwf-disvmesh.lst
+    ex-gwf-disvmesh.mvmf6
+    ex-gwf-disvmesh.nam
+    ex-gwf-disvmesh.npf
+    ex-gwf-disvmesh.oc
+    ex-gwf-disvmesh.rch
+    ex-gwf-disvmesh.tdis
+    mfsim.lst
+    mfsim.nam
+  DESTINATION examples/ex-gwf-disvmesh
+)

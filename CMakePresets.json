@@ -15,6 +15,17 @@
       "cacheVariables": {
         "VTK_DIR" : "C:/VTK-6.3.0-vs2017-x64/lib/cmake/vtk-6.3"
       }
+    },
+    {
+      "name": "vs2019_leaks",
+      "displayName": "vs2019 x64 with vtk-6.3.0-vs2017 (builds in _vs2019_leaks)",
+      "generator": "Visual Studio 16 2019",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/_${presetName}",
+      "cacheVariables": {
+        "VTK_DIR" : "C:/VTK-6.3.0-leaks-vs2017-x64/lib/cmake/vtk-6.3",
+        "MV_DEBUG_MEMORY_LEAKS": "ON"
+      }
     }
   ]
   ,
@@ -22,6 +33,10 @@
     {
       "name": "vs2019",
       "configurePreset": "vs2019"
+    },
+    {
+      "name": "vs2019_leaks",
+      "configurePreset": "vs2019_leaks"
     }
   ],
   "vendor": {
