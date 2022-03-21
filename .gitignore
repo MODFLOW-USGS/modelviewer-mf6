@@ -23,3 +23,12 @@ Help/mvmf6.chm
 
 # Visual Studio history directories
 .vshistory/
+
+# local cmake presets
+CMakeUserPresets.json
+
+# Backup files
+*.BAK
+
+# .env files
+.env*
