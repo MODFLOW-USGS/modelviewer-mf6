@@ -230,7 +230,7 @@ void CMvView::OnDraw(CDC *pDC)
         int DPI = m_RenderWindow->GetDPI();
 
         m_RenderWindow->SetupMemoryRendering(rcDest.right / scale,
-                                             rcDest.top / scale, pDC->m_hAttribDC);
+                                             rcDest.top / scale, pDC->GetSafeHdc());
 
         m_RenderWindow->Render();
 
