@@ -192,7 +192,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 211
         TOPMARGIN, 7
-        BOTTOMMARGIN, 269
+        BOTTOMMARGIN, 263
     END
 
     IDD_GRID_LINES, DIALOG
@@ -761,7 +761,7 @@ BEGIN
     CONTROL         "",IDC_PROP_SHEET,"Static",SS_BLACKFRAME | NOT WS_VISIBLE,7,7,106,156
 END
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 218, 276
+IDD_ABOUTBOX DIALOGEX 0, 0, 218, 270
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Model Viewer for Modflow 6"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
@@ -777,8 +777,8 @@ BEGIN
     LTEXT           "This version of Model Viewer is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey (USGS).",IDC_STATIC,15,110,189,34
     LTEXT           "No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty.",IDC_STATIC,15,148,190,34
     LTEXT           "The software is provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the software.",IDC_STATIC,15,187,190,26
-    GROUPBOX        "Credits",IDC_STATIC,7,220,204,49
-    LTEXT           "Model Viewer was developed by\nPaul A. Hsieh (pahsieh@usgs.gov), \nRichard B. Winston (rbwinst@usgs.gov), and \nScott Charlton (charlton@usgs.gov)",IDC_STATIC,14,233,156,33
+    GROUPBOX        "Credits",IDC_STATIC,7,220,204,42
+    LTEXT           "Model Viewer for Modflow 6 was developed by\nPaul A. Hsieh (pahsieh@usgs.gov) and \nScott Charlton (charlton@usgs.gov)",IDC_STATIC,15,231,189,25
 END
 
 IDD_GRID_LINES DIALOGEX 0, 0, 146, 82

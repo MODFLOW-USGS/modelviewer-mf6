@@ -143,7 +143,7 @@ void CModflow6DataFilesDlg::OnBrowseGwfModelGridFile()
 void CModflow6DataFilesDlg::OnBrowseGwfModelHeadFile()
 {
     CFileDialog fileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-                        "Head Files (*.bhd; *.hds; *.hdb)|*.bhd; *.hds; *.hdb|All Files (*.*)|*.*||");
+                        "Head Files (*.hds; *.bhd; *.hdb; *.hed)|*.hds; *.bhd; *.hdb; *.hed|All Files (*.*)|*.*||");
     fileDlg.m_ofn.lpstrTitle = "GWF Model Head File";
     if (fileDlg.DoModal() != IDOK)
     {
@@ -155,7 +155,7 @@ void CModflow6DataFilesDlg::OnBrowseGwfModelHeadFile()
 void CModflow6DataFilesDlg::OnBrowseGwfModelBudgetFile()
 {
     CFileDialog fileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-                        "Budget Files (*.cbc; *.cbb)|*.cbc; *.cbb|All Files (*.*)|*.*||");
+                        "Budget Files (*.cbc; *.cbb; *.ccf; *.bud; *.bin)|*.cbc; *.cbb; *.ccf; *.bud; *.bin|All Files (*.*)|*.*||");
     fileDlg.m_ofn.lpstrTitle = "GWF Model Budget File";
     if (fileDlg.DoModal() != IDOK)
     {
