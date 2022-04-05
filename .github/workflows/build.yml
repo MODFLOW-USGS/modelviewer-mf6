@@ -174,8 +174,8 @@ jobs:
         $file = ".\ModelViewer\ModelViewer.rc"
         (Get-Content $file) | Foreach-Object {
           $_ -replace $prelim_pt1, $approved_pt1`
-             -replace $prelim_pt1, $approved_pt2`
-             -replace $prelim_pt1, $approved_pt3`
+             -replace $prelim_pt2, $approved_pt2`
+             -replace $prelim_pt3, $approved_pt3`
         } | Set-Content $file
 
     - name: Commit and push
