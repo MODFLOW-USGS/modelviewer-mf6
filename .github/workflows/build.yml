@@ -37,13 +37,13 @@ jobs:
 
     steps:
 
-    # - name: Checkout
-    #   uses: actions/checkout@v2
-
     - name: Checkout
       uses: actions/checkout@v2
-      with:
-        fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
+
+    # - name: Checkout
+    #   uses: actions/checkout@v2
+    #   with:
+    #     fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
 
     - name: Cache vtk
       id: cache-vtk
@@ -190,7 +190,7 @@ jobs:
       uses: actions-js/push@master
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
-        branch: HEAD:refs/heads/__${{env.NEXT_VERSION}}.${{github.run_number}}
+        branch: __${{env.NEXT_VERSION}}.${{github.run_number}}
 
     - name: Configure
       shell: pwsh
