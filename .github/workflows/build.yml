@@ -44,6 +44,7 @@ jobs:
     - name: Verify version in code.json
       shell: pwsh
       run: |
+        $file = ".\code.json"
         $ver = ((Get-Content $file) | ConvertFrom-Json).version
         echo $ver
         echo $env:SEM_VER_REGEX
