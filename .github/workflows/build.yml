@@ -46,11 +46,13 @@ jobs:
       run: |
         $file = ".\code.json"
         $ver = ((Get-Content $file) | ConvertFrom-Json).version
-        echo $ver
-        echo $env:SEM_VER_REGEX
+        echo "::debug::version = $ver"
+        echo "::debug::SEM_VER_REGEX = $env:SEM_VER_REGEX"
         if ($ver -notmatch $env:SEM_VER_REGEX) {
+          echo "::error file=code.json::Bad version $ver"
+          echo "should see this"
           exit 1
-        }
+        }        
 
     - name: Cache vtk
       id: cache-vtk
