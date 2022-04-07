@@ -49,8 +49,8 @@ jobs:
         echo "::debug::version = $ver"
         echo "::debug::SEM_VER_REGEX = $env:SEM_VER_REGEX"
         if ($ver -notmatch $env:SEM_VER_REGEX) {
-          echo "::error file=code.json::Bad version $ver"
-          echo "should see this"
+          echo "::error::Bad version in code.json"
+          echo "::error::Please see https://semver.org/"
           exit 1
         }        
 
