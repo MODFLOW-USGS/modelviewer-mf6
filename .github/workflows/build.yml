@@ -50,6 +50,7 @@ jobs:
         echo "::debug::SEM_VER_REGEX = $env:SEM_VER_REGEX"
         if ($ver -notmatch $env:SEM_VER_REGEX) {
           echo "::error::Bad version in code.json -- $ver (see https://semver.org/)"
+          echo "::set-output name=status::1"
         }        
 
     - name: Cache vtk
