@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - develop
-      - *-rc*
+      - "*-rc*"
     paths-ignore:
       - .github/workflows/build-vtk*.yml
       - CODE_OF_CONDUCT.md
@@ -17,6 +17,7 @@ on:
     branches:
       - main
       - develop
+      - "*-rc*"
     paths-ignore:
       - .github/workflows/build-vtk*.yml
       - CODE_OF_CONDUCT.md
