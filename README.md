@@ -53,7 +53,8 @@ Use CMake to open the project in Visual Studio
       
 To debug in Visual Studio
 
-      Right-click 'ModelViewer' within the 'Solution Explorer' tab and select 'Set as Startup Project'.  Press the F5 key to begin debugging.
+      Right-click 'ModelViewer' within the 'Solution Explorer' tab and select
+      'Set as Startup Project'.  Press the F5 key to begin debugging.
       
 Disclaimer
 ----------
