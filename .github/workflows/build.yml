@@ -169,6 +169,7 @@ jobs:
 
 
     - name: Update About
+      if: ${{ false }}    # skip for now
       shell: pwsh
       run: |
         $prelim_pt1 = '"This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey \(USGS\).",.*$'
@@ -189,6 +190,7 @@ jobs:
 
     # @TODO Only on push to main on MODFLOW-USGS/modelviewer-mf6
     - name: Update README.md
+      if: ${{ false }}    # skip for now
       shell: pwsh
       run: |
         $approved = ("Disclaimer`n" +
