@@ -769,14 +769,14 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,161,7,50,14,WS_GROUP
     ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
     LTEXT           "Model Viewer for Modflow 6",IDC_MV_VERSION,45,7,107,10,SS_NOPREFIX
-    LTEXT           "Version 1.0.12",IDC_STATIC,45,20,107,10
-    LTEXT           "03/25/2022 (compiled Mar 25 2022 14:49:37)",IDC_MV_RELEASE,45,33,129,8
+    LTEXT           "Version 1.0.0",IDC_STATIC,45,20,107,10
+    LTEXT           "04/12/2022 (compiled Apr 12 2022 13:26:55)",IDC_MV_RELEASE,45,33,128,8
     GROUPBOX        "Notice",IDC_STATIC,7,47,204,49
     LTEXT           "This software uses the Visualization Toolkit (vtk), written and copyrighted by Ken Martin, Will Schroeder and Bill Lorensen. The authors of vtk have granted permission to use, copy, and distribute vtk while retaining their copyright. ",IDC_STATIC,15,59,191,34
     GROUPBOX        "Disclaimer",IDC_STATIC,7,98,204,119
-    LTEXT           "This version of Model Viewer is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey (USGS).",IDC_STATIC,15,110,189,34
-    LTEXT           "No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty.",IDC_STATIC,15,148,190,34
-    LTEXT           "The software is provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the software.",IDC_STATIC,15,187,190,26
+    LTEXT           "This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review.",IDC_STATIC,15,110,189,40
+    LTEXT           "No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty.",IDC_STATIC,15,152,190,34
+    LTEXT           "Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.",IDC_STATIC,15,187,190,26
     GROUPBOX        "Credits",IDC_STATIC,7,220,204,42
     LTEXT           "Model Viewer for Modflow 6 was developed by\nPaul A. Hsieh (pahsieh@usgs.gov) and \nScott Charlton (charlton@usgs.gov)",IDC_STATIC,15,231,189,25
 END
@@ -1550,8 +1550,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,12,64
- PRODUCTVERSION 1,0,12,64
+ FILEVERSION 1,0,0,77
+ PRODUCTVERSION 1,0,0,77
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1568,12 +1568,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "USGS"
             VALUE "FileDescription", "Model Viewer for Modflow 6"
-            VALUE "FileVersion", "1.0.12.64"
+            VALUE "FileVersion", "1.0.0.77"
             VALUE "InternalName", "Model Viewer for Modflow 6"
             VALUE "LegalCopyright", "public domain"
             VALUE "OriginalFilename", "mvmf6.exe"
             VALUE "ProductName", "Model Viewer for Modflow 6"
-            VALUE "ProductVersion", "1.0.12.64"
+            VALUE "ProductVersion", "1.0.0.77"
         END
     END
     BLOCK "VarFileInfo"

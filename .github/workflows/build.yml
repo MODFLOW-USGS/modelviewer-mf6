@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - "*-rc*"
     paths-ignore:
       - .github/workflows/build-vtk*.yml
       - CODE_OF_CONDUCT.md
@@ -16,6 +17,7 @@ on:
     branches:
       - main
       - develop
+      - "*-rc*"
     paths-ignore:
       - .github/workflows/build-vtk*.yml
       - CODE_OF_CONDUCT.md
@@ -29,6 +31,8 @@ env:
   RELEASES_URL: ${{github.api_url}}/repos/${{github.repository}}/releases
   VTK_6_3_0_VS2017_X64_URL: https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/vtk-6.3.0-vs2017-x64/vtk-6.3.0-vs2017-x64.7z
   HTMLHELP_URL: http://web.archive.org/web/20160201063255/http://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe
+  SEM_VER_REGEX: ^(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+  DIST_DIR: mvmf6-1.0.0    # automate this later
 
 jobs:
 
@@ -39,6 +43,18 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v2
+
+    - name: Verify version in code.json
+      shell: pwsh
+      run: |
+        $file = ".\code.json"
+        $ver = ((Get-Content $file) | ConvertFrom-Json).version
+        echo "::debug::version = $ver"
+        echo "::debug::SEM_VER_REGEX = $env:SEM_VER_REGEX"
+        if ($ver -notmatch $env:SEM_VER_REGEX) {
+          echo "::error::Bad version in code.json -- $ver (see https://semver.org/)"
+          exit 1
+        }
 
     - name: Cache vtk
       id: cache-vtk
@@ -96,6 +112,7 @@ jobs:
         popd
 
     - name: Export next mvmf6 version
+      if: ${{ false }}
       shell: pwsh
       run: |
         # create headers dictionary
@@ -153,19 +170,62 @@ jobs:
         }
         Write-Output "NEXT_VERSION=$next_version" >> $env:GITHUB_ENV
 
+
+    - name: Update About
+      if: ${{ false }}    # skip for now
+      shell: pwsh
+      run: |
+        $prelim_pt1 = '"This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey \(USGS\).",.*$'
+        $prelim_pt2 = '"No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty.",.*$'
+        $prelim_pt3 = '"The software is provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the software.",.*$'
+
+        $approved_pt1 = '"This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review.",IDC_STATIC,15,110,189,40'
+        $approved_pt2 = '"No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty.",IDC_STATIC,15,152,190,34'
+        $approved_pt3 = '"Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.",IDC_STATIC,15,187,190,26'
+
+        # sed ModelViewer.rc
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace $prelim_pt1, $approved_pt1`
+             -replace $prelim_pt2, $approved_pt2`
+             -replace $prelim_pt3, $approved_pt3`
+        } | Set-Content $file
+
+    # @TODO Only on push to main on MODFLOW-USGS/modelviewer-mf6
+    - name: Update README.md
+      if: ${{ false }}    # skip for now
+      shell: pwsh
+      run: |
+        $approved = ("Disclaimer`n" +
+                     "----------`n" +
+                     "`n" +
+                     "This software has been approved for release by the U.S. Geological Survey`n" +
+                     "(USGS). Although the software has been subjected to rigorous review, the USGS`n" +
+                     "reserves the right to update the software as needed pursuant to further analysis`n" +
+                     "and review. No warranty, expressed or implied, is made by the USGS or the U.S.`n" +
+                     "Government as to the functionality of the software and related material nor`n" +
+                     "shall the fact of release constitute any such warranty. Furthermore, the`n" +
+                     "software is released on condition that neither the USGS nor the U.S. Government`n" +
+                     "shall be held liable for any damages resulting from its authorized or`n" +
+                     "unauthorized use.")
+        $file = ".\README.md"
+        (Get-Content -Raw $file) -replace "(?ms)Disclaimer.*", $approved | Set-Content $file
+
     - name: Commit and push
-      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
+      # if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
+      if: ${{ false }}    # skip for now
       uses: actions-js/push@master
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         branch: main
 
-    # - name: Commit and push branch
-    #   if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6') )
-    #   uses: actions-js/push@master
-    #   with:
-    #     github_token: ${{secrets.GITHUB_TOKEN}}
-    #     branch: HEAD:refs/heads/__${{env.NEXT_VERSION}}.${{github.run_number}}
+    - name: Commit and push branch
+      # if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6') )
+      if: ${{ false }}    # skip for now
+      uses: actions-js/push@master
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        branch: __${{env.NEXT_VERSION}}.${{github.run_number}}
 
     - name: Configure
       shell: pwsh
@@ -184,9 +244,16 @@ jobs:
         Copy-Item .\Help\mvmf6.chm ${{env.DIST_DIR}}\bin\.
         7z a -tzip ${{env.DIST_DIR}}.zip .\${{env.DIST_DIR}}\
 
+    - name: Create artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path:  ${{env.DIST_DIR}}.zip
+
     # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
     - name: Create release
-      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch') || (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      # if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch') || (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      if: ${{ false }}    # skip for now
       run: |
         # store new commit
         $target_commitish = (git log -n1 --format=format:"%H")
