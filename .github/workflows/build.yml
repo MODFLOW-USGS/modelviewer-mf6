@@ -250,7 +250,7 @@ jobs:
     - name: Create artifact
       env:
         DIST_DIR: mvmf6-1.0.0-rc.1    # automate this later
-      users: actions/upload-artifact@v3
+      user: actions/upload-artifact@v3
       with:
         name: dist
         path:  ${{env.DIST_DIR}}.zip
