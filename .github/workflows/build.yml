@@ -211,14 +211,16 @@ jobs:
         (Get-Content -Raw $file) -replace "(?ms)Disclaimer.*", $approved | Set-Content $file
 
     - name: Commit and push
-      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
+      # if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
+      if: ${{ false }}    # skip for now
       uses: actions-js/push@master
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         branch: main
 
     - name: Commit and push branch
-      if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6') )
+      # if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6') )
+      if: ${{ false }}    # skip for now
       uses: actions-js/push@master
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
@@ -233,17 +235,30 @@ jobs:
       run: cmake --build --preset vs2019 --config release
 
     - name: Install
+      env:
+        DIST_DIR: mvmf6-1.0.0-rc.1    # automate this later
       shell: pwsh
       run: cmake --install _vs2019 --prefix ${{env.DIST_DIR}} --config release
 
     - name: Build mvmf6 zip
+      env:
+        DIST_DIR: mvmf6-1.0.0-rc.1    # automate this later
       run: |
         Copy-Item .\Help\mvmf6.chm ${{env.DIST_DIR}}\bin\.
         7z a -tzip ${{env.DIST_DIR}}.zip .\${{env.DIST_DIR}}\
 
+    - name: Create artifact
+      env:
+        DIST_DIR: mvmf6-1.0.0-rc.1    # automate this later
+      users: actions/upload-artifact@v3
+      with:
+        name: dist
+        path:  ${{env.DIST_DIR}}.zip
+
     # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
     - name: Create release
-      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch') || (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      # if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch') || (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      if: ${{ false }}    # skip for now
       run: |
         # store new commit
         $target_commitish = (git log -n1 --format=format:"%H")
