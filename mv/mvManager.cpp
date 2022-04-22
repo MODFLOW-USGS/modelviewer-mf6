@@ -621,7 +621,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     m_PointScalars->SetNumberOfComponents(1);
     m_CellScalars = vtkSmartPointer<vtkDoubleArray>::New();
     m_CellScalars->SetNumberOfComponents(1);
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         // DIS grid - interpolated
         m_ScalarLayeredGrid      = 0;
@@ -671,7 +671,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_StairsteppedGrid->SetCells(cellType, cellArray);
         delete[] cellType;
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         // DISV grid - interpolated
         m_ScalarStructuredGrid   = 0;
@@ -780,7 +780,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_StairsteppedGrid->SetCells(cellType, cellArray);
         delete[] cellType;
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         // DISU grid
         m_ScalarStructuredGrid   = 0;
@@ -841,7 +841,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     m_Vectors->SetNumberOfComponents(3);
     m_VectorMagnitudes = vtkSmartPointer<vtkDoubleArray>::New();
     m_VectorMagnitudes->SetNumberOfComponents(1);
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         m_VectorUnstructuredGrid = 0;
         m_VectorDataSet          = vtkSmartPointer<vtkStructuredGrid>::New();
@@ -851,7 +851,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_ExtractStructuredGridVector->SetInputData(m_VectorDataSet);
         m_ActiveVectorDataSet->SetInputConnection(m_ExtractStructuredGridVector->GetOutputPort());
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_VectorDataSet          = 0;
         m_VectorUnstructuredGrid = vtkSmartPointer<vtkUnstructuredGrid>::New();
@@ -875,7 +875,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     m_InterpolatedGridPoints->SetDataTypeToDouble();
     m_InterpolatedGridPoints->SetData(doubleArray);
 
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         vtkSmartPointer<vtkDoubleArray> doubleArray = vtkSmartPointer<vtkDoubleArray>::New();
         doubleArray->SetNumberOfComponents(3);
@@ -883,7 +883,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_StairsteppedGridPoints->SetDataTypeToDouble();
         m_StairsteppedGridPoints->SetData(doubleArray);
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         vtkSmartPointer<vtkDoubleArray> doubleArray = vtkSmartPointer<vtkDoubleArray>::New();
         doubleArray->SetNumberOfComponents(3);
@@ -892,7 +892,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_StairsteppedGridPoints->SetDataTypeToDouble();
         m_StairsteppedGridPoints->SetData(doubleArray);
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         vtkSmartPointer<vtkDoubleArray> doubleArray = vtkSmartPointer<vtkDoubleArray>::New();
         doubleArray->SetNumberOfComponents(3);
@@ -929,15 +929,15 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     }
     ComputeActiveScalarRange();
 
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         m_ScalarStructuredGrid->Modified();
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_ScalarLayeredGrid->Modified();
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         m_ScalarUnstructuredGrid->Modified();
     }
@@ -972,17 +972,17 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
 
     // default Axes
     double bounds[6];
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         m_ScalarStructuredGrid->ComputeBounds();
         m_ScalarStructuredGrid->GetBounds(bounds);
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_ScalarLayeredGrid->ComputeBounds();
         m_ScalarLayeredGrid->GetBounds(bounds);
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         m_ScalarUnstructuredGrid->ComputeBounds();
         m_ScalarUnstructuredGrid->GetBounds(bounds);
@@ -998,13 +998,13 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     if (m_DataSource->GetVectorArray() != 0)
     {
         int np;
-        if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+        if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
         {
             const int *vdim = m_DataSource->GetVectorGridDimensions();
             m_VectorDataSet->SetDimensions(vdim[0], vdim[1], vdim[2]);
             np = vdim[0] * vdim[1] * vdim[2];
         }
-        else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+        else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
         {
             np = m_DataSource->GetNumModelCells();
             // vtkCellArray *connectivity = vtkCellArray::New();
@@ -1066,13 +1066,13 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     if (m_DataSource->GetModelFeatureArray())
     {
         double rgba[4];
-        if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+        if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
         {
             m_ModelFeatures->SetGridTypeToStructuredGrid();
             m_ModelFeatures->SetFullGridDimensions(m_DataSource->GetScalarGridDimensions());
             m_ModelFeatures->SetGridPoints(m_InterpolatedGridPoints);
         }
-        else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+        else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
         {
             m_ModelFeatures->SetGridTypeToUnstructuredGrid();
             // Send the cell (connectivity) data from m_ScalarLayeredGrid to m_ModelFeatures
@@ -1081,7 +1081,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
                                                              m_ScalarLayeredGrid->GetCells());
             m_ModelFeatures->SetGridPoints(m_InterpolatedGridPoints);
         }
-        else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+        else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
         {
             m_ModelFeatures->SetGridTypeToUnstructuredGrid();
             // Send the cell (connectivity) data from m_ScalarUnstructuredGrid to m_ModelFeatures
@@ -1164,7 +1164,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_UseLogColorBar[i]         = 0;
         m_NumColorBarLabels[i]      = 5;
         m_ColorBarLabelPrecision[i] = 3;
-        if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+        if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
         {
             m_SolidDisplayMode[i] = MV_SOLID_BLOCKY;
         }
@@ -1184,7 +1184,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_CustomIsosurfaceValues[i]     = 0;
     }
 
-    if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         SetSolidDisplayToBlocky();
     }
@@ -1245,7 +1245,7 @@ void mvManager::ApplyDefaultSettings()
     SetCroppedAwayPiecesOpacity(0.2);
 
     // Subgrid
-    if (GetGridType() == MV_STRUCTURED_GRID)
+    if (GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         int *sdim = m_DataSource->GetScalarGridDimensions();
         SetScalarSubgridExtent(0, sdim[0] - 1, 0, sdim[1] - 1, 0, sdim[2] - 1);
@@ -1264,7 +1264,7 @@ void mvManager::ApplyDefaultSettings()
     }
     else
     {
-        if (m_DataSource->GetGridType() != MV_LAYERED_GRID)
+        if (m_DataSource->GetGridType() != GridType::MV_LAYERED_GRID)
         {
             int *sdim = m_DataSource->GetScalarGridDimensions();
             //		   SetGridLinePositions(sdim[0]/2, sdim[1]/2, sdim[2]/2);
@@ -1300,7 +1300,7 @@ void mvManager::ApplyDefaultSettings()
         SetColorBarLabelPrecision(3);
 
         // Solid amd Grid Display
-        if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+        if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
         {
             SetSolidDisplayToBlocky();
             SetGridDisplayToStairstepped();
@@ -1423,7 +1423,7 @@ void mvManager::SetReleaseDataFlag(int b)
     }
 }
 
-int mvManager::GetGridType() const
+GridType mvManager::GetGridType() const
 {
     if (m_DataSource != 0)
     {
@@ -1431,7 +1431,7 @@ int mvManager::GetGridType() const
     }
     else
     {
-        return 0;
+        return GridType::MV_GRID_NOT_DEFINED;
     }
 }
 
@@ -1670,7 +1670,7 @@ void mvManager::UpdateColorBands()
 
 void mvManager::SetScalarSubgridExtent(int imin, int imax, int jmin, int jmax, int kmin, int kmax)
 {
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         // note that imin, imax, jmin, etc refer to point indices, starting from zero, and using vtk convention
         // In particular, k goes from bottom to top.
@@ -1696,7 +1696,7 @@ void mvManager::SetScalarSubgridExtent(int imin, int imax, int jmin, int jmax, i
         }
         m_ExtractCellsForSubgrid->SetCellList(cellList);
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         // kmin = top layer in subgrid
         // kmax = bottom layer in subgrid
@@ -1719,11 +1719,11 @@ void mvManager::SetScalarSubgridExtent(int imin, int imax, int jmin, int jmax, i
 
 const int *mvManager::GetScalarSubgridExtent()
 {
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         return m_ExtractStructuredGridForSubgrid->GetVOI();
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         // TO DO
         return 0;
@@ -1733,7 +1733,7 @@ const int *mvManager::GetScalarSubgridExtent()
 
 void mvManager::ScalarSubgridOn()
 {
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         const int *sdim = m_DataSource->GetScalarGridDimensions();
         int       *v    = m_ExtractStructuredGridForSubgrid->GetVOI();
@@ -1844,7 +1844,7 @@ void mvManager::ScalarSubgridOn()
             m_BlockySolidThreshold->SetInputConnection(m_ExtractCellsForSubgrid->GetOutputPort());
         }
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_ActiveScalarDataSet->SetInputConnection(m_ExtractCellsForSubgrid->GetOutputPort());
         m_BlockySolidThreshold->SetInputConnection(m_ExtractCellsForSubgrid->GetOutputPort());
@@ -1892,7 +1892,7 @@ void mvManager::ScalarSubgridOn()
 
 void mvManager::ScalarSubgridOff()
 {
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         if (m_GridDisplayMode == MV_GRID_INTERPOLATED)
         {
@@ -1921,7 +1921,7 @@ void mvManager::ScalarSubgridOff()
             m_ExtractFace[i]->SetInputConnection(m_ActiveScalarDataSet->GetOutputPort());
         }
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         if (m_GridDisplayMode == MV_GRID_INTERPOLATED)
         {
@@ -1976,7 +1976,7 @@ void mvManager::ScalarSubgridOff()
 
 int mvManager::IsScalarSubgridOn() const
 {
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         if (m_GridDisplayMode == MV_GRID_INTERPOLATED)
         {
@@ -1987,7 +1987,7 @@ int mvManager::IsScalarSubgridOn() const
             return (m_ActiveScalarDataSet->GetInput() == m_ExtractCellsForSubgrid->GetOutput());
         }
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         return (m_ActiveScalarDataSet->GetInput() == m_ExtractCellsForSubgrid->GetOutput());
     }
@@ -2186,7 +2186,7 @@ void mvManager::CropVectors(double xmin, double xmax,
         m_CropBoxForVectors->SetModelBounds(bounds);
         m_CropBoxForVectors->SetBounds(m_VectorBounds);
         m_CropBoxForVectors->SetAngle(m_VectorClippingAngle);
-        if (GetGridType() == MV_STRUCTURED_GRID)
+        if (GetGridType() == GridType::MV_STRUCTURED_GRID)
         {
             m_CropVectors->SetInputConnection(m_ExtractStructuredGridVector->GetOutputPort());
         }
@@ -2199,7 +2199,7 @@ void mvManager::CropVectors(double xmin, double xmax,
     }
     else
     {
-        if (GetGridType() == MV_STRUCTURED_GRID)
+        if (GetGridType() == GridType::MV_STRUCTURED_GRID)
         {
             m_ActiveVectorDataSet->SetInputConnection(m_ExtractStructuredGridVector->GetOutputPort());
         }
@@ -2613,7 +2613,7 @@ void mvManager::HideGridLines()
 
 void mvManager::ActivateGridLines(int i)
 {
-    if ((m_DataSource == 0) || (GetGridType() != MV_LAYERED_GRID))
+    if ((m_DataSource == 0) || (GetGridType() != GridType::MV_LAYERED_GRID))
     {
         m_GridLinesActivated[i] = 1;
         if (m_ActivatedGridLinesVisibility == 1)
@@ -2661,7 +2661,7 @@ void mvManager::SetGridLineColor(double r, double g, double b)
 
 int mvManager::AreGridLinesActive(int i) const
 {
-    if ((m_DataSource != 0) && (GetGridType() == MV_LAYERED_GRID))
+    if ((m_DataSource != 0) && (GetGridType() == GridType::MV_LAYERED_GRID))
     {
         return false;
     }
@@ -2945,15 +2945,15 @@ void mvManager::OnDataModified()
     //	{
     //		m_ScalarStructuredGrid->Modified();
     //	}
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         m_ScalarStructuredGrid->Modified();
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_ScalarLayeredGrid->Modified();
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         m_ScalarUnstructuredGrid->Modified();
     }
@@ -3091,17 +3091,17 @@ void mvManager::SetScalarDataTypeTo(int dataTypeIndex)
 
     int numPoints;
     int numCells;
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         numPoints = m_ScalarStructuredGrid->GetNumberOfPoints();
         numCells  = m_ScalarStructuredGrid->GetNumberOfCells();
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         numPoints = m_ScalarLayeredGrid->GetNumberOfPoints();
         numCells  = m_ScalarLayeredGrid->GetNumberOfCells();
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         numPoints = m_ScalarUnstructuredGrid->GetNumberOfPoints();
         numCells  = m_ScalarUnstructuredGrid->GetNumberOfCells();
@@ -3124,15 +3124,15 @@ void mvManager::SetScalarDataTypeTo(int dataTypeIndex)
     }
     ComputeActiveScalarRange();
 
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         m_ScalarStructuredGrid->Modified();
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_ScalarLayeredGrid->Modified();
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         m_ScalarUnstructuredGrid->Modified();
     }
@@ -4971,7 +4971,7 @@ char *mvManager::Serialize(const char *fileName, mvGUISettings *gui) const
     }
     out << "Model feature glyph size = " << m_ModelFeatures->GetGlyphSize() << endl;
 
-    if (GetGridType() == MV_STRUCTURED_GRID)
+    if (GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         // Subgrid
         int *subg = m_ExtractStructuredGridForSubgrid->GetVOI();
@@ -6158,7 +6158,7 @@ void mvManager::RemoveOverlay()
 
 bool mvManager::GetIsStructuredGrid()
 {
-    return (GetGridType() == MV_STRUCTURED_GRID);
+    return (GetGridType() == GridType::MV_STRUCTURED_GRID);
 };
 
 void mvManager::SetBoundingBoxBounds()
@@ -6220,11 +6220,11 @@ int mvManager::GetNumberOfLayersInUnstructuredGrid() const
 
 void mvManager::SetGridDisplayToInterpolated()
 {
-    if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         return;
     }
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         if (IsScalarSubgridOn())
         {
@@ -6235,7 +6235,7 @@ void mvManager::SetGridDisplayToInterpolated()
             m_ActiveScalarDataSet->SetInputData(m_ScalarStructuredGrid);
         }
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_ExtractCellsForSubgrid->SetInputData(m_ScalarLayeredGrid);
         if (IsScalarSubgridOn())
@@ -6260,7 +6260,7 @@ void mvManager::SetGridDisplayToInterpolated()
 
 void mvManager::SetGridDisplayToStairstepped()
 {
-    if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         return;
     }

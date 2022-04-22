@@ -66,7 +66,7 @@ public:
     int                                HasVectorData() const;
     int                                HasPathlineData() const;
     //	int AreAllCellsActive() const;
-    int                                GetGridType() const;
+    GridType                           GetGridType() const;
     bool                               GetIsStructuredGrid();
     void                               ApplyDefaultSettings();
     void                               SetImmediateModeRendering(int b);

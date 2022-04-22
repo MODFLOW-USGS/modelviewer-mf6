@@ -17,7 +17,7 @@ public:
     static char  *GetNameStatic() { return "Modflow 6"; }
     virtual char *GetName() { return GetNameStatic(); }
     virtual int   GetPrimaryScalarMode() { return MV_CELL_SCALARS; }
-    virtual int   GetGridType() { return m_GridType; }
+    virtual GridType GetGridType() { return m_GridType; }
     //   virtual int AreAllCellsActive() { return 0; }
     virtual char *LoadData(char *dataFileList);
     virtual void  AdvanceOneTimePoint() { SetTimePointTo(-1); }
@@ -48,7 +48,7 @@ protected:
     int         m_NumberOfCellLayers;
     int         m_NumberOfModflowCells;
     int         m_ModelFeatureArraySize;
-    int         m_GridType;
+    GridType    m_GridType;
     int         m_HasSpecificDischargeData;
     ifstream    m_IfHead;
     ifstream    m_IfBudget;

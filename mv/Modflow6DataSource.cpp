@@ -49,7 +49,7 @@ Modflow6DataSource::Modflow6DataSource()
 {
     m_NumberOfVTKPoints            = 0;
     m_NumberOfVTKCells             = 0;
-    m_GridType                     = MV_GRID_NOT_DEFINED;
+    m_GridType                     = GridType::MV_GRID_NOT_DEFINED;
     m_NumberOfScalarDataTypes      = 0;
     m_NumberOfCellColumns          = 0;
     m_NumberOfCellRows             = 0;
@@ -162,7 +162,7 @@ char *Modflow6DataSource::LoadData(char *dataFileList)
     char *pList = dataFileList;
     ParseDataFileList(pList, nameFile);
 
-    m_GridType = MV_GRID_NOT_DEFINED;
+    m_GridType = GridType::MV_GRID_NOT_DEFINED;
     if (strlen(nameFile) > 0)
     {
         // if nameFile is specified, then get the gridFile, headFile, and budgetFile from
@@ -174,7 +174,7 @@ char *Modflow6DataSource::LoadData(char *dataFileList)
             m_DataFileList = 0;
             return errMsg;
         }
-        if (m_GridType == MV_GRID_NOT_DEFINED)
+        if (m_GridType == GridType::MV_GRID_NOT_DEFINED)
         {
             delete[] m_DataFileList;
             m_DataFileList = 0;
@@ -196,15 +196,15 @@ char *Modflow6DataSource::LoadData(char *dataFileList)
         aRecord[49] = '\0';
         if (strstr(aRecord, "DISV"))
         {
-            m_GridType = MV_LAYERED_GRID;
+            m_GridType = GridType::MV_LAYERED_GRID;
         }
         else if (strstr(aRecord, "DISU"))
         {
-            m_GridType = MV_UNSTRUCTURED_GRID;
+            m_GridType = GridType::MV_UNSTRUCTURED_GRID;
         }
         else if (strstr(aRecord, "DIS"))
         {
-            m_GridType = MV_STRUCTURED_GRID;
+            m_GridType = GridType::MV_STRUCTURED_GRID;
         }
         else
         {
@@ -231,13 +231,13 @@ char *Modflow6DataSource::LoadData(char *dataFileList)
     errMsg = 0;
     switch (m_GridType)
     {
-    case MV_STRUCTURED_GRID:
+    case GridType::MV_STRUCTURED_GRID:
         errMsg = CreateDisGrid(gridFile);
         break;
-    case MV_LAYERED_GRID:
-        CreateDisvGrid(gridFile);
+    case GridType::MV_LAYERED_GRID:
+        errMsg = CreateDisvGrid(gridFile);
         break;
-    case MV_UNSTRUCTURED_GRID:
+    case GridType::MV_UNSTRUCTURED_GRID:
         errMsg = CreateDisuGrid(gridFile);
         break;
     }
@@ -368,7 +368,7 @@ char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
     headFile[0]   = '\0';
     budgetFile[0] = '\0';
     gridFile[0]   = '\0';
-    m_GridType    = MV_GRID_NOT_DEFINED;
+    m_GridType    = GridType::MV_GRID_NOT_DEFINED;
     ocFile[0]     = '\0';
     ifstream in(nameFile, ios::in);
     if (!in.is_open())
@@ -392,7 +392,7 @@ char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
                 mvUtil::TrimLeft(gridFile);
                 ExtractFileName(gridFile);
                 strcat(gridFile, ".grb");
-                m_GridType = MV_STRUCTURED_GRID;
+                m_GridType = GridType::MV_STRUCTURED_GRID;
             }
             else if (!_strnicmp(aline, "disv6 ", 6))
             {
@@ -400,7 +400,7 @@ char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
                 mvUtil::TrimLeft(gridFile);
                 ExtractFileName(gridFile);
                 strcat(gridFile, ".grb");
-                m_GridType = MV_LAYERED_GRID;
+                m_GridType = GridType::MV_LAYERED_GRID;
             }
             else if (!_strnicmp(aline, "disu6 ", 5))
             {
@@ -408,7 +408,7 @@ char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
                 mvUtil::TrimLeft(gridFile);
                 strcat(gridFile, ".grb");
                 ExtractFileName(gridFile);
-                m_GridType = MV_UNSTRUCTURED_GRID;
+                m_GridType = GridType::MV_UNSTRUCTURED_GRID;
             }
             if (!_strnicmp(aline, "oc6 ", 4))
             {
@@ -1680,7 +1680,7 @@ char *Modflow6DataSource::CountHead(char *dataTypeLabel)
     double pertim, totim, value;
     char   text[16];
     m_NumberOfTimePoints = 0;
-    if (m_GridType == MV_UNSTRUCTURED_GRID)
+    if (m_GridType == GridType::MV_UNSTRUCTURED_GRID)
     {
         jmax = m_NumberOfModflowCells;
         kmax = 1;
@@ -1823,7 +1823,7 @@ char *Modflow6DataSource::CountBudgetAndFeatures()
                 m_IfBudget.read((char *)(&node), sizeof(int));
                 m_IfBudget.read((char *)(&id2), sizeof(int));
                 mf_cell_index = node - 1;
-                if (m_GridType == MV_STRUCTURED_GRID)
+                if (m_GridType == GridType::MV_STRUCTURED_GRID)
                 {
                     num_vtk_cells_for_this_flowType++;
                 }
@@ -1910,7 +1910,7 @@ char *Modflow6DataSource::CountBudgetAndFeatures()
     delete vtk_cell_count;
 
     // ********* temporary -- no vectors for DISU GRID **********
-    if (m_GridType == MV_UNSTRUCTURED_GRID)
+    if (m_GridType == GridType::MV_UNSTRUCTURED_GRID)
     {
         m_HasSpecificDischargeData = 0;
     }
@@ -1923,7 +1923,7 @@ void Modflow6DataSource::GetTimePoints(double *timePoints, int *periods, int *st
     int    kstp, kper, n1, n2, n3, i, j, jmax, k, kmax;
     double pertim, totim, value;
     char   text[16];
-    if (m_GridType == MV_UNSTRUCTURED_GRID)
+    if (m_GridType == GridType::MV_UNSTRUCTURED_GRID)
     {
         jmax = m_NumberOfModflowCells;
         kmax = 1;
@@ -1984,7 +1984,7 @@ void Modflow6DataSource::SetTimePointTo(int timePointIndex)
                 m_IfHead.read((char *)(&n1), sizeof(int));
                 m_IfHead.read((char *)(&n2), sizeof(int));
                 int ncpl;
-                if (m_GridType == MV_STRUCTURED_GRID)
+                if (m_GridType == GridType::MV_STRUCTURED_GRID)
                 {
                     ncpl = n1 * n2;
                 }
@@ -2055,7 +2055,7 @@ void Modflow6DataSource::SetTimePointTo(int timePointIndex)
     memset(modflow_active_cell, 0, m_NumberOfModflowCells * sizeof(int));
 
     // read head
-    if (m_GridType == MV_STRUCTURED_GRID)
+    if (m_GridType == GridType::MV_STRUCTURED_GRID)
     {
         int     ncol, nrow, ncpl;
         double *pointValues = m_ScalarArray;
@@ -2094,7 +2094,7 @@ void Modflow6DataSource::SetTimePointTo(int timePointIndex)
         mvUtil::interp3d(cellValues, pointValues, m_Delr, m_Delc_revdir, m_Elev,
                          ncol, nrow, m_NumberOfCellLayers, m_InactiveCellValue, znull, useLayer);
     }
-    else if (m_GridType == MV_LAYERED_GRID)
+    else if (m_GridType == GridType::MV_LAYERED_GRID)
     {
         int     p, q, ncpl;
         double  dx, dy, dz;
@@ -2199,7 +2199,7 @@ void Modflow6DataSource::SetTimePointTo(int timePointIndex)
         }
         delete[] sumOfWeights;
     }
-    else if (m_GridType == MV_UNSTRUCTURED_GRID)
+    else if (m_GridType == GridType::MV_UNSTRUCTURED_GRID)
     {
         int nodes, n1, n2;
         memset(m_ScalarArray, 0, m_NumberOfVTKPoints * sizeof(double));
@@ -2307,7 +2307,7 @@ void Modflow6DataSource::SetTimePointTo(int timePointIndex)
 
                     if (IsModelFeature(flowType))
                     {
-                        if (m_GridType == MV_STRUCTURED_GRID)
+                        if (m_GridType == GridType::MV_STRUCTURED_GRID)
                         {
                             // find the Modflow col, row, and layer for this node
                             int nm1                 = node - 1;
@@ -2341,7 +2341,7 @@ void Modflow6DataSource::SetTimePointTo(int timePointIndex)
                         m_IfBudget.read((char *)(&value1), sizeof(double));
                         m_IfBudget.read((char *)(&value2), sizeof(double));
                         m_IfBudget.read((char *)(&value3), sizeof(double));
-                        if (m_GridType == MV_STRUCTURED_GRID)
+                        if (m_GridType == GridType::MV_STRUCTURED_GRID)
                         {
                             // find the Modflow col, row, and layer for this node
                             int nm1   = node - 1;
@@ -2364,7 +2364,7 @@ void Modflow6DataSource::SetTimePointTo(int timePointIndex)
                                 m_VectorArray[3 * ivtk + 2] = m_InactiveCellValue;
                             }
                         }
-                        else if (m_GridType == MV_LAYERED_GRID /* || m_GridType == MV_UNSTRUCTURED_GRID */)
+                        else if (m_GridType == GridType::MV_LAYERED_GRID /* || m_GridType == GridType::MV_UNSTRUCTURED_GRID */)
                         {
                             int nm1 = node - 1;
                             if (modflow_active_cell[nm1])

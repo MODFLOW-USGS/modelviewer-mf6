@@ -35,7 +35,7 @@ public:
      * 3) vtkStructuredGrid with all active cells, 4) vtkStructuredGrid that
      * might contain inactive cells, and 5) vtkUnstructuredGrid..
      */
-    virtual int     GetGridType()                          = 0;
+    virtual GridType  GetGridType()                        = 0;
 
     /**
      * Returns the convention used for indexing.

@@ -119,9 +119,9 @@ void CSolidDlg::Reinitialize()
 
 void CSolidDlg::Activate(BOOL b)
 {
-    GetDlgItem(IDC_SOLID_DISPLAY_SMOOTH)->EnableWindow(b && m_pDoc->GetGridType() != MV_UNSTRUCTURED_GRID);
-    GetDlgItem(IDC_SOLID_DISPLAY_BLOCKY)->EnableWindow(b && m_PrimaryScalarMode == 0 && m_pDoc->GetGridType() != MV_UNSTRUCTURED_GRID);
-    GetDlgItem(IDC_SOLID_DISPLAY_BANDED)->EnableWindow(b && m_pDoc->GetGridType() != MV_UNSTRUCTURED_GRID);
+    GetDlgItem(IDC_SOLID_DISPLAY_SMOOTH)->EnableWindow(b && m_pDoc->GetGridType() != GridType::MV_UNSTRUCTURED_GRID);
+    GetDlgItem(IDC_SOLID_DISPLAY_BLOCKY)->EnableWindow(b && m_PrimaryScalarMode == 0 && m_pDoc->GetGridType() != GridType::MV_UNSTRUCTURED_GRID);
+    GetDlgItem(IDC_SOLID_DISPLAY_BANDED)->EnableWindow(b && m_pDoc->GetGridType() != GridType::MV_UNSTRUCTURED_GRID);
     GetDlgItem(IDC_APPLY_THRESHOLD)->EnableWindow(b);
     GetDlgItem(IDC_COLOR_BANDS)->EnableWindow(b && ((CButton *)GetDlgItem(IDC_SOLID_DISPLAY_BANDED))->GetCheck());
     GetDlgItem(IDC_APPLY)->EnableWindow(b);

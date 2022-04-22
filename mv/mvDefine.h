@@ -1,3 +1,5 @@
+#ifndef __mvDefine_h
+#define __mvDefine_h
 
 #define MV_VERSION                      "MF6"
 
@@ -14,10 +16,12 @@
 #define MV_CELL_SCALARS                 0
 #define MV_POINT_SCALARS                1
 
-#define MV_GRID_NOT_DEFINED             0
-#define MV_STRUCTURED_GRID              4
-#define MV_LAYERED_GRID                 5
-#define MV_UNSTRUCTURED_GRID            6
+enum class GridType {
+    MV_GRID_NOT_DEFINED               = 0,
+    MV_STRUCTURED_GRID                = 4,               // DIS6
+    MV_LAYERED_GRID                   = 5,               // DISV6
+    MV_UNSTRUCTURED_GRID              = 6                // DISU6
+};
 
 #define MV_INITIAL_DISPLAY_BOUNDING_BOX 0
 #define MV_INITIAL_DISPLAY_GRID_OUTLINE 1
@@ -28,3 +32,5 @@
 #define MP_TRAVEL_TIME                  0
 #define MP_MIN_TRAVEL_TIME              1
 #define MP_MAX_TRAVEL_TIME              2
+
+#endif    // __mvDefine_h

@@ -854,7 +854,7 @@ void CMvDoc::UpdateGridDlg()
 
     // Grid lines
     CGridLinesPage *lines   = m_GridDlg->m_GridLinesPage;
-    lines->m_StructuredGrid = (m_Manager->GetGridType() == MV_STRUCTURED_GRID);
+    lines->m_StructuredGrid = (m_Manager->GetGridType() == GridType::MV_STRUCTURED_GRID);
     if (m_Manager->IsScalarSubgridOn())
     {
         // if subgrid is on, then limit the extent of the grid lines
@@ -868,7 +868,7 @@ void CMvDoc::UpdateGridDlg()
     }
     else
     {
-        if (m_Manager->GetGridType() == MV_STRUCTURED_GRID)
+        if (m_Manager->GetGridType() == GridType::MV_STRUCTURED_GRID)
         {
             lines->m_XMin = 0;
             lines->m_XMax = sdim[0] - 1;
@@ -883,7 +883,7 @@ void CMvDoc::UpdateGridDlg()
             lines->m_ZMax = m_Manager->GetNumberOfLayersInUnstructuredGrid();
         }
     }
-    if (m_Manager->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_Manager->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         int p[3];
         m_Manager->GetGridLinePositions(p);
@@ -923,7 +923,7 @@ void CMvDoc::UpdateGridDlg()
     // Subgrid page
     CSubgridPage *subgrid = m_GridDlg->m_SubgridPage;
     const int    *voi     = m_Manager->GetScalarSubgridExtent();
-    if (m_Manager->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_Manager->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         // structured grid
         subgrid->m_col_min         = voi[0] + 1;
@@ -937,7 +937,7 @@ void CMvDoc::UpdateGridDlg()
         subgrid->m_lay_upper_limit = sdim[2] - 1;
         subgrid->m_ActivateSubgrid = m_Manager->IsScalarSubgridOn();
     }
-    else if (m_Manager->GetGridType() == MV_LAYERED_GRID)
+    else if (m_Manager->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         subgrid->m_col_min         = 0;
         subgrid->m_col_max         = 0;
@@ -955,7 +955,7 @@ void CMvDoc::UpdateGridDlg()
         subgrid->GetDlgItem(IDC_JHIGH)->SetWindowText("");
         subgrid->m_ActivateSubgrid = 0;
     }
-    else if (m_Manager->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_Manager->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         subgrid->m_col_min         = 0;
         subgrid->m_col_max         = 0;
@@ -980,7 +980,7 @@ void CMvDoc::UpdateGridDlg()
 
     // Grid display page
     CGridDisplayPage *display   = m_GridDlg->m_GridDisplayPage;
-    display->m_UnstructuredGrid = (m_Manager->GetGridType() == MV_UNSTRUCTURED_GRID);
+    display->m_UnstructuredGrid = (m_Manager->GetGridType() == GridType::MV_UNSTRUCTURED_GRID);
     if (display->m_UnstructuredGrid)
     {
         display->m_GridDisplayMode = 1;
@@ -1013,7 +1013,7 @@ void CMvDoc::UpdateVectorDlg()
         // Controls Page
         CVectorControlsPage *ctrl = m_VectorDlg->m_ControlsPage;
         const int           *vdim = m_Manager->GetVectorGridDimensions();
-        if (m_Manager->GetGridType() == MV_STRUCTURED_GRID)
+        if (m_Manager->GetGridType() == GridType::MV_STRUCTURED_GRID)
         {
             int extent[6];
             int rate[3];
@@ -1465,7 +1465,7 @@ void CMvDoc::OnUpdateShowGridShell(CCmdUI *pCmdUI)
 
 void CMvDoc::OnShowGridLines()
 {
-    if (m_Manager->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_Manager->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         if (m_Manager->AreActivatedGridLinesVisible())
         {
@@ -1481,7 +1481,7 @@ void CMvDoc::OnShowGridLines()
                 m_GridDlg->m_PropertySheet->GetActiveIndex() == 0);
         }
     }
-    else if (m_Manager->GetGridType() == MV_LAYERED_GRID)
+    else if (m_Manager->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         if (m_Manager->IsGridLayerVisible())
         {
@@ -1502,15 +1502,15 @@ void CMvDoc::OnShowGridLines()
 
 void CMvDoc::OnUpdateShowGridLines(CCmdUI *pCmdUI)
 {
-    if (m_Manager->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_Manager->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         pCmdUI->SetCheck(m_Manager->AreActivatedGridLinesVisible());
     }
-    else if (m_Manager->GetGridType() == MV_LAYERED_GRID)
+    else if (m_Manager->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         pCmdUI->SetCheck(m_Manager->IsGridLayerVisible());
     }
-    else if (m_Manager->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_Manager->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         pCmdUI->SetCheck(FALSE);
     }
@@ -2276,7 +2276,7 @@ void CMvDoc::ApplySubgrid(int col_min, int col_max, int row_min, int row_max, in
 {
     int imin, imax, jmin, jmax, kmin, kmax;
     // convert to vtk indexing and compute extents for points
-    if (m_Manager->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_Manager->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         const int *sdim = m_Manager->GetScalarGridDimensions();
         // note that imin, imax, jmin, etc refer to point dimensions
@@ -2287,7 +2287,7 @@ void CMvDoc::ApplySubgrid(int col_min, int col_max, int row_min, int row_max, in
         kmin            = sdim[2] - lay_max - 1;
         kmax            = sdim[2] - lay_min;
     }
-    else if (m_Manager->GetGridType() == MV_LAYERED_GRID)
+    else if (m_Manager->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         imin = 0;
         imax = 0;
@@ -2992,7 +2992,7 @@ void CMvDoc::SetGridLayerPosition(int layerNumber)
 void CMvDoc::SetGridDisplayToInterpolated()
 {
     m_Manager->SetGridDisplayToInterpolated();
-    if (m_Manager->GetGridType() != MV_UNSTRUCTURED_GRID)
+    if (m_Manager->GetGridType() != GridType::MV_UNSTRUCTURED_GRID)
     {
         m_GridDlg->m_GridLinesPage->Activate(TRUE);
     }
@@ -3014,11 +3014,11 @@ void CMvDoc::SetGridDisplayToStairstepped()
         OnShowNone();
     }
     m_Manager->SetGridDisplayToStairstepped();
-    if (m_Manager->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_Manager->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         m_Manager->HideGridLines();
     }
-    else if (m_Manager->GetGridType() == MV_LAYERED_GRID)
+    else if (m_Manager->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_Manager->HideGridLayer();
     }
@@ -3033,7 +3033,7 @@ void CMvDoc::SetGridDisplayToStairstepped()
     SetModifiedFlag(TRUE);
 }
 
-int CMvDoc::GetGridType()
+GridType CMvDoc::GetGridType()
 {
     return m_Manager->GetGridType();
 }
