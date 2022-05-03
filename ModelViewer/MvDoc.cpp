@@ -978,6 +978,7 @@ void CMvDoc::UpdateGridDlg()
     subgrid->CustomUpdateData(FALSE);
     subgrid->Activate(TRUE);
 
+#ifdef ENABLE_CGRIDDISPLAYPAGE
     // Grid display page
     CGridDisplayPage *display   = m_GridDlg->m_GridDisplayPage;
     display->m_UnstructuredGrid = (m_Manager->GetGridType() == GridType::MV_UNSTRUCTURED_GRID);
@@ -1000,6 +1001,7 @@ void CMvDoc::UpdateGridDlg()
         display->UpdateData(FALSE);
         display->Activate(TRUE);
     }
+#endif
 
     // Grid Dlg
     m_GridDlg->m_GridShellPage->Activate(m_Manager->IsGridShellVisible());
