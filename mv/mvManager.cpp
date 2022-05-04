@@ -1144,7 +1144,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     m_UseLogColorBar             = new int[m_NumScalarDataTypes];
     m_NumColorBarLabels          = new int[m_NumScalarDataTypes];
     m_ColorBarLabelPrecision     = new int[m_NumScalarDataTypes];
-    m_SolidDisplayMode           = new int[m_NumScalarDataTypes];
+    m_SolidDisplayMode           = new SolidDisplayType[m_NumScalarDataTypes];
     m_DoSolidThreshold           = new int[m_NumScalarDataTypes];
     m_SolidThresholdMax          = new double[m_NumScalarDataTypes];
     m_SolidThresholdMin          = new double[m_NumScalarDataTypes];
@@ -1166,11 +1166,11 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_ColorBarLabelPrecision[i] = 3;
         if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
         {
-            m_SolidDisplayMode[i] = MV_SOLID_BLOCKY;
+            m_SolidDisplayMode[i] = SolidDisplayType::MV_SOLID_BLOCKY;
         }
         else
         {
-            m_SolidDisplayMode[i] = MV_SOLID_SMOOTH;
+            m_SolidDisplayMode[i] = SolidDisplayType::MV_SOLID_SMOOTH;
         }
         m_DoSolidThreshold[i]           = 0;
         m_SolidThresholdMax[i]          = 1;
@@ -1657,7 +1657,7 @@ void mvManager::UpdateColorBands()
         delete[] values;
     }
 
-    if (m_SolidDisplayMode[m_ActiveDataType] == MV_SOLID_SMOOTH)
+    if (m_SolidDisplayMode[m_ActiveDataType] == SolidDisplayType::MV_SOLID_SMOOTH)
     {
         m_SolidMapper->SetScalarModeToUsePointData();
     }
@@ -3154,11 +3154,11 @@ void mvManager::SetScalarDataTypeTo(int dataTypeIndex)
     SetColorBarNumberOfLabels(m_NumColorBarLabels[dataTypeIndex]);
     SetColorBarLabelPrecision(m_ColorBarLabelPrecision[dataTypeIndex]);
 
-    if (m_SolidDisplayMode[dataTypeIndex] == MV_SOLID_BLOCKY)
+    if (m_SolidDisplayMode[dataTypeIndex] == SolidDisplayType::MV_SOLID_BLOCKY)
     {
         SetSolidDisplayToBlocky();
     }
-    else if (m_SolidDisplayMode[dataTypeIndex] == MV_SOLID_BANDED)
+    else if (m_SolidDisplayMode[dataTypeIndex] == SolidDisplayType::MV_SOLID_BANDED)
     {
         SetSolidDisplayToBanded();
     }
@@ -3204,26 +3204,26 @@ void mvManager::SetScalarDataTypeTo(int dataTypeIndex)
 
 void mvManager::SetSolidDisplayToBlocky()
 {
-    m_SolidDisplayMode[m_ActiveDataType] = MV_SOLID_BLOCKY;
+    m_SolidDisplayMode[m_ActiveDataType] = SolidDisplayType::MV_SOLID_BLOCKY;
     m_SolidMapper->SetScalarModeToUseCellData();
     BuildPipelineForSolid();
 }
 
 void mvManager::SetSolidDisplayToSmooth()
 {
-    m_SolidDisplayMode[m_ActiveDataType] = MV_SOLID_SMOOTH;
+    m_SolidDisplayMode[m_ActiveDataType] = SolidDisplayType::MV_SOLID_SMOOTH;
     m_SolidMapper->SetScalarModeToUsePointData();
     BuildPipelineForSolid();
 }
 
 void mvManager::SetSolidDisplayToBanded()
 {
-    m_SolidDisplayMode[m_ActiveDataType] = MV_SOLID_BANDED;
+    m_SolidDisplayMode[m_ActiveDataType] = SolidDisplayType::MV_SOLID_BANDED;
     m_SolidMapper->SetScalarModeToUseCellData();
     BuildPipelineForSolid();
 }
 
-int mvManager::GetSolidDisplayMode() const
+SolidDisplayType mvManager::GetSolidDisplayMode() const
 {
     if (m_SolidDisplayMode != 0)
     {
@@ -3231,7 +3231,7 @@ int mvManager::GetSolidDisplayMode() const
     }
     else
     {
-        return 0;
+        return SolidDisplayType::MV_SOLID_SMOOTH;
     }
 }
 
@@ -4366,7 +4366,7 @@ void mvManager::BuildPipelineForSolid()
     vtkAlgorithmOutput *previousAlgorithmOutput;
     if (m_DoSolidThreshold[m_ActiveDataType])
     {
-        if (m_SolidDisplayMode[m_ActiveDataType] == MV_SOLID_SMOOTH || m_SolidDisplayMode[m_ActiveDataType] == MV_SOLID_BANDED)
+        if (m_SolidDisplayMode[m_ActiveDataType] == SolidDisplayType::MV_SOLID_SMOOTH || m_SolidDisplayMode[m_ActiveDataType] == SolidDisplayType::MV_SOLID_BANDED)
         {
             previousAlgorithmOutput = m_SmoothSolid->GetOutputPort();
         }
@@ -4626,7 +4626,7 @@ void mvManager::BuildPipelineForSolid()
             if (m_DoSolidThreshold[m_ActiveDataType])
             {
                 // for smooth or banded solid, we clip
-                if (m_SolidDisplayMode[m_ActiveDataType] == MV_SOLID_SMOOTH || m_SolidDisplayMode[m_ActiveDataType] == MV_SOLID_BANDED)
+                if (m_SolidDisplayMode[m_ActiveDataType] == SolidDisplayType::MV_SOLID_SMOOTH || m_SolidDisplayMode[m_ActiveDataType] == SolidDisplayType::MV_SOLID_BANDED)
                 {
                     m_FacesClipMin->SetInputConnection(m_Faces->GetOutputPort());
                     m_CroppedSolid->AddInputConnection(m_FacesClipMax->GetOutputPort());
@@ -4653,7 +4653,7 @@ void mvManager::BuildPipelineForSolid()
     }
 
     // Create color bands
-    if (m_SolidDisplayMode[m_ActiveDataType] == MV_SOLID_BANDED)
+    if (m_SolidDisplayMode[m_ActiveDataType] == SolidDisplayType::MV_SOLID_BANDED)
     {
         m_ColorBandFilter->SetInputConnection(previousAlgorithmOutput);
         previousAlgorithmOutput = m_ColorBandFilter->GetOutputPort();
@@ -4888,7 +4888,7 @@ char *mvManager::Serialize(const char *fileName, mvGUISettings *gui) const
         out << "Color bar " << (i + 1) << " label precision = " << m_ColorBarLabelPrecision[i] << endl;
 
         // Solid Control
-        out << "Solid " << (i + 1) << " display mode = " << m_SolidDisplayMode[i] << endl;
+        out << "Solid " << (i + 1) << " display mode = " << static_cast<int>(m_SolidDisplayMode[i]) << endl;
         out << "Solid " << (i + 1) << " apply threshold = " << m_DoSolidThreshold[i] << endl;
         out << "Solid " << (i + 1) << " threshold lower limit = " << m_SolidThresholdMin[i] << endl;
         out << "Solid " << (i + 1) << " threshold upper limit = " << m_SolidThresholdMax[i] << endl;
@@ -5576,7 +5576,13 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
                 m_NumColorBarLabels          = numColorBarLabels;
                 m_ColorBarLabelPrecision     = colorBarLabelPrecision;
 
-                m_SolidDisplayMode           = solidDisplayMode;
+                m_SolidDisplayMode           = new SolidDisplayType[numDataTypes];
+                for (i = 0; i < numDataTypes; ++i)
+                {
+                    m_SolidDisplayMode[i] = static_cast<SolidDisplayType>(solidDisplayMode[i]);
+                }
+                delete[] solidDisplayMode;
+
                 m_DoSolidThreshold           = applySolidThreshold;
                 m_SolidThresholdMax          = solidThresholdMax;
                 m_SolidThresholdMin          = solidThresholdMin;
@@ -6286,7 +6292,7 @@ void mvManager::SetGridDisplayToStairstepped()
     // Set solid display mode to blocky for all data types
     for (int i = 0; i < m_NumScalarDataTypes; i++)
     {
-        m_SolidDisplayMode[i] = MV_SOLID_BLOCKY;
+        m_SolidDisplayMode[i] = SolidDisplayType::MV_SOLID_BLOCKY;
     }
     BuildPipelineForSolid();
 }

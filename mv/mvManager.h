@@ -350,7 +350,7 @@ public:
     void                               SolidThresholdOff();
     int                                IsSolidThresholdOn() const;
     void                               SetSolidThresholdLimits(double minValue, double maxValue);
-    int                                GetSolidDisplayMode() const;
+    SolidDisplayType                   GetSolidDisplayMode() const;
     void                               GetSolidThresholdLimits(double *limits) const;
 
     // Isosurface Control
@@ -416,7 +416,7 @@ protected:
     int                                            *m_NumberOfColorBands;
     int                                            *m_NumberOfCustomIsosurfaces;
     int                                            *m_NumberOfRegularIsosurfaces;
-    int                                            *m_SolidDisplayMode;
+    SolidDisplayType                               *m_SolidDisplayMode;
     int                                            *m_UseLogColorBar;
     int                                            *m_UseRegularIsosurface;
 

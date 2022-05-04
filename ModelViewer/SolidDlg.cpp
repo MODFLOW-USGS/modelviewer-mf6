@@ -22,7 +22,7 @@ CSolidDlg::CSolidDlg(CWnd *pParent, CMvDoc *pDoc)
     m_SolidThresholdMin  = 0.0;
     m_SolidThresholdMax  = 0.0;
     m_ApplyThreshold     = FALSE;
-    m_SolidDisplayMode   = -1;
+    m_SolidDisplayMode   = SolidDisplayType::MV_SOLID_NOT_DEFINED;
     m_NumberOfColorBands = 0;
     //}}AFX_DATA_INIT
 
@@ -41,10 +41,16 @@ void CSolidDlg::DoDataExchange(CDataExchange *pDX)
     DDX_Text(pDX, IDC_SOLID_THRESHOLD_MIN, m_SolidThresholdMin);
     DDX_Text(pDX, IDC_SOLID_THRESHOLD_MAX, m_SolidThresholdMax);
     DDX_Check(pDX, IDC_APPLY_THRESHOLD, m_ApplyThreshold);
-    DDX_Radio(pDX, IDC_SOLID_DISPLAY_SMOOTH, m_SolidDisplayMode);
     DDX_Text(pDX, IDC_COLOR_BANDS, m_NumberOfColorBands);
     DDV_MinMaxInt(pDX, m_NumberOfColorBands, 2, 50);
     //}}AFX_DATA_MAP
+
+    int value = static_cast<int>(m_SolidDisplayMode);
+    DDX_Radio(pDX, IDC_SOLID_DISPLAY_SMOOTH, value);
+    if (pDX->m_bSaveAndValidate)
+    {
+        m_SolidDisplayMode = static_cast<SolidDisplayType>(value);
+    }
 
     pDX->PrepareEditCtrl(IDC_SOLID_THRESHOLD_MAX);
     if (pDX->m_bSaveAndValidate)
@@ -109,7 +115,7 @@ BOOL CSolidDlg::OnInitDialog()
 void CSolidDlg::Reinitialize()
 {
     m_ApplyThreshold   = FALSE;
-    m_SolidDisplayMode = 0;
+    m_SolidDisplayMode = SolidDisplayType::MV_SOLID_SMOOTH;
     UpdateData(FALSE);
     GetDlgItem(IDC_SOLID_THRESHOLD_MAX)->SetWindowText("");
     GetDlgItem(IDC_SOLID_THRESHOLD_MIN)->SetWindowText("");
@@ -134,21 +140,21 @@ void CSolidDlg::Activate(BOOL b)
 
 void CSolidDlg::OnSolidDisplaySmooth()
 {
-    m_SolidDisplayMode = 0;
+    m_SolidDisplayMode = SolidDisplayType::MV_SOLID_SMOOTH;
     GetDlgItem(IDC_COLOR_BANDS)->EnableWindow(FALSE);
     m_pDoc->SetSolidDisplayToSmooth();
 }
 
 void CSolidDlg::OnSolidDisplayBlocky()
 {
-    m_SolidDisplayMode = 1;
+    m_SolidDisplayMode = SolidDisplayType::MV_SOLID_BLOCKY;
     GetDlgItem(IDC_COLOR_BANDS)->EnableWindow(FALSE);
     m_pDoc->SetSolidDisplayToBlocky();
 }
 
 void CSolidDlg::OnSolidDisplayBanded()
 {
-    m_SolidDisplayMode = 3;
+    m_SolidDisplayMode = SolidDisplayType::MV_SOLID_BANDED;
     GetDlgItem(IDC_COLOR_BANDS)->EnableWindow(TRUE);
     m_pDoc->SetSolidDisplayToBanded();
 }

@@ -7,6 +7,8 @@
 // SolidDlg.h : header file
 //
 
+#include "mvDefine.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // CSolidDlg dialog
 class CMvDoc;
@@ -23,13 +25,13 @@ public:
     // Dialog Data
     //{{AFX_DATA(CSolidDlg)
     enum { IDD = IDD_SOLID };
-    double m_SolidThresholdMin;
-    double m_SolidThresholdMax;
-    BOOL   m_ApplyThreshold;
-    int    m_SolidDisplayMode;
-    int    m_NumberOfColorBands;
+    double           m_SolidThresholdMin;
+    double           m_SolidThresholdMax;
+    BOOL             m_ApplyThreshold;
+    SolidDisplayType m_SolidDisplayMode;
+    int              m_NumberOfColorBands;
     //}}AFX_DATA
-    int    m_PrimaryScalarMode;
+    int              m_PrimaryScalarMode;
 
     // Overrides
     // ClassWizard generated virtual function overrides

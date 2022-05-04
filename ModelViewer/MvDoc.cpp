@@ -3025,7 +3025,7 @@ void CMvDoc::SetGridDisplayToStairstepped()
         m_Manager->HideGridLayer();
     }
     m_GridDlg->m_GridLinesPage->Activate(FALSE);
-    m_SolidDlg->m_SolidDisplayMode = 1;
+    m_SolidDlg->m_SolidDisplayMode = SolidDisplayType::MV_SOLID_BLOCKY;
     m_SolidDlg->UpdateData(FALSE);
     m_SolidDlg->GetDlgItem(IDC_SOLID_DISPLAY_SMOOTH)->EnableWindow(FALSE);
     m_SolidDlg->GetDlgItem(IDC_SOLID_DISPLAY_BLOCKY)->EnableWindow(FALSE);
