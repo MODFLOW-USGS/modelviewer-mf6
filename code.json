@@ -3,8 +3,8 @@
     "name": "modelviewer-mf6",
     "organization": "U.S. Geological Survey",
     "description": "Model Viewer for Modflow 6: A Program For Three-Dimensional Visualization of Ground-water Model Results",
-    "version": "1.0.0-rc.1",
-    "status": "Release Candidate",
+    "version": "1.1.0-prerelease.x",
+    "status": "Development",
 
     "permissions": {
       "usageType": "openSource",
@@ -41,7 +41,7 @@
     },
 
     "date": {
-      "metadataLastUpdated": "2022-02-17"
+      "metadataLastUpdated": "2022-05-04"
     }
   }
 ]

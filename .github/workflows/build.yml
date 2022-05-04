@@ -25,6 +25,8 @@ on:
       - README.md
 
 env:
+  DIST_DIR: mvmf6-1.1.0-prerelease.x
+  USER_DIST_DIR: mvmf6-${{github.repository_owner}}-1.1.0-prerelease.x
   VTK_VERSION: 6.3.0
   RELEASES_URL: ${{github.api_url}}/repos/${{github.repository}}/releases
   VTK_6_3_0_VS2017_X64_URL: https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/vtk-6.3.0-vs2017-x64/vtk-6.3.0-vs2017-x64.7z
@@ -167,8 +169,19 @@ jobs:
         }
         Write-Output "NEXT_VERSION=$next_version" >> $env:GITHUB_ENV
 
+    - name: Update build date
+      shell: pwsh
+      run: |
+        # sed ModelViewer.rc
+        $date_compiled = "$((Get-Date -UFormat '%m/%d/%Y (compiled %b %d %Y %T)'))"
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace '"(?<month>[0-1][1-9])\/(?<day>[0-3][1-9])\/(?<year>\d{4}) \(.*\)"',                                               """$date_compiled"""`
+        } | Set-Content $file
 
+    # @TODO Only on push to main on MODFLOW-USGS/modelviewer-mf6
     - name: Update About
+      if: ${{ false }}
       shell: pwsh
       run: |
         $prelim_pt1 = '"This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey \(USGS\).",.*$'
@@ -189,6 +202,7 @@ jobs:
 
     # @TODO Only on push to main on MODFLOW-USGS/modelviewer-mf6
     - name: Update README.md
+      if: ${{ false }}
       shell: pwsh
       run: |
         $approved = ("Disclaimer`n" +
@@ -229,17 +243,37 @@ jobs:
       run: cmake --build --preset vs2019 --config release
 
     - name: Install
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
       shell: pwsh
       run: cmake --install _vs2019 --prefix ${{env.DIST_DIR}} --config release
 
+    - name: Install (user)
+      if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      shell: pwsh
+      run: cmake --install _vs2019 --prefix ${{env.USER_DIST_DIR}} --config release
+
     - name: Build mvmf6 zip
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
       run: |
         Copy-Item .\Help\mvmf6.chm ${{env.DIST_DIR}}\bin\.
         7z a -tzip ${{env.DIST_DIR}}.zip .\${{env.DIST_DIR}}\
 
+    - name: Build mvmf6 zip (user)
+      if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      run: |
+        Copy-Item .\Help\mvmf6.chm ${{env.USER_DIST_DIR}}\bin\.
+        7z a -tzip ${{env.USER_DIST_DIR}}.zip .\${{env.USER_DIST_DIR}}\
+
+    - name: Upload artifact (user)
+      if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{env.USER_DIST_DIR}}.zip
+        path: ${{env.USER_DIST_DIR}}.zip
+
     # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
     - name: Create release
-      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch') || (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
       run: |
         # store new commit
         $target_commitish = (git log -n1 --format=format:"%H")
