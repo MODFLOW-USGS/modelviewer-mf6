@@ -66,12 +66,15 @@ using std::ofstream;
 using std::pow;
 
 // This must be below vtkStandardNewMacro
-#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #include <afx.h>
+#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+// This must be below <afx.h>
+#include <shlwapi.h>
 
 mvManager::mvManager()
 {
@@ -4823,7 +4826,9 @@ char *mvManager::Serialize(const char *fileName, mvGUISettings *gui) const
     {
         cr    = strchr(code, '\n');
         *(cr) = '\0';
-        out << "File code " << (i + 1) << " = " << code << endl;
+        // Get relative paths for all file codes
+        std::string relative = GetRelativePath(fileName, code);
+        out << "File code " << (i + 1) << " = " << relative.c_str() << endl;
         code = cr + 1;
     }
 
@@ -5170,8 +5175,12 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
         return;
     }
 
-    char *dataFileList = new char[ncode * 1024];
-    dataFileList[0]    = '\0';
+    // Get absolute paths for all file codes
+    std::string dirname = GetDirName(fileName);
+    char        szDest[MAX_PATH];
+    char        fullpath[MAX_PATH];
+    char *      dataFileList = new char[ncode * 1024];
+    dataFileList[0]          = '\0';
     for (i = 0; i < ncode; i++)
     {
         buffer[0] = '\0';
@@ -5183,7 +5192,18 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
             strcpy(errorMsg, "The Model Viewer file is damaged and cannot be loaded.");
             return;
         }
-        strcat(dataFileList, buffer);
+        if (strlen(buffer))
+        {
+            strcpy(szDest, dirname.c_str());
+            VERIFY(PathAppend(szDest, buffer));
+            VERIFY(PathCanonicalize(fullpath, szDest));
+            VERIFY(PathFileExists(fullpath));
+            strcat(dataFileList, fullpath);
+        }
+        else
+        {
+            strcat(dataFileList, "");
+        }
         strcat(dataFileList, "\n");
     }
 
@@ -6300,4 +6320,34 @@ void mvManager::SetGridDisplayToStairstepped()
 int mvManager::GetGridDisplayMode()
 {
     return m_GridDisplayMode;
+}
+
+std::string mvManager::GetRelativePath(const char *pszFrom, const char *pszTo)
+{
+    TCHAR szOut[MAX_PATH] = "";
+    if (strlen(pszTo) && PathIsSameRoot(pszFrom, pszTo))
+    {
+        std::string cpTo(pszTo);
+        std::replace(cpTo.begin(), cpTo.end(), '/', '\\');
+        VERIFY(PathCanonicalize(szOut, cpTo.c_str()));
+        cpTo = szOut;
+        VERIFY(PathRelativePathTo(szOut, pszFrom, FILE_ATTRIBUTE_NORMAL, cpTo.c_str(), FILE_ATTRIBUTE_NORMAL));
+        return std::string(szOut);
+    }
+    return std::string(pszTo);
+}
+
+std::string mvManager::GetDirName(const char *fullPath)
+{
+    char szPath[MAX_PATH];
+    char szOut[MAX_PATH];
+    char szDrive[_MAX_DRIVE];
+    char szDir[_MAX_DIR];
+    char szDest[MAX_PATH];
+
+    ASSERT(!PathIsRelative(fullPath));
+    VERIFY(_tsplitpath_s(fullPath, szDrive, _MAX_DRIVE, szDir, _MAX_DIR, NULL, 0, NULL, 0) == 0);
+    VERIFY(_tmakepath_s(szPath, _MAX_DIR, szDrive, szDir, NULL, NULL) == 0);
+
+    return std::string(szPath);
 }

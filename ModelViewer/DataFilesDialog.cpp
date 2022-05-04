@@ -31,8 +31,7 @@ char *DataFilesDialog::GetModflow6DataFiles()
         return NULL;
     }
 
-    // For now, we just use the file name and not the path.
-    // TO DO: Determine the path relative to the document file.
+    // Store fullpaths and convert to relative when Serializing
     BOOL  setdir = FALSE;
     char *dataFileList;
     if (dlg.m_FileSpecificationMethod == 0)
@@ -43,7 +42,6 @@ char *DataFilesDialog::GetModflow6DataFiles()
         {
             _chdir((LPCTSTR)name.Left(pos));
             setdir = TRUE;
-            name   = name.Right(name.GetLength() - pos - 1);
         }
         dataFileList = new char[name.GetLength() + 20];
         strcpy(dataFileList, (LPCTSTR)name);
@@ -57,26 +55,16 @@ char *DataFilesDialog::GetModflow6DataFiles()
         {
             _chdir((LPCTSTR)gridFile.Left(pos));
             setdir   = TRUE;
-            gridFile = gridFile.Right(gridFile.GetLength() - pos - 1);
         }
-        CString headFile = dlg.m_HeadFile;
-        pos              = headFile.ReverseFind('\\');
-        if (pos != -1)
-        {
-            headFile = headFile.Right(headFile.GetLength() - pos - 1);
-        }
-        CString budgetFile = dlg.m_BudgetFile;
-        pos                = budgetFile.ReverseFind('\\');
-        if (pos != -1)
-        {
-            budgetFile = budgetFile.Right(budgetFile.GetLength() - pos - 1);
-        }
-        dataFileList = new char[gridFile.GetLength() + headFile.GetLength() + budgetFile.GetLength() + 20];
+        CString headOrConcFile = dlg.m_HeadOrConcFile;
+        CString budgetFile     = dlg.m_BudgetFile;
+
+        dataFileList           = new char[gridFile.GetLength() + headOrConcFile.GetLength() + budgetFile.GetLength() + 20];
         // no name file
         strcpy(dataFileList, "\n");
         strcat(dataFileList, (LPCTSTR)gridFile);
         strcat(dataFileList, "\n");
-        strcat(dataFileList, (LPCTSTR)headFile);
+        strcat(dataFileList, (LPCTSTR)headOrConcFile);
         strcat(dataFileList, "\n");
         strcat(dataFileList, (LPCTSTR)budgetFile);
         strcat(dataFileList, "\n");

@@ -59,6 +59,9 @@ public:
     mvManager();
     virtual ~mvManager();
 
+    static std::string                 GetDirName(const char *fullPath);
+    static std::string                 GetRelativePath(const char *pszFrom, const char *pszTo);
+
     // Data set and animation control
     // void ClearData();
     char                              *LoadData(char *modelType, char *dataFileList);
