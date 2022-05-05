@@ -6,10 +6,8 @@ project (
   LANGUAGES CXX C
 )
 
-if (MV_DEBUG_MEMORY_LEAKS)
-  # This sets 'Use MFC in a Shared DLL' -- automatically sets _AFXDLL
-  set(CMAKE_MFC_FLAG 2)
-endif()
+# This sets 'Use MFC in a Shared DLL' -- automatically sets _AFXDLL
+set(CMAKE_MFC_FLAG 2)
 
 add_library(mv
   Modflow6DataSource.cpp
