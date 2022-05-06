@@ -10,10 +10,12 @@ project (
 include(GNUInstallDirs)
 
 # check for vtk
+message(STATUS "VTK_DIR=${VTK_DIR}")
 find_package(VTK REQUIRED)
 if(NOT VTK_DIR)
   message(FATAL_ERROR "Please set VTK_DIR.")
 endif()
+message(STATUS "VTK_USE_FILE=${VTK_USE_FILE}")
 include(${VTK_USE_FILE})
 
 # check for MFC

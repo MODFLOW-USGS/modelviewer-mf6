@@ -171,10 +171,12 @@ void mvDisplayObject::SetScale(double xScale, double yScale, double zScale)
     m_LODActor->SetScale(xScale, yScale, zScale);
 }
 
+#if ((VTK_MAJOR_VERSION <= 8) && (VTK_MINOR_VERSION < 2)) 
 void mvDisplayObject::SetImmediateModeRendering(int b)
 {
     m_Mapper->SetImmediateModeRendering(b);
 }
+#endif
 
 void mvDisplayObject::UseLODActor(int b)
 {

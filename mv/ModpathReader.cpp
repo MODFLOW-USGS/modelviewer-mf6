@@ -145,7 +145,12 @@ void ModpathReader::ReadData(char *pathlineFile, int &numPathlines, int &numCoor
             if (intArray->GetValue(j) + 1 == i)
             {
                 double w[4];
+#if ((VTK_MAJOR_VERSION == 7) && (VTK_MINOR_VERSION <= 2) || (VTK_MAJOR_VERSION <= 6))
                 doubleArray->GetTupleValue(j, w);
+#else
+                doubleArray->GetTypedTuple(j, w);
+#endif
+
                 if (v[0] == w[0] && v[1] == w[1] && v[2] == w[2])
                 {
                     flag = -1; // ignore coincident point
@@ -215,7 +220,11 @@ void ModpathReader::ReadData(char *pathlineFile, int &numPathlines, int &numCoor
             if (locator[i] != -1)
             {
                 double w[4];
+#if ((VTK_MAJOR_VERSION == 7) && (VTK_MINOR_VERSION <= 2) || (VTK_MAJOR_VERSION <= 6))
                 doubleArray->GetTupleValue(j, w);
+#else
+                doubleArray->GetTypedTuple(j, w);
+#endif
                 coordinates[3 * k]     = w[0];
                 coordinates[3 * k + 1] = w[1];
                 coordinates[3 * k + 2] = w[2];

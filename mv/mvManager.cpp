@@ -1387,6 +1387,7 @@ void mvManager::ApplyDefaultSettings()
     // Grid Display
 }
 
+#if ((VTK_MAJOR_VERSION <= 8) && (VTK_MINOR_VERSION < 2))
 void mvManager::SetImmediateModeRendering(int b)
 {
     m_SolidMapper->SetImmediateModeRendering(b);
@@ -1401,6 +1402,7 @@ void mvManager::SetImmediateModeRendering(int b)
         m_GridLines[i]->SetImmediateModeRendering(b);
     }
 }
+#endif
 
 void mvManager::SetReleaseDataFlag(int b)
 {

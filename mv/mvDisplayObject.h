@@ -31,7 +31,9 @@ public:
     double        GetSpecular();
     double        GetSpecularPower();
     void          SetScale(double xScale, double yScale, double zScale);
+#if ((VTK_MAJOR_VERSION <= 8) && (VTK_MINOR_VERSION < 2))
     void          SetImmediateModeRendering(int b);
+#endif
     void          UseLODActor(int b);
     void          SetNumberOfCloudPoints(int n);
     void          SetScalarRange(double min, double max);

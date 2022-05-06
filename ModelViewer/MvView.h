@@ -16,8 +16,12 @@ using std::ofstream;
 
 class vtkLight;
 class vtkRenderer;
+#if 1
+class vtkMFCWindow; // @replaces vtkWin32OpenGLRenderWindow and vtkWin32RenderWindowInteractor
+#else
 class vtkWin32OpenGLRenderWindow;
 class vtkWin32RenderWindowInteractor;
+#endif
 class mvGUISettings;
 
 class CMvView : public CView
@@ -83,8 +87,12 @@ protected:
 
     // Objects for vtk rendering
     vtkRenderer*                    m_Renderer;
+#if 1
+    vtkMFCWindow*                   m_MFCWindow;           // @replaces m_RenderWindow and m_Interactor
+#else
     vtkWin32OpenGLRenderWindow*     m_RenderWindow;
     vtkWin32RenderWindowInteractor* m_Interactor;
+#endif
     vtkLight*                       m_Headlight;
     vtkLight*                       m_AuxiliaryLight;
 
@@ -119,7 +127,9 @@ protected:
     CString                         m_FileStartNumber;
 
     // Protected methods
-    virtual LRESULT                 WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+#if 0
+    virtual LRESULT                 WindowProc(UINT message, WPARAM wParam, LPARAM lParam);  // @todo
+#endif
     void                            PlaceHeadlightWithCamera();
     void                            WriteBmp(ofstream* file, BOOL useScreenResolution);
 

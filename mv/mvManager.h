@@ -72,7 +72,9 @@ public:
     GridType                           GetGridType() const;
     bool                               GetIsStructuredGrid();
     void                               ApplyDefaultSettings();
+#if ((VTK_MAJOR_VERSION <= 8) && (VTK_MINOR_VERSION < 2))
     void                               SetImmediateModeRendering(int b);
+#endif
     void                               SetReleaseDataFlag(int b);
     const int                         *GetScalarGridDimensions() const;
     const int                         *GetVectorGridDimensions() const;
