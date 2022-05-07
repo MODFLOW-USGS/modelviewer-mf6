@@ -145,7 +145,7 @@ void ModpathReader::ReadData(char *pathlineFile, int &numPathlines, int &numCoor
             if (intArray->GetValue(j) + 1 == i)
             {
                 double w[4];
-#if ((VTK_MAJOR_VERSION == 7) && (VTK_MINOR_VERSION <= 2) || (VTK_MAJOR_VERSION <= 6))
+#if ((VTK_MAJOR_VERSION == 7) && (VTK_MINOR_VERSION <= 1) || (VTK_MAJOR_VERSION < 7))  //  https://vtk.org/doc/nightly/html/VTK-7-1-Changes.html
                 doubleArray->GetTupleValue(j, w);
 #else
                 doubleArray->GetTypedTuple(j, w);
@@ -220,7 +220,7 @@ void ModpathReader::ReadData(char *pathlineFile, int &numPathlines, int &numCoor
             if (locator[i] != -1)
             {
                 double w[4];
-#if ((VTK_MAJOR_VERSION == 7) && (VTK_MINOR_VERSION <= 2) || (VTK_MAJOR_VERSION <= 6))
+#if ((VTK_MAJOR_VERSION == 7) && (VTK_MINOR_VERSION <= 1) || (VTK_MAJOR_VERSION < 7))  //  https://vtk.org/doc/nightly/html/VTK-7-1-Changes.html
                 doubleArray->GetTupleValue(j, w);
 #else
                 doubleArray->GetTypedTuple(j, w);
