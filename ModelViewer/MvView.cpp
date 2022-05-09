@@ -97,8 +97,7 @@ CMvView::CMvView()
 #endif
     // vtk rendering
     m_Renderer = vtkRenderer::New();
-    //m_Renderer->SetBackground(1, 1, 1);
-    m_Renderer->SetBackground(0.9, 0.9, 0.9);
+    m_Renderer->SetBackground(1, 1, 1);
 #ifdef NDEBUG
     m_Renderer->GlobalWarningDisplayOff();
 #endif
@@ -461,8 +460,7 @@ void CMvView::ApplyViewSettings(mvGUISettings *gui)
     }
     else
     {
-        //m_Renderer->SetBackground(1, 1, 1);
-        m_Renderer->SetBackground(0.9, 0.9, 0.9);
+        m_Renderer->SetBackground(1, 1, 1);
     }
 }
 
