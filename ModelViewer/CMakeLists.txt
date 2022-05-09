@@ -141,6 +141,28 @@ add_executable(ModelViewer WIN32
   VectorThresholdPage.h
 )
 
+if (${VTK_VERSION} VERSION_GREATER_EQUAL "9.0")
+  # vtk 9.1.0
+  #
+  # VTK::RenderingFreeType fixes
+  #   ERROR: In C:\VTK-9.1.0\Rendering\Core\vtkTextMapper.cxx, line 522
+  #   vtkOpenGLTextMapper (0000023EAF61D1A0): Could not locate vtkTextRenderer object.
+  #
+  # VTK::InteractionStyle fixes
+  #   Warning: In C:\VTK-9.1.0\Rendering\Core\vtkInteractorStyleSwitchBase.cxx, line 37
+  #   vtkInteractorStyleSwitchBase (000001CF38197220): Warning: Link to vtkInteractionStyle for default style selection.
+  #
+  #   Before adding, vtkWindowInteractor was broken (mouse did nothing)
+  #
+  vtk_module_autoinit(
+    TARGETS
+      ModelViewer
+    MODULES
+      VTK::RenderingFreeType   #  Fixes ERROR: In C:\VTK-9.1.0\Rendering\Core\vtkTextMapper.cxx, line 522
+      VTK::InteractionStyle    #  Fixes nothing happens when interacting with the mouse
+  )
+endif()
+
 # modify ModelViewer executable name
 set_target_properties(ModelViewer PROPERTIES OUTPUT_NAME mvmf6)
 
@@ -201,6 +223,7 @@ if (MSVC)
     COMMAND ${CMAKE_COMMAND} -E echo Copying VTK dlls...
   )
   foreach(_lib ${VTK_LIBRARIES})
+    # message(STATUS "_lib=${_lib}")
     add_custom_command(TARGET ModelViewer POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${_lib}> $<TARGET_FILE_DIR:ModelViewer>
     )
