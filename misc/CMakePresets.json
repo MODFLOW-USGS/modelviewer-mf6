@@ -8,56 +8,57 @@
     "configurePresets": [
       {
         "name": "vs2017",
-        "displayName": "vs2017 x64 with vtk-6.3.0-vs2017",
+        "displayName": "vtk-6.3.0 w/ vtkGUISupportMFC=ON on vs2017-x64",
         "generator": "Visual Studio 15 2017",
         "architecture": "x64",
-        "binaryDir": "C:/VTK-6.3.0-vs2017-x64-build",
+        "binaryDir": "C:/VTK-$env{VTK_VERSION}-$env{VS_VERSION}-x64-build",
         "cacheVariables": {
-          "BUILD_TESTING": {
-            "type": "BOOL",
-            "value": "OFF"
-          },
-          "CMAKE_DEBUG_POSTFIX": {
-            "type": "STRING",
-            "value": "d"
-          }
+          "BUILD_TESTING": "OFF",
+          "CMAKE_DEBUG_POSTFIX": "d",
+          "CMAKE_INSTALL_PREFIX": "C:/VTK-$env{VTK_VERSION}-$env{VS_VERSION}-x64",
+          "Module_vtkGUISupportMFC": "ON"
+        },
+        "environment": {
+          "VTK_VERSION": "6.3.0",
+          "VS_VERSION": "vs2017"
         },
         "vendor": {
-          "Name": "U.S. Geological Survey",
-          "Notes": "This file should be placed in the root directory of C:/VTK-6.3.0",
-          "Configure": "cmake --preset vs2017",
-          "Build": "cmake --build --preset vs2017 --config release",
-          "Install-debug": "cmake --install C:/VTK-6.3.0-vs2017-x64-build --prefix C:/VTK-6.3.0-vs2017-x64 --config debug",
-          "Install-release": "cmake --install C:/VTK-6.3.0-vs2017-x64-build --prefix C:/VTK-6.3.0-vs2017-x64 --config release"
+          "usgs.gov/modflow": {
+            "Name": "U.S. Geological Survey",
+            "Notes": "This file should be placed in the root directory of C:/VTK-6.3.0",
+            "Configure": "cmake --preset VTK-6.3.0-vs2017-x64",
+            "Build": "cmake --build --preset VTK-6.3.0-vs2017-x64 --config release",
+            "Install-debug": "cmake --install C:/VTK-6.3.0-vs2017-x64-build --config debug",
+            "Install-release": "cmake --install C:/VTK-6.3.0-vs2017-x64-build --config release"
+          }
         }
       },
       {
         "name": "vs2017-leaks",
-        "displayName": "vs2017 x64 with vtk-6.3.0-vs2017 with VTK_DEBUG_LEAKS=ON",
+        "displayName": "vtk-6.3.0 w/ vtkGUISupportMFC=ON and VTK_DEBUG_LEAKS=ON on vs2017-x64",
         "generator": "Visual Studio 15 2017",
         "architecture": "x64",
-        "binaryDir": "C:/VTK-6.3.0-leaks-vs2017-x64-build",
+        "binaryDir": "C:/VTK-$env{VTK_VERSION}-leaks-$env{VS_VERSION}-x64-build",
         "cacheVariables": {
-          "BUILD_TESTING": {
-            "type": "BOOL",
-            "value": "OFF"
-          },
-          "CMAKE_DEBUG_POSTFIX": {
-            "type": "STRING",
-            "value": "d"
-          },
-          "VTK_DEBUG_LEAKS": {
-            "type": "BOOL",
-            "value": "ON"
-          }
+          "BUILD_TESTING": "OFF",
+          "CMAKE_DEBUG_POSTFIX": "d",
+          "CMAKE_INSTALL_PREFIX": "C:/VTK-$env{VTK_VERSION}-leaks-$env{VS_VERSION}-x64",
+          "Module_vtkGUISupportMFC": "ON",
+          "VTK_DEBUG_LEAKS": "ON"
+        },
+        "environment": {
+          "VTK_VERSION": "6.3.0",
+          "VS_VERSION": "vs2017"
         },
         "vendor": {
-          "Name": "U.S. Geological Survey",
-          "Notes": "This file should be placed in the root directory of C:/VTK-6.3.0",
-          "Configure": "cmake --preset vs2017-leaks",
-          "Build": "cmake --build --preset vs2017-leaks --config release",
-          "Install-debug": "cmake --install C:/VTK-6.3.0-leaks-vs2017-x64-build --prefix C:/VTK-6.3.0-leaks-vs2017-x64 --config debug",
-          "Install-release": "cmake --install C:/VTK-6.3.0-leaks-vs2017-x64-build --prefix C:/VTK-6.3.0-leaks-vs2017-x64 --config release"
+          "usgs.gov/modflow": {
+            "Name": "U.S. Geological Survey",
+            "Notes": "This file should be placed in the root directory of C:/VTK-6.3.0",
+            "Configure": "cmake --preset VTK-6.3.0-vs2017-x64",
+            "Build": "cmake --build --preset VTK-6.3.0-vs2017-x64 --config release",
+            "Install-debug": "cmake --install C:/VTK-6.3.0-vs2017-x64-build --config debug",
+            "Install-release": "cmake --install C:/VTK-6.3.0-vs2017-x64-build --config release"
+          }
         }
       }
     ],
