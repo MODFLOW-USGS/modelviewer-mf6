@@ -2,9 +2,6 @@ name: build
 
 on:
   push:
-    branches:
-      - main
-      - develop
     paths-ignore:
       - .github/workflows/build-vtk*.yml
       - CODE_OF_CONDUCT.md
