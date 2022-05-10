@@ -90,8 +90,8 @@ protected:
 #if 1
     vtkMFCWindow*                   m_MFCWindow;           // @replaces m_RenderWindow and m_Interactor
 #else
-    vtkWin32OpenGLRenderWindow*     m_RenderWindow;
-    vtkWin32RenderWindowInteractor* m_Interactor;
+    vtkWin32OpenGLRenderWindow*     m_RenderWindow;        // replaced by m_MFCWindow->GetRenderWindow()
+    vtkWin32RenderWindowInteractor* m_Interactor;          // replaced by m_MFCWindow->GetInteractor()
 #endif
     vtkLight*                       m_Headlight;
     vtkLight*                       m_AuxiliaryLight;
