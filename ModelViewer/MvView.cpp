@@ -201,94 +201,11 @@ void CMvView::OnDraw(CDC *pDC)
     }
 #endif
     // Printing code
-    if (pDC->IsPrinting())                                 //  @todo
+    if (pDC->IsPrinting())
     {
-#if 0
-        int   size[2];
-        float scale;
-
-        BeginWaitCursor();
-#if 0
-        memcpy(size, m_RenderWindow->GetSize(), sizeof(int) * 2);
-#else
-        memcpy(size, m_MFCWindow->GetRenderWindow()->GetSize(), sizeof(int) * 2);
-#endif
-
-        float cxDIB = (float)size[0]; // Size of DIB - x
-        float cyDIB = (float)size[1]; // Size of DIB - y
-        CRect rcDest;
-
-        // get size of printer page (in pixels)
-        float cxPage  = (float)pDC->GetDeviceCaps(HORZRES);
-        float cyPage  = (float)pDC->GetDeviceCaps(VERTRES);
-        // get printer pixels per inch
-        float cxInch  = (float)pDC->GetDeviceCaps(LOGPIXELSX);
-        float cyInch  = (float)pDC->GetDeviceCaps(LOGPIXELSY);
-        scale         = cxInch / m_DPI;
-
-        //
-        // Best Fit case -- create a rectangle which preserves
-        // the DIB's aspect ratio, and fills the page horizontally.
-        //
-        // The formula in the "->bottom" field below calculates the Y
-        // position of the printed bitmap, based on the size of the
-        // bitmap, the width of the page, and the relative size of
-        // a printed pixel (cyInch / cxInch).
-        //
-        rcDest.bottom = rcDest.left = 0;
-        if ((cyDIB * cxPage / cxInch) > (cxDIB * cyPage / cyInch))
-        {
-            rcDest.top   = cyPage;
-            rcDest.right = (cyPage * cxInch * cxDIB) / (cyInch * cyDIB);
-        }
-        else
-        {
-            rcDest.right = cxPage;
-            rcDest.top   = (cxPage * cyInch * cyDIB) / (cxInch * cxDIB);
-        }
-
-        CRect rcDestLP(rcDest);
-        pDC->DPtoLP(rcDestLP);
-#if 0
-        int DPI = m_RenderWindow->GetDPI();
-
-        m_RenderWindow->SetupMemoryRendering(rcDest.right / scale,
-                                             rcDest.top / scale, pDC->GetSafeHdc());
-
-        m_RenderWindow->Render();
-#else
-        int DPI = m_MFCWindow->GetRenderWindow()->GetDPI();
-
-        m_MFCWindow->GetRenderWindow()->SetupMemoryRendering(rcDest.right / scale,
-                                             rcDest.top / scale, pDC->GetSafeHdc());
-
-        m_MFCWindow->GetRenderWindow()->Render();
-#endif
-
-        pDC->SetStretchBltMode(HALFTONE);
-        ::SetBrushOrgEx(pDC->GetSafeHdc(), 0, 0, NULL);
-
-#if 0
-        StretchBlt(pDC->GetSafeHdc(), 0, 0,
-                   rcDest.right, rcDest.top,
-                   m_RenderWindow->GetMemoryDC(),
-                   0, 0, rcDest.right / scale, rcDest.top / scale, SRCCOPY);
-
-        m_RenderWindow->ResumeScreenRendering();
-#else
-        StretchBlt(pDC->GetSafeHdc(), 0, 0,
-                   rcDest.right, rcDest.top,
-                   m_MFCWindow->GetRenderWindow()->GetMemoryDC(),
-                   0, 0, rcDest.right / scale, rcDest.top / scale, SRCCOPY);
-
-        m_MFCWindow->GetRenderWindow()->ResumeScreenRendering();
-#endif
-        EndWaitCursor();
-#else
         BeginWaitCursor();
         m_MFCWindow->DrawDC(pDC);
         EndWaitCursor();
-#endif
     }
     // Screen drawing code
     else
