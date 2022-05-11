@@ -58,7 +58,7 @@ jobs:
         else {
           $version = $Matches.0
         }
-        $name = ${{github.repository_owner}}
+        $name = "${{github.repository_owner}}"
         $DIST_DIR = "mvmf6-${version}"
         $USER_DIST_DIR = "${name}-mvmf6-${version}"
         # export
