@@ -23,8 +23,8 @@ on:
       - README.md
 
 env:
-  DIST_DIR: mvmf6-1.1.0-prerelease.x
-  USER_DIST_DIR: mvmf6-${{github.repository_owner}}-1.1.0-prerelease.x
+  DIST_DIR: mvmf6-1.1.0-prerelease.${{github.run_number}}
+  USER_DIST_DIR: mvmf6-${{github.repository_owner}}-1.1.0-prerelease.${{github.run_number}}
   VTK_VERSION: 6.3.0
   RELEASES_URL: ${{github.api_url}}/repos/${{github.repository}}/releases
   VTK_6_3_0_VS2017_X64_URL: https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/vtk-6.3.0-vs2017-x64/vtk-6.3.0-vs2017-x64.7z
