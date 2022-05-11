@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop*
     paths:
       - .github/workflows/build-vtk.yml
       - misc/CMakePresets.json
