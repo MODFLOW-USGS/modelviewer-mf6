@@ -276,9 +276,6 @@ jobs:
         name: ${{env.USER_DIST_DIR}}.zip
         path: ${{env.USER_DIST_DIR}}.zip
 
-    # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
-    - name: Create release
-      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
     - name: Create artifact
       uses: actions/upload-artifact@v3
       with:
