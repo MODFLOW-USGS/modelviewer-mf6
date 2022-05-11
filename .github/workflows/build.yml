@@ -52,7 +52,7 @@ jobs:
           exit 1
         }
         if ($Matches["prerelease"] -and $Matches["prerelease"] -match "runnumber") {
-          $runnumber = ${{github.run_number}}
+          $runnumber = "${{github.run_number}}"
           $version = $Matches.0 -replace "runnumber", $runnumber
         }
         else {
