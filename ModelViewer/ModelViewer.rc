@@ -1550,8 +1550,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,12,64
- PRODUCTVERSION 1,0,12,64
+ FILEVERSION 1,1,0,0
+ PRODUCTVERSION 1,1,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1568,12 +1568,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "USGS"
             VALUE "FileDescription", "Model Viewer for Modflow 6"
-            VALUE "FileVersion", "1.0.12.64"
+            VALUE "FileVersion", "1.1.0.0-prerelease-0"
             VALUE "InternalName", "Model Viewer for Modflow 6"
             VALUE "LegalCopyright", "public domain"
             VALUE "OriginalFilename", "mvmf6.exe"
             VALUE "ProductName", "Model Viewer for Modflow 6"
-            VALUE "ProductVersion", "1.0.12.64"
+            VALUE "ProductVersion", "1.1.0.0-prerelease-0"
         END
     END
     BLOCK "VarFileInfo"

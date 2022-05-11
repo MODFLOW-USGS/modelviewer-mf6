@@ -12,7 +12,8 @@ on:
   pull_request:
     branches:
       - main
-      - develop
+      - develop*
+      - "*-rc*"
     paths-ignore:
       - .github/workflows/build-vtk*.yml
       - CODE_OF_CONDUCT.md
@@ -178,7 +179,7 @@ jobs:
 
     # @TODO Only on push to main on MODFLOW-USGS/modelviewer-mf6
     - name: Update About
-      if: ${{ false }}
+      if: ${{ false }}    # skip for now
       shell: pwsh
       run: |
         $prelim_pt1 = '"This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey \(USGS\).",.*$'
@@ -199,7 +200,7 @@ jobs:
 
     # @TODO Only on push to main on MODFLOW-USGS/modelviewer-mf6
     - name: Update README.md
-      if: ${{ false }}
+      if: ${{ false }}    # skip for now
       shell: pwsh
       run: |
         $approved = ("Disclaimer`n" +
@@ -218,14 +219,16 @@ jobs:
         (Get-Content -Raw $file) -replace "(?ms)Disclaimer.*", $approved | Set-Content $file
 
     - name: Commit and push
-      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
+      # if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
+      if: ${{ false }}    # skip for now
       uses: actions-js/push@master
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         branch: main
 
     - name: Commit and push branch
-      if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6') )
+      # if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6') )
+      if: ${{ false }}    # skip for now
       uses: actions-js/push@master
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
@@ -244,16 +247,23 @@ jobs:
       shell: pwsh
       run: cmake --install _vs2019 --prefix ${{env.DIST_DIR}} --config release
 
-    - name: Install (user)
-      if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
-      shell: pwsh
-      run: cmake --install _vs2019 --prefix ${{env.USER_DIST_DIR}} --config release
-
     - name: Build mvmf6 zip
       if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
       run: |
         Copy-Item .\Help\mvmf6.chm ${{env.DIST_DIR}}\bin\.
         7z a -tzip ${{env.DIST_DIR}}.zip .\${{env.DIST_DIR}}\
+
+    - name: Upload artifact
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path:  ${{env.DIST_DIR}}.zip
+
+    - name: Install (user)
+      if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      shell: pwsh
+      run: cmake --install _vs2019 --prefix ${{env.USER_DIST_DIR}} --config release
 
     - name: Build mvmf6 zip (user)
       if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
@@ -270,7 +280,8 @@ jobs:
 
     # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
     - name: Create release
-      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
+      # if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch') || (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      if: ${{ false }}    # skip for now
       run: |
         # store new commit
         $target_commitish = (git log -n1 --format=format:"%H")
