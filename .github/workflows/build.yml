@@ -23,13 +23,12 @@ on:
       - README.md
 
 env:
-  DIST_DIR: mvmf6-1.1.0-prerelease.${{github.run_number}}
-  USER_DIST_DIR: mvmf6-${{github.repository_owner}}-1.1.0-prerelease.${{github.run_number}}
   VTK_VERSION: 6.3.0
   RELEASES_URL: ${{github.api_url}}/repos/${{github.repository}}/releases
   VTK_6_3_0_VS2017_X64_URL: https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/vtk-6.3.0-vs2017-x64/vtk-6.3.0-vs2017-x64.7z
   HTMLHELP_URL: http://web.archive.org/web/20160201063255/http://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe
   SEM_VER_REGEX: ^(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+  SEM_VER_REGEX_2: (?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?
 
 jobs:
 
@@ -52,6 +51,20 @@ jobs:
           echo "::error::Bad version in code.json -- $ver (see https://semver.org/)"
           exit 1
         }
+        if ($Matches["prerelease"] -and $Matches["prerelease"] -match "runnumber") {
+          $runnumber = ${{github.run_number}}
+          $version = $Matches.0 -replace "runnumber", $runnumber
+        }
+        else {
+          $version = $Matches.0
+        }
+        $name = ${{github.repository_owner}}
+        $DIST_DIR = "mvmf6-${version}"
+        $USER_DIST_DIR = "${name}-mvmf6-${version}"
+        # export
+        Write-Output "SEMVER=$version" >> $env:GITHUB_ENV
+        Write-Output "DIST_DIR=$DIST_DIR" >> $env:GITHUB_ENV
+        Write-Output "USER_DIST_DIR=$USER_DIST_DIR" >> $env:GITHUB_ENV
 
     - name: Cache vtk
       id: cache-vtk
@@ -167,14 +180,23 @@ jobs:
         }
         Write-Output "NEXT_VERSION=$next_version" >> $env:GITHUB_ENV
 
-    - name: Update build date
+    - name: Update About dialog version
+      shell: pwsh
+      run: |
+        # sed ModelViewer.rc
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace "Version $env:SEM_VER_REGEX_2", "Version $env:SEMVER"
+        } | Set-Content $file
+
+    - name: Update About dialog build date
       shell: pwsh
       run: |
         # sed ModelViewer.rc
         $date_compiled = "$((Get-Date -UFormat '%m/%d/%Y (compiled %b %d %Y %T)'))"
         $file = ".\ModelViewer\ModelViewer.rc"
         (Get-Content $file) | Foreach-Object {
-          $_ -replace '"(?<month>[0-1][1-9])\/(?<day>[0-3][1-9])\/(?<year>\d{4}) \(.*\)"',                                               """$date_compiled"""`
+          $_ -replace '"(?<month>[0-1][1-9])\/(?<day>[0-3][1-9])\/(?<year>\d{4}) \(.*\)"', """$date_compiled"""
         } | Set-Content $file
 
     # @TODO Only on push to main on MODFLOW-USGS/modelviewer-mf6
