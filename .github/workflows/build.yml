@@ -51,20 +51,19 @@ jobs:
           echo "::error::Bad version in code.json -- $ver (see https://semver.org/)"
           exit 1
         }
-        if ($Matches["prerelease"] -and $Matches["prerelease"] -match "runnumber") {
-          $runnumber = "${{github.run_number}}"
-          $version = $Matches.0 -replace "runnumber", $runnumber
+        if ($Matches["prerelease"] -and $Matches["prerelease"] -like "*runnumber*") {
+            $version = $Matches.0 -replace "runnumber", "${{github.run_number}}"
         }
         else {
-          $version = $Matches.0
+            $version = $Matches.0
         }
         $name = "${{github.repository_owner}}"
-        $DIST_DIR = "mvmf6-${version}"
-        $USER_DIST_DIR = "${name}-mvmf6-${version}"
+        $dist_dir = "mvmf6-${version}"
+        $user_dist_dir = "${name}-mvmf6-${version}"
         # export
         Write-Output "SEMVER=$version" >> $env:GITHUB_ENV
-        Write-Output "DIST_DIR=$DIST_DIR" >> $env:GITHUB_ENV
-        Write-Output "USER_DIST_DIR=$USER_DIST_DIR" >> $env:GITHUB_ENV
+        Write-Output "DIST_DIR=$dist_dir" >> $env:GITHUB_ENV
+        Write-Output "USER_DIST_DIR=$user_dist_dir" >> $env:GITHUB_ENV
 
     - name: Cache vtk
       id: cache-vtk
