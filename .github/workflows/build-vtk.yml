@@ -4,20 +4,22 @@ on:
   push:
     branches:
       - main
+      - develop*
     paths:
       - .github/workflows/build-vtk.yml
       - misc/CMakePresets.json
 
 env:
   VTK_VERSION: 6.3.0
+  PRESET: vs2017
 
 jobs:
 
   cache-vtk-debug:
-    # uncomment the next line if you want to compile vtk
+    # comment the next line if you want to compile vtk
     if: github.repository == 'MODFLOW-USGS/modelviewer-mf6'
 
-    runs-on: windows-2016
+    runs-on: windows-2019
 
     steps:
 
@@ -43,7 +45,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{env.instdir}}
-          key: windows-2016-vtk-${{env.type}}-${{hashFiles('misc/CMakePresets.json')}}
+          key: windows-2019-vtk-${{env.type}}-${{hashFiles('misc/CMakePresets.json')}}
 
       - name: Download vtk
         if: steps.cache-vtk-debug.outputs.cache-hit != 'true'
@@ -55,15 +57,43 @@ jobs:
           7z x ${{github.workspace}}\${{env.zipfile}}
           rm ${{github.workspace}}\${{env.zipfile}}
 
+      - name: Install vs2017 build tools
+        if: steps.cache-vtk-debug.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          $downloaded = $false
+          while (-Not $downloaded) {
+            try {
+              Invoke-WebRequest "https://aka.ms/vs/15/release/vs_buildtools.exe" -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
+              $downloaded = $true
+            }
+            catch {
+              Write-Output "Retry"
+            }
+          }
+          $arg = @(
+              "--add", "Microsoft.VisualStudio.Workload.VCTools", `
+              "--add", "Microsoft.VisualStudio.Workload.MSBuildTools", `
+              "--add", "Microsoft.VisualStudio.Component.VC.ATL", `
+              "--add", "Microsoft.VisualStudio.Component.VC.ATLMFC", `
+              "--includeRecommended", `
+              "--passive", `
+              "--wait", `
+              "--norestart", `
+              "--noUpdateInstaller"
+          )
+          $process = Start-Process -FilePath $env:TEMP\vs_buildtools.exe -ArgumentList $arg -Wait -PassThru
+          Write-Output $process.ExitCode
+
       - name: Build vtk
         if: steps.cache-vtk-debug.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
           cp misc\CMakePresets.json ${{env.srcdir}}
           cd ${{env.srcdir}}
-          cmake --preset vs2017
-          cmake --build --preset vs2017 --config ${{env.type}}
-          cmake --install ${{env.builddir}} --prefix ${{env.instdir}} --config ${{env.type}}
+          cmake --preset ${{env.PRESET}}
+          cmake --build --preset ${{env.PRESET}} --config ${{env.type}}
+          cmake --install ${{env.builddir}} --config ${{env.type}}
 
       - name: Check debug cache
         shell: pwsh
@@ -71,10 +101,10 @@ jobs:
           dir ${{env.instdir}}\bin
 
   cache-vtk-release:
-    # uncomment the next line if you want to compile vtk
+    # comment the next line if you want to compile vtk
     if: github.repository == 'MODFLOW-USGS/modelviewer-mf6'
 
-    runs-on: windows-2016
+    runs-on: windows-2019
 
     steps:
     
@@ -100,7 +130,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{env.instdir}}
-          key: windows-2016-vtk-${{env.type}}-${{hashFiles('misc/CMakePresets.json')}}
+          key: windows-2019-vtk-${{env.type}}-${{hashFiles('misc/CMakePresets.json')}}
 
       - name: Download vtk
         if: steps.cache-vtk-release.outputs.cache-hit != 'true'
@@ -112,15 +142,43 @@ jobs:
           7z x ${{github.workspace}}\${{env.zipfile}}
           rm ${{github.workspace}}\${{env.zipfile}}
 
+      - name: Install vs2017 build tools
+        if: steps.cache-vtk-release.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          $downloaded = $false
+          while (-Not $downloaded) {
+            try {
+              Invoke-WebRequest "https://aka.ms/vs/15/release/vs_buildtools.exe" -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
+              $downloaded = $true
+            }
+            catch {
+              Write-Output "Retry"
+            }
+          }
+          $arg = @(
+              "--add", "Microsoft.VisualStudio.Workload.VCTools", `
+              "--add", "Microsoft.VisualStudio.Workload.MSBuildTools", `
+              "--add", "Microsoft.VisualStudio.Component.VC.ATL", `
+              "--add", "Microsoft.VisualStudio.Component.VC.ATLMFC", `
+              "--includeRecommended", `
+              "--passive", `
+              "--wait", `
+              "--norestart", `
+              "--noUpdateInstaller"
+          )
+          $process = Start-Process -FilePath $env:TEMP\vs_buildtools.exe -ArgumentList $arg -Wait -PassThru
+          Write-Output $process.ExitCode
+
       - name: Build vtk
         if: steps.cache-vtk-release.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
           cp misc\CMakePresets.json ${{env.srcdir}}
           cd ${{env.srcdir}}
-          cmake --preset vs2017
-          cmake --build --preset vs2017 --config ${{env.type}}
-          cmake --install ${{env.builddir}} --prefix ${{env.instdir}} --config ${{env.type}}
+          cmake --preset ${{env.PRESET}}
+          cmake --build --preset ${{env.PRESET}} --config ${{env.type}}
+          cmake --install ${{env.builddir}} --config ${{env.type}}
 
       - name: Check release cache
         shell: pwsh
@@ -128,10 +186,10 @@ jobs:
           dir ${{env.instdir}}\bin
 
   cache-vtk:
-    # uncomment the next line if you want to compile vtk
+    # comment the next line if you want to compile vtk
     if: github.repository == 'MODFLOW-USGS/modelviewer-mf6'
 
-    runs-on: windows-2016
+    runs-on: windows-2019
     needs: [cache-vtk-debug, cache-vtk-release]
 
     steps:
@@ -159,7 +217,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{env.instdir}}
-          key: windows-2016-vtk-${{hashFiles('misc/CMakePresets.json')}}
+          key: windows-2019-vtk-${{hashFiles('misc/CMakePresets.json')}}
 
       - name: Cache vtk debug
         if: steps.cache-vtk.outputs.cache-hit != 'true'
@@ -167,14 +225,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{env.instdir}}
-          key: windows-2016-vtk-debug-${{hashFiles('misc/CMakePresets.json')}}
+          key: windows-2019-vtk-debug-${{hashFiles('misc/CMakePresets.json')}}
 
       - name: Cache vtk release
         if: steps.cache-vtk.outputs.cache-hit != 'true'
         uses: actions/cache@v2
         with:
           path: ${{env.instdir}}
-          key: windows-2016-vtk-release-${{hashFiles('misc/CMakePresets.json')}}
+          key: windows-2019-vtk-release-${{hashFiles('misc/CMakePresets.json')}}
 
       - name: Check merged cache
         shell: pwsh
@@ -194,7 +252,7 @@ jobs:
           $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
 
           try {
-              #  Get a release by tag name 
+              #  Get a release by tag name
               # https://docs.github.com/rest/reference/repos#get-a-release-by-tag-name
               # get /repos/{owner}/{repo}/releases/tags/{tag}
               $response = Invoke-WebRequest -Uri ${{env.releases_url}}/tags/${{env.tag}} -Headers $h -Method Get

@@ -12,6 +12,14 @@ This is the development repository for the USGS Model Viewer for MODFLOW 6 Graph
 * Git 2.31 or newer
 * Microsoft Visual Studio 2019
 
+  * Workloads:
+    
+    Desktop development with C++  :ballot_box_with_check:
+  
+  * Individual components
+    
+    :ballot_box_with_check: C++ MFC for latest v142 build tools (x86 & x64)
+
 ## Building
 
 Open a command prompt window and download the precompiled VTK 6.3.0 libraries
@@ -39,9 +47,14 @@ Use CMake to build
 
       cmake --build --preset vs2019
 
-Use CMake to open the project in visual studio
+Use CMake to open the project in Visual Studio
 
       cmake --open _vs2019
+      
+To debug in Visual Studio
+
+      Right-click 'ModelViewer' within the 'Solution Explorer' tab and select 
+      'Set as Startup Project'.  Press the F5 key to begin debugging.
       
 Disclaimer
 ----------
