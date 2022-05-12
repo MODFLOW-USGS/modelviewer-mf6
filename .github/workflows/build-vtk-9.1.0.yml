@@ -63,7 +63,7 @@ jobs:
         if: steps.cache-vtk-debug.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
-          cp misc\CMakePresets.json ${{env.srcdir}}
+          cp misc\CMakePresets-vtk-9.1.0.json ${{env.srcdir}}\CMakePresets.json
           cd ${{env.srcdir}}
           cmake --preset ${{env.PRESET}}
           cmake --build --preset ${{env.PRESET}} --config ${{env.type}}
@@ -120,7 +120,7 @@ jobs:
         if: steps.cache-vtk-release.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
-          cp misc\CMakePresets.json ${{env.srcdir}}
+          cp misc\CMakePresets-vtk-9.1.0.json ${{env.srcdir}}\CMakePresets.json
           cd ${{env.srcdir}}
           cmake --preset ${{env.PRESET}}
           cmake --build --preset ${{env.PRESET}} --config ${{env.type}}
