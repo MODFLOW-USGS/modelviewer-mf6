@@ -1,0 +1,26 @@
+From e3f82dc08568552525527f74632ff09b4561056f Mon Sep 17 00:00:00 2001
+From: "Charlton, Scott R" <charlton@usgs.gov>
+Date: Wed, 11 May 2022 20:59:42 -0600
+Subject: [PATCH] update for memory leaks
+
+---
+ SystemTools.cxx | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/SystemTools.cxx b/SystemTools.cxx
+index bd900fe..57ef960 100644
+--- a/SystemTools.cxx
++++ b/SystemTools.cxx
+@@ -4732,6 +4732,9 @@ SystemToolsManager::~SystemToolsManager()
+ {
+   if (--SystemToolsManagerCount == 0) {
+     SystemTools::ClassFinalize();
++#if defined(_MSC_VER)
++    _CrtDumpMemoryLeaks();
++#endif
+   }
+ }
+ 
+-- 
+2.27.0.windows.1
+
