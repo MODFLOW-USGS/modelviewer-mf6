@@ -7,8 +7,8 @@
   },
   "configurePresets": [
     {
-      "name": "vs2019",
-      "displayName": "vs2019 x64 with vtk-6.3.0-vs2017 (builds in _vs2019)",
+      "name": "vtk-6.3.0-vs2017-x64",
+      "displayName": "vs2019 x64 with vtk-6.3.0-vs2017 (builds in _vtk-6.3.0-vs2017-x64)",
       "generator": "Visual Studio 16 2019",
       "architecture": "x64",
       "binaryDir": "${sourceDir}/_${presetName}",
@@ -18,8 +18,8 @@
       }
     },
     {
-      "name": "vs2019_leaks",
-      "displayName": "vs2019 x64 with vtk-6.3.0-vs2017 (builds in _vs2019_leaks)",
+      "name": "vtk-6.3.0-leaks-vs2017-x64",
+      "displayName": "vs2019 x64 with vtk-6.3.0-vs2017 (builds in _vtk-6.3.0-leaks-vs2017-x64)",
       "generator": "Visual Studio 16 2019",
       "architecture": "x64",
       "binaryDir": "${sourceDir}/_${presetName}",
@@ -56,12 +56,20 @@
   ,
   "buildPresets": [
     {
-      "name": "vs2019",
-      "configurePreset": "vs2019"
+      "name": "vtk-6.3.0-vs2017-x64",
+      "configurePreset": "vtk-6.3.0-vs2017-x64"
     },
     {
-      "name": "vs2019_leaks",
-      "configurePreset": "vs2019_leaks"
+      "name": "vtk-6.3.0-leaks-vs2017-x64",
+      "configurePreset": "vtk-6.3.0-leaks-vs2017-x64"
+    },
+    {
+      "name": "vtk-9.1.0-vs2019-x64",
+      "configurePreset": "vtk-9.1.0-vs2019-x64"
+    },
+    {
+      "name": "vtk-9.1.0-leaks-vs2019-x64",
+      "configurePreset": "vtk-9.1.0-leaks-vs2019-x64"
     }
   ],
   "vendor": {
