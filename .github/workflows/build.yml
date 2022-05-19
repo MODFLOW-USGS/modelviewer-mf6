@@ -53,6 +53,7 @@ jobs:
         }
         if ($Matches["prerelease"] -and $Matches["prerelease"] -like "*runnumber*") {
             $version = $Matches.0 -replace "runnumber", "${{github.run_number}}"
+            $version = $version -replace "prerelease.", "prerelease-vtk-6.3-"
         }
         else {
             $version = $Matches.0
@@ -278,8 +279,8 @@ jobs:
       if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
       uses: actions/upload-artifact@v3
       with:
-        name: dist-vtk-6.3
-        path:  ${{env.DIST_DIR}}
+        name: ${{env.DIST_DIR}}
+        path: ${{env.DIST_DIR}}
 
     - name: Install (user)
       if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
@@ -296,7 +297,7 @@ jobs:
       if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
       uses: actions/upload-artifact@v3
       with:
-        name: dist-vtk-6.3
+        name: ${{env.USER_DIST_DIR}}
         path: ${{env.USER_DIST_DIR}}
 
     # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
@@ -390,6 +391,7 @@ jobs:
         }
         if ($Matches["prerelease"] -and $Matches["prerelease"] -like "*runnumber*") {
             $version = $Matches.0 -replace "runnumber", "${{github.run_number}}"
+            $version = $version -replace "prerelease.", "prerelease-vtk-9.1-"
         }
         else {
             $version = $Matches.0
@@ -615,8 +617,8 @@ jobs:
       if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
       uses: actions/upload-artifact@v3
       with:
-        name: dist-vtk-9.1
-        path:  ${{env.DIST_DIR}}
+        name: ${{env.DIST_DIR}}
+        path: ${{env.DIST_DIR}}
 
     - name: Install (user)
       if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
@@ -633,7 +635,7 @@ jobs:
       if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
       uses: actions/upload-artifact@v3
       with:
-        name: dist-vtk-9.1
+        name: ${{env.USER_DIST_DIR}}
         path: ${{env.USER_DIST_DIR}}
 
     # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
