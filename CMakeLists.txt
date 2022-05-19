@@ -11,6 +11,47 @@ include(GNUInstallDirs)
 
 # check for vtk
 find_package(VTK REQUIRED)
+if (${VTK_VERSION} VERSION_EQUAL "6.3")
+  find_package(VTK
+    COMPONENTS
+      vtkalglib
+      vtkCommonColor
+      vtkCommonComputationalGeometry
+      vtkCommonCore
+      vtkCommonDataModel
+      vtkCommonExecutionModel
+      vtkCommonMath
+      vtkCommonMisc
+      vtkCommonSystem
+      vtkCommonTransforms
+      vtkDICOMParser
+      vtkFiltersCore
+      vtkFiltersExtraction
+      vtkFiltersGeneral
+      vtkFiltersGeometry
+      vtkFiltersModeling
+      vtkFiltersSources
+      vtkFiltersStatistics
+      vtkfreetype
+      vtkftgl
+      vtkImagingCore
+      vtkImagingFourier
+      vtkImagingHybrid
+      vtkInteractionStyle
+      vtkIOImage
+      vtkjpeg
+      # vtkmetaio
+      vtkpng
+      vtkRenderingCore
+      vtkRenderingFreeType
+      vtkRenderingLOD
+      vtkRenderingOpenGL
+      vtksys
+      vtktiff
+      vtkzlib
+    REQUIRED
+  )
+endif()
 if(NOT VTK_DIR)
   message(FATAL_ERROR "Please set VTK_DIR.")
 endif()
