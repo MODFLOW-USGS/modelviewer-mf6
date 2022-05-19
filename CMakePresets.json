@@ -26,7 +26,7 @@
       "cacheVariables": {
         "VTK_DIR" : "C:/VTK-6.3.0-leaks-vs2017-x64/lib/cmake/vtk-6.3",
         "MV_DEBUG_MEMORY_LEAKS": "ON",
-        "VTK_SUFFIX" : "-vtk-6.3"
+        "VTK_SUFFIX" : "-vtk-6.3-leaks"
       }
     },
     {
@@ -49,7 +49,7 @@
       "cacheVariables": {
         "VTK_DIR" : "C:/VTK-9.1.0-leaks-vs2019-x64/lib/cmake/vtk-9.1",
         "MV_DEBUG_MEMORY_LEAKS": "ON",
-        "VTK_SUFFIX" : "-vtk-9.1"
+        "VTK_SUFFIX" : "-vtk-9.1-leaks"
       }
     }
   ]
