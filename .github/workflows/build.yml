@@ -268,36 +268,36 @@ jobs:
       shell: pwsh
       run: cmake --install _vtk-6.3.0-vs2017-x64 --prefix ${{env.DIST_DIR}} --config release
 
-    - name: Build mvmf6 zip
+    - name: Build mvmf6
       if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
       run: |
         Copy-Item .\Help\mvmf6.chm ${{env.DIST_DIR}}\bin\.
-        7z a -tzip ${{env.DIST_DIR}}.zip .\${{env.DIST_DIR}}\
+        # 7z a -tzip ${{env.DIST_DIR}}.zip .\${{env.DIST_DIR}}\
 
     - name: Upload artifact
       if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
       uses: actions/upload-artifact@v3
       with:
         name: dist-vtk-6.3
-        path:  ${{env.DIST_DIR}}.zip
+        path:  ${{env.DIST_DIR}}
 
     - name: Install (user)
       if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
       shell: pwsh
       run: cmake --install _vtk-6.3.0-vs2017-x64 --prefix ${{env.USER_DIST_DIR}} --config release
 
-    - name: Build mvmf6 zip (user)
+    - name: Build mvmf6 (user)
       if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
       run: |
         Copy-Item .\Help\mvmf6.chm ${{env.USER_DIST_DIR}}\bin\.
-        7z a -tzip ${{env.USER_DIST_DIR}}.zip .\${{env.USER_DIST_DIR}}\
+        # 7z a -tzip ${{env.USER_DIST_DIR}}.zip .\${{env.USER_DIST_DIR}}\
 
     - name: Upload artifact (user)
       if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
       uses: actions/upload-artifact@v3
       with:
         name: dist-vtk-6.3
-        path: ${{env.USER_DIST_DIR}}.zip
+        path: ${{env.USER_DIST_DIR}}
 
     # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
     - name: Create release
@@ -605,36 +605,36 @@ jobs:
       shell: pwsh
       run: cmake --install _vtk-9.1.0-vs2019-x64 --prefix ${{env.DIST_DIR}} --config release
 
-    - name: Build mvmf6 zip
+    - name: Build mvmf6
       if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
       run: |
         Copy-Item .\Help\mvmf6.chm ${{env.DIST_DIR}}\bin\.
-        7z a -tzip ${{env.DIST_DIR}}.zip .\${{env.DIST_DIR}}\
+        # 7z a -tzip ${{env.DIST_DIR}}.zip .\${{env.DIST_DIR}}\
 
     - name: Upload artifact
       if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
       uses: actions/upload-artifact@v3
       with:
         name: dist-vtk-9.1
-        path:  ${{env.DIST_DIR}}.zip
+        path:  ${{env.DIST_DIR}}
 
     - name: Install (user)
       if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
       shell: pwsh
       run: cmake --install _vtk-9.1.0-vs2019-x64 --prefix ${{env.USER_DIST_DIR}} --config release
 
-    - name: Build mvmf6 zip (user)
+    - name: Build mvmf6 (user)
       if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
       run: |
         Copy-Item .\Help\mvmf6.chm ${{env.USER_DIST_DIR}}\bin\.
-        7z a -tzip ${{env.USER_DIST_DIR}}.zip .\${{env.USER_DIST_DIR}}\
+        # 7z a -tzip ${{env.USER_DIST_DIR}}.zip .\${{env.USER_DIST_DIR}}\
 
     - name: Upload artifact (user)
       if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
       uses: actions/upload-artifact@v3
       with:
         name: dist-vtk-9.1
-        path: ${{env.USER_DIST_DIR}}.zip
+        path: ${{env.USER_DIST_DIR}}
 
     # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
     - name: Create release
