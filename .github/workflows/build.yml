@@ -186,7 +186,7 @@ jobs:
         # sed ModelViewer.rc
         $file = ".\ModelViewer\ModelViewer.rc"
         (Get-Content $file) | Foreach-Object {
-          $_ -replace "Version $env:SEM_VER_REGEX_2", "Version $env:SEMVER"
+          $_ -replace "`"Version $env:SEM_VER_REGEX_2`"", "`"Version $env:SEMVER`""
         } | Set-Content $file
 
     - name: Update About dialog build date
