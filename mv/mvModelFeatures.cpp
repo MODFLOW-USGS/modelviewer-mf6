@@ -36,7 +36,13 @@ mvModelFeatures::mvModelFeatures()
     m_UnstructuredGrid = 0;
     m_ThresholdCells   = vtkSmartPointer<vtkThreshold>::New();
     m_ThresholdCells->SetInputData(m_StructuredGrid);
-    m_ThresholdCells->ThresholdBetween(0.5, 10000);
+#if ((VTK_MAJOR_VERSION == 9) && (VTK_MINOR_VERSION < 1) || (VTK_MAJOR_VERSION < 9))
+    m_ThresholdCells->ThresholdBetween(0.5, 10000);    // deprecated as of VTK 9.1
+#else
+    m_ThresholdCells->SetThresholdFunction(vtkThreshold::THRESHOLD_BETWEEN);
+    m_ThresholdCells->SetLowerThreshold(0.5);
+    m_ThresholdCells->SetUpperThreshold(10000);
+#endif
     m_ThresholdCells->SetInputArrayToProcess(0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_CELLS, vtkDataSetAttributes::SCALARS);
     SetMapperInputConnection(m_ThresholdCells->GetOutputPort());
 
@@ -250,7 +256,13 @@ void mvModelFeatures::Build()
     else
     {
         SetMapperInputConnection(m_ThresholdCells->GetOutputPort());
-        m_ThresholdCells->ThresholdBetween(0.5, m_NumberOfModelFeatureTypes + 0.5);
+#if ((VTK_MAJOR_VERSION == 9) && (VTK_MINOR_VERSION < 1) || (VTK_MAJOR_VERSION < 9))
+        m_ThresholdCells->ThresholdBetween(0.5, m_NumberOfModelFeatureTypes + 0.5);    // deprecated as of VTK 9.1
+#else
+        m_ThresholdCells->SetThresholdFunction(vtkThreshold::THRESHOLD_BETWEEN);
+        m_ThresholdCells->SetLowerThreshold(0.5);
+        m_ThresholdCells->SetUpperThreshold(m_NumberOfModelFeatureTypes + 0.5);
+#endif
         if (m_UnstructuredGrid)
         {
             m_UnstructuredGrid->SetCells(m_CellTypes, m_CellLocations, m_Cells);

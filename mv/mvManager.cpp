@@ -947,7 +947,12 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
 
     // Define the cutoff value that indicates inactive cells.
     double cutoff = m_DataSource->GetInactiveCellValue() * 0.999;
-    m_ActiveScalarDataSet->ThresholdByLower(cutoff);
+#if ((VTK_MAJOR_VERSION == 9) && (VTK_MINOR_VERSION < 1) || (VTK_MAJOR_VERSION < 9))
+    m_ActiveScalarDataSet->ThresholdByLower(cutoff);    // deprecated as of VTK 9.1
+#else
+    m_ActiveScalarDataSet->SetThresholdFunction(vtkThreshold::THRESHOLD_LOWER);
+    m_ActiveScalarDataSet->SetLowerThreshold(cutoff);
+#endif
 
     // Bounding box
     SetBoundingBoxBounds();
@@ -4133,13 +4138,25 @@ void mvManager::SolidThresholdOff()
 
 void mvManager::SetSolidThresholdLimits(double minValue, double maxValue)
 {
-    m_BlockySolidThreshold->ThresholdBetween(minValue, maxValue);
+#if ((VTK_MAJOR_VERSION == 9) && (VTK_MINOR_VERSION < 1) || (VTK_MAJOR_VERSION < 9))
+    m_BlockySolidThreshold->ThresholdBetween(minValue, maxValue);    // deprecated as of VTK 9.1
+#else
+    m_BlockySolidThreshold->SetThresholdFunction(vtkThreshold::THRESHOLD_BETWEEN);
+    m_BlockySolidThreshold->SetLowerThreshold(minValue);
+    m_BlockySolidThreshold->SetUpperThreshold(maxValue);
+#endif
     m_GridShellClipMin->SetValue(minValue);
     m_GridShellClipMax->SetValue(maxValue);
     m_SmoothSolidIsosurface->GenerateValues(2, minValue, maxValue);
     m_FacesClipMin->SetValue(minValue);
     m_FacesClipMax->SetValue(maxValue);
-    m_FacesThreshold->ThresholdBetween(minValue, maxValue);
+#if ((VTK_MAJOR_VERSION == 9) && (VTK_MINOR_VERSION < 1) || (VTK_MAJOR_VERSION < 9))
+    m_FacesThreshold->ThresholdBetween(minValue, maxValue);    // deprecated as of VTK 9.1
+#else
+    m_FacesThreshold->SetThresholdFunction(vtkThreshold::THRESHOLD_BETWEEN);
+    m_FacesThreshold->SetLowerThreshold(minValue);
+    m_FacesThreshold->SetUpperThreshold(maxValue);
+#endif
     m_SolidThresholdMin[m_ActiveDataType] = minValue;
     m_SolidThresholdMax[m_ActiveDataType] = maxValue;
 }

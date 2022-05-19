@@ -76,7 +76,12 @@ void mvGridLines::SetInputData(vtkUnstructuredGrid *dataSet, int numCol, int num
 
 void mvGridLines::SetThresholdMin(double value)
 {
-    m_Threshold->ThresholdByLower(value);
+#if ((VTK_MAJOR_VERSION == 9) && (VTK_MINOR_VERSION < 1) || (VTK_MAJOR_VERSION < 9))
+    m_Threshold->ThresholdByLower(value);    // deprecated as of VTK 9.1
+#else
+    m_Threshold->SetThresholdFunction(vtkThreshold::THRESHOLD_LOWER);
+    m_Threshold->SetLowerThreshold(value);
+#endif
 }
 
 const int *mvGridLines::GetExtent() const
