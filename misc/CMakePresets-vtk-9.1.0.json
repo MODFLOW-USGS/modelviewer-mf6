@@ -1,0 +1,78 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+      "major": 3,
+      "minor": 18,
+      "patch": 0
+    },
+    "configurePresets": [
+      {
+        "name": "VTK-9.1.0-vs2019-x64",
+        "displayName": "vtk-9.1.0 with VTK_MODULE_ENABLE_VTK_GUISupportMFC=YES using vs2019 x64",
+        "generator": "Visual Studio 16 2019",
+        "architecture": "x64",
+        "binaryDir": "C:/VTK-$env{VTK_VERSION}-$env{VS_VERSION}-x64-build",
+        "cacheVariables": {
+          "BUILD_TESTING": "OFF",
+          "CMAKE_DEBUG_POSTFIX": "d",
+          "CMAKE_INSTALL_PREFIX": "C:/VTK-$env{VTK_VERSION}-$env{VS_VERSION}-x64",
+          "VTK_MODULE_ENABLE_VTK_GUISupportMFC": "YES"
+        },
+        "environment": {
+          "VTK_VERSION": "9.1.0",
+          "VS_VERSION": "vs2019"
+        },
+        "vendor": {
+          "usgs.gov/modflow": {
+            "Name": "U.S. Geological Survey",
+            "Notes": "This file should be placed in the root directory of C:/VTK-9.1.0",
+            "Configure": "cmake --preset VTK-9.1.0-vs2019-x64",
+            "Build": "cmake --build --preset VTK-9.1.0-vs2019-x64 --config release",
+            "Install-debug": "cmake --install C:/VTK-9.1.0-vs2019-x64-build --config debug",
+            "Install-release": "cmake --install C:/VTK-9.1.0-vs2019-x64-build --config release"
+          }
+        }
+      },
+      {
+        "name": "VTK-9.1.0-leaks-vs2019-x64",
+        "displayName": "vtk-9.1.0 w/ VTK_MODULE_ENABLE_VTK_GUISupportMFC=YES and VTK_DEBUG_LEAKS=ON on vs2017-x64",
+        "generator": "Visual Studio 16 2019",
+        "architecture": "x64",
+        "binaryDir": "C:/VTK-$env{VTK_VERSION}-leaks-$env{VS_VERSION}-x64-build",
+        "cacheVariables": {
+          "BUILD_TESTING": "OFF",
+          "CMAKE_DEBUG_POSTFIX": "d",
+          "CMAKE_INSTALL_PREFIX": "C:/VTK-$env{VTK_VERSION}-leaks-$env{VS_VERSION}-x64",
+          "VTK_MODULE_ENABLE_VTK_GUISupportMFC": "YES",
+          "VTK_DEBUG_LEAKS": "ON"
+        },
+        "environment": {
+          "VTK_VERSION": "9.1.0",
+          "VS_VERSION": "vs2019"
+        },
+        "vendor": {
+          "usgs.gov/modflow": {
+            "Name": "U.S. Geological Survey",
+            "Notes": "This file should be placed in the root directory of C:/VTK-9.1.0",
+            "Configure": "cmake --preset VTK-9.1.0-leaks-vs2019-x64",
+            "Build": "cmake --build --preset VTK-9.1.0-leaks-vs2019-x64 --config release",
+            "Install-debug": "cmake --install C:/VTK-9.1.0-leaks-vs2019-x64 --config debug",
+            "Install-release": "cmake --install C:/VTK-9.1.0-leaks-vs2019-x64 --config release"
+          }
+        }
+      }
+    ],
+    "buildPresets": [
+      {
+        "name": "VTK-9.1.0-vs2019-x64",
+        "configurePreset": "VTK-9.1.0-vs2019-x64"
+      },
+      {
+        "name": "VTK-9.1.0-leaks-vs2019-x64",
+        "configurePreset": "VTK-9.1.0-leaks-vs2019-x64"
+      }
+    ],
+    "vendor": {
+      "Note": ""
+    }
+  }

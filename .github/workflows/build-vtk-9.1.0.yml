@@ -1,0 +1,283 @@
+name: build-vtk-9.1.0
+
+on:
+  push:
+    branches:
+      - main
+      - develop*
+    paths:
+      - .github/workflows/build-vtk-9.1.0.yml
+      - misc/CMakePresets-vtk-9.1.0.json
+
+env:
+  CL: /MP
+  VTK_VERSION: 9.1.0
+  VS_VERSION: vs2019
+  PRESET: VTK-9.1.0-vs2019-x64
+
+jobs:
+
+  cache-vtk-debug:
+    # comment the next line if you want to compile vtk
+    if: github.repository == 'MODFLOW-USGS/modelviewer-mf6'
+
+    runs-on: windows-2019
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Export env
+        env:
+          type:     debug
+          zipfile:  v${{env.VTK_VERSION}}.zip
+          instdir:  C:/VTK-${{env.VTK_VERSION}}-${{env.VS_VERSION}}-x64
+          builddir: C:/VTK-${{env.VTK_VERSION}}-${{env.VS_VERSION}}-x64-build
+          srcdir:   C:/VTK-${{env.VTK_VERSION}}
+        shell: pwsh
+        run: |
+          echo "type=$env:type"         >> $env:GITHUB_ENV
+          echo "zipfile=$env:zipfile"   >> $env:GITHUB_ENV
+          echo "instdir=$env:instdir"   >> $env:GITHUB_ENV
+          echo "builddir=$env:builddir" >> $env:GITHUB_ENV
+          echo "srcdir=$env:srcdir"     >> $env:GITHUB_ENV
+
+      - name: Cache vtk
+        id: cache-vtk-debug
+        uses: actions/cache@v2
+        with:
+          path: ${{env.instdir}}
+          key: windows-2019-vtk-${{env.type}}-${{hashFiles('misc\CMakePresets-vtk-9.1.0.json')}}
+
+      - name: Download vtk
+        if: steps.cache-vtk-debug.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          curl -L -O "https://github.com/Kitware/VTK/archive/refs/tags/${{env.zipfile}}"
+          Get-FileHash ${{env.zipfile}}
+          cd C:\
+          7z x ${{github.workspace}}\${{env.zipfile}}
+          rm ${{github.workspace}}\${{env.zipfile}}
+
+      - name: Build vtk
+        if: steps.cache-vtk-debug.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          cp misc\CMakePresets-vtk-9.1.0.json ${{env.srcdir}}\CMakePresets.json
+          cd ${{env.srcdir}}
+          cmake --preset ${{env.PRESET}}
+          cmake --build --preset ${{env.PRESET}} --config ${{env.type}}
+          cmake --install ${{env.builddir}} --prefix ${{env.instdir}} --config ${{env.type}}
+
+      - name: Check debug cache
+        shell: pwsh
+        run: |
+          dir ${{env.instdir}}\bin
+
+  cache-vtk-release:
+    # uncomment the next line if you want to compile vtk
+    if: github.repository == 'MODFLOW-USGS/modelviewer-mf6'
+
+    runs-on: windows-2019
+
+    steps:
+    
+      - uses: actions/checkout@v2
+
+      - name: Export env
+        env:
+          type:     release
+          zipfile:  v${{env.VTK_VERSION}}.zip
+          instdir:  C:/VTK-${{env.VTK_VERSION}}-${{env.VS_VERSION}}-x64
+          builddir: C:/VTK-${{env.VTK_VERSION}}-${{env.VS_VERSION}}-x64-build
+          srcdir:   C:/VTK-${{env.VTK_VERSION}}
+        shell: pwsh
+        run: |
+          echo "type=$env:type"         >> $env:GITHUB_ENV
+          echo "zipfile=$env:zipfile"   >> $env:GITHUB_ENV
+          echo "instdir=$env:instdir"   >> $env:GITHUB_ENV
+          echo "builddir=$env:builddir" >> $env:GITHUB_ENV
+          echo "srcdir=$env:srcdir"     >> $env:GITHUB_ENV
+
+      - name: Cache vtk
+        id: cache-vtk-release
+        uses: actions/cache@v2
+        with:
+          path: ${{env.instdir}}
+          key: windows-2019-vtk-${{env.type}}-${{hashFiles('misc\CMakePresets-vtk-9.1.0.json')}}
+
+      - name: Download vtk
+        if: steps.cache-vtk-release.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          curl -L -O "https://github.com/Kitware/VTK/archive/refs/tags/${{env.zipfile}}"
+          Get-FileHash ${{env.zipfile}}
+          cd C:\
+          7z x ${{github.workspace}}\${{env.zipfile}}
+          rm ${{github.workspace}}\${{env.zipfile}}
+
+      - name: Build vtk
+        if: steps.cache-vtk-release.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          cp misc\CMakePresets-vtk-9.1.0.json ${{env.srcdir}}\CMakePresets.json
+          cd ${{env.srcdir}}
+          cmake --preset ${{env.PRESET}}
+          cmake --build --preset ${{env.PRESET}} --config ${{env.type}}
+          cmake --install ${{env.builddir}} --prefix ${{env.instdir}} --config ${{env.type}}
+
+      - name: Check release cache
+        shell: pwsh
+        run: |
+          dir ${{env.instdir}}\bin
+
+  cache-vtk:
+    # uncomment the next line if you want to compile vtk
+    if: github.repository == 'MODFLOW-USGS/modelviewer-mf6'
+
+    runs-on: windows-2019
+    needs: [cache-vtk-debug, cache-vtk-release]
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Export env
+        env:
+          zipfile:  v${{env.VTK_VERSION}}.zip
+          instdir:  C:/VTK-${{env.VTK_VERSION}}-${{env.VS_VERSION}}-x64
+          builddir: C:/VTK-${{env.VTK_VERSION}}-${{env.VS_VERSION}}-x64-build
+          srcdir:   C:/VTK-${{env.VTK_VERSION}}
+          tag:      vtk-${{env.VTK_VERSION}}-${{env.VS_VERSION}}-x64
+        shell: pwsh
+        run: |
+          echo "zipfile=$env:zipfile"   >> $env:GITHUB_ENV
+          echo "instdir=$env:instdir"   >> $env:GITHUB_ENV
+          echo "builddir=$env:builddir" >> $env:GITHUB_ENV
+          echo "srcdir=$env:srcdir"     >> $env:GITHUB_ENV
+          echo "tag=$env:tag"           >> $env:GITHUB_ENV
+
+      - name: Cache vtk
+        id: cache-vtk
+        uses: actions/cache@v2
+        with:
+          path: ${{env.instdir}}
+          key: windows-2019-vtk-${{hashFiles('misc\CMakePresets-vtk-9.1.0.json')}}
+
+      - name: Cache vtk debug
+        if: steps.cache-vtk.outputs.cache-hit != 'true'
+        id: cache-vtk-debug
+        uses: actions/cache@v2
+        with:
+          path: ${{env.instdir}}
+          key: windows-2019-vtk-debug-${{hashFiles('misc\CMakePresets-vtk-9.1.0.json')}}
+
+      - name: Cache vtk release
+        if: steps.cache-vtk.outputs.cache-hit != 'true'
+        uses: actions/cache@v2
+        with:
+          path: ${{env.instdir}}
+          key: windows-2019-vtk-release-${{hashFiles('misc\CMakePresets-vtk-9.1.0.json')}}
+
+      - name: Check merged cache
+        shell: pwsh
+        run: |
+          dir ${{env.instdir}}\bin
+
+      - name: Compress cache
+        shell: pwsh
+        run: |
+          7z a ${{env.tag}}.7z ${{env.instdir}}
+
+      - name: Delete release
+        env:
+          releases_url: ${{github.api_url}}/repos/${{github.repository}}/releases
+        run: |
+          # create headers dictionary
+          $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
+
+          try {
+              #  Get a release by tag name 
+              # https://docs.github.com/rest/reference/repos#get-a-release-by-tag-name
+              # get /repos/{owner}/{repo}/releases/tags/{tag}
+              $response = Invoke-WebRequest -Uri ${{env.releases_url}}/tags/${{env.tag}} -Headers $h -Method Get
+              $hashtable = $response.Content | ConvertFrom-Json -AsHashtable
+
+              # Delete a release
+              # https://docs.github.com/en/rest/reference/releases#delete-a-release
+              # delete /repos/{owner}/{repo}/releases/{release_id}
+              $id = $hashtable.id.ToString()
+              $response = Invoke-WebRequest -Uri ${{env.releases_url}}/$id -Headers $h -Method Delete
+          }
+          catch {
+            Write-Output "An error occured:"
+            Write-Output $_
+          }
+
+      - name: Delete tag
+        shell: pwsh
+        run: |
+          git push --delete origin refs/tags/${{env.tag}}
+
+      - name: Create release
+        env:
+          releases_url: ${{github.api_url}}/repos/${{github.repository}}/releases
+        run: |
+          # setup json variables
+          $tag_name = "${{env.tag}}"
+          $filename = "${{env.tag}}.7z"
+          $hash = (Get-FileHash $filename).Hash.ToLower()
+          # format using markdown
+          $body = "```````nsha256`n$hash $filename`n``````"
+
+          # store commit
+          $target_commitish = "${{github.sha}}"
+
+          # create headers dictionary
+          $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
+          $releases_url = "${{env.releases_url}}"
+          # create release
+          # POST /repos/{owner}/{repo}/releases
+          # see https://docs.github.com/en/rest/reference/repos#create-a-release
+          #
+          $create = @{
+            "body"             = $body
+            "tag_name"         = $tag_name
+            "target_commitish" = $target_commitish
+            "name"             = $tag_name
+            "draft"            = $true
+          }
+          $create_json = $create | ConvertTo-Json
+          $release = Invoke-WebRequest -Uri $releases_url -Headers $h -Method Post -Body $create_json
+          # upload artifact (asset)
+          # POST /repos/{owner}/{repo}/releases/{release_id}/assets
+          # see https://docs.github.com/en/rest/reference/repos#upload-a-release-asset
+          #
+          $upload_uri = ($release.Content | ConvertFrom-Json).upload_url
+          if (! ($upload_uri -match  "(.*)\{\?name,label\}") ) {
+            # expecting URI{?name,label}
+            # ie https://uploads.github.com/repos/scharlton2/iricdev-2019/releases/24058628/assets{?name,label}
+            throw "Bad upload_url"
+          }
+          $upload_uri = $Matches[1] + "?name=$filename"
+          $h["Content-type"] = "application/x-7z-compressed"
+          $bytes = [System.IO.File]::ReadAllBytes($filename)
+          $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method Post -Body $bytes
+          # update release
+          # PATCH /repos/{owner}/{repo}/releases/{release_id}
+          # see https://docs.github.com/en/rest/reference/repos#update-a-release
+          #
+          $release_id = ($release.Content | ConvertFrom-Json).id
+          $h.Remove("Content-type")
+          $update = @{ "draft" = $false }
+          $update_json = $update | ConvertTo-Json
+          $release = Invoke-WebRequest -Uri "$releases_url/$release_id" -Headers $h -Method Patch -Body $update_json
+
+          # display download url
+          Write-Output "::group::Results"
+          Write-Output "$((($release.Content | ConvertFrom-Json).assets).browser_download_url)"
+          Write-Output "${{github.sha}}"
+          Write-Output "sha256"
+          Write-Output "$hash  $filename"
+          Write-Output "::endgroup::"
