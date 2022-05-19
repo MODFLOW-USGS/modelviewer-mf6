@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project (
   mv
-  VERSION ${MvProject_VERSION_MAJOR}.${MvProject_VERSION_MINOR}.${MvProject_VERSION_PATCH}
+  VERSION ${MvProject${VTK_SUFFIX}_VERSION_MAJOR}.${MvProject${VTK_SUFFIX}_VERSION_MINOR}.${MvProject${VTK_SUFFIX}_VERSION_PATCH}
   LANGUAGES CXX C
 )
 
@@ -73,6 +73,9 @@ generate_export_header(mv
 )
 
 target_compile_definitions(mv PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
+
+# @TODO clean this up
+target_compile_definitions(mv PRIVATE MV_USE_VTKMFCWINDOW)
 
 if (MV_DEBUG_MEMORY_LEAKS)
   # set for all configs

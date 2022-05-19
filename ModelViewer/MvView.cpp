@@ -11,9 +11,15 @@
 #include "BitmapResolutionDlg.h"
 #include "ExportAnimationDlg.h"
 
-#if 1
+#if defined(MV_USE_VTKMFCWINDOW)
 #include "vtkMFCWindow.h"
 #endif
+
+#if !((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION <= 3) || (VTK_MAJOR_VERSION < 6))
+#include <vtkBMPWriter.h>
+#include <vtkRenderLargeImage.h>
+#endif
+
 #include "vtkRenderer.h"
 #include "vtkLight.h"
 #include "vtkLightCollection.h"
@@ -92,7 +98,7 @@ END_MESSAGE_MAP()
 
 CMvView::CMvView()
 {
-#if 1
+#if defined(MV_USE_VTKMFCWINDOW)
     m_MFCWindow = nullptr;
 #endif
     // vtk rendering
@@ -101,7 +107,7 @@ CMvView::CMvView()
 #ifdef NDEBUG
     m_Renderer->GlobalWarningDisplayOff();
 #endif
-#if 0
+#if !defined(MV_USE_VTKMFCWINDOW)
     m_RenderWindow = vtkWin32OpenGLRenderWindow::New();    //  @done in vtkMFCWindow ctor
     m_RenderWindow->AddRenderer(m_Renderer);               //  @moved to OnInitialUpdate
     m_Interactor = vtkWin32RenderWindowInteractor::New();  //  @done in vtkMFCWindow::SetRenderWindow
@@ -130,10 +136,12 @@ CMvView::CMvView()
     m_HeadlightIntensity      = 1.0;
     m_AuxiliaryLightIntensity = 0.0;
 
+#if !defined(MV_USE_VTKMFCWINDOW)
     // printing
     m_PrintDPI                = 100;
     m_PreviewDPI              = 100;
     m_DPI                     = 100;
+#endif
 
     // bitmap exporting
     m_BitmapResolutionOption  = 0;
@@ -147,19 +155,19 @@ CMvView::CMvView()
 
 CMvView::~CMvView()
 {
-#if 0
-    m_Interactor->Delete();                                //  @todo
+#if !defined(MV_USE_VTKMFCWINDOW)
+    m_Interactor->Delete();         //  @todo
 #endif
     m_Renderer->SetRenderWindow(NULL);
     m_Renderer->RemoveLight(m_Headlight);
     m_Renderer->RemoveLight(m_AuxiliaryLight);
-#if 0
-    m_RenderWindow->Delete();                              //  @todo
+#if !defined(MV_USE_VTKMFCWINDOW)
+    m_RenderWindow->Delete();       //  @todo
 #endif
     m_Renderer->Delete();
     m_Headlight->Delete();
     m_AuxiliaryLight->Delete();
-#if 1
+#if defined(MV_USE_VTKMFCWINDOW)
     if (m_MFCWindow) delete m_MFCWindow;
 #endif
 }
@@ -191,7 +199,7 @@ void CMvView::OnDraw(CDC *pDC)
     CMvDoc *pDoc = GetDocument();
     ASSERT_VALID(pDoc);
     // Initialize the interactor the first time this method is called
-#if 0
+#if !defined(MV_USE_VTKMFCWINDOW)
     if (!m_Interactor->GetInitialized())                   //  @todo
     {
         m_Interactor->SetRenderWindow(m_RenderWindow);
@@ -203,9 +211,70 @@ void CMvView::OnDraw(CDC *pDC)
     // Printing code
     if (pDC->IsPrinting())
     {
+#if defined(MV_USE_VTKMFCWINDOW)
         BeginWaitCursor();
         m_MFCWindow->DrawDC(pDC);
         EndWaitCursor();
+#else
+        int   size[2];
+        float scale;
+
+        BeginWaitCursor();
+        memcpy(size, m_RenderWindow->GetSize(), sizeof(int) * 2);
+
+        float cxDIB = (float)size[0]; // Size of DIB - x
+        float cyDIB = (float)size[1]; // Size of DIB - y
+        CRect rcDest;
+
+        // get size of printer page (in pixels)
+        float cxPage  = (float)pDC->GetDeviceCaps(HORZRES);
+        float cyPage  = (float)pDC->GetDeviceCaps(VERTRES);
+        // get printer pixels per inch
+        float cxInch  = (float)pDC->GetDeviceCaps(LOGPIXELSX);
+        float cyInch  = (float)pDC->GetDeviceCaps(LOGPIXELSY);
+        scale         = cxInch / m_DPI;
+
+        //
+        // Best Fit case -- create a rectangle which preserves
+        // the DIB's aspect ratio, and fills the page horizontally.
+        //
+        // The formula in the "->bottom" field below calculates the Y
+        // position of the printed bitmap, based on the size of the
+        // bitmap, the width of the page, and the relative size of
+        // a printed pixel (cyInch / cxInch).
+        //
+        rcDest.bottom = rcDest.left = 0;
+        if ((cyDIB * cxPage / cxInch) > (cxDIB * cyPage / cyInch))
+        {
+            rcDest.top   = cyPage;
+            rcDest.right = (cyPage * cxInch * cxDIB) / (cyInch * cyDIB);
+        }
+        else
+        {
+            rcDest.right = cxPage;
+            rcDest.top   = (cxPage * cyInch * cyDIB) / (cxInch * cxDIB);
+        }
+
+        CRect rcDestLP(rcDest);
+        pDC->DPtoLP(rcDestLP);
+        int DPI = m_RenderWindow->GetDPI();
+
+        m_RenderWindow->SetupMemoryRendering(rcDest.right / scale,
+                                             rcDest.top / scale, pDC->GetSafeHdc());
+
+        m_RenderWindow->Render();
+
+        pDC->SetStretchBltMode(HALFTONE);
+        ::SetBrushOrgEx(pDC->GetSafeHdc(), 0, 0, NULL);
+
+        StretchBlt(pDC->GetSafeHdc(), 0, 0,
+                   rcDest.right, rcDest.top,
+                   m_RenderWindow->GetMemoryDC(),
+                   0, 0, rcDest.right / scale, rcDest.top / scale, SRCCOPY);
+
+        m_RenderWindow->ResumeScreenRendering();
+        EndWaitCursor();
+#endif
     }
     // Screen drawing code
     else
@@ -229,10 +298,10 @@ void CMvView::OnDraw(CDC *pDC)
         {
             BeginWaitCursor();
         }
-#if 0
-        m_RenderWindow->Render();
+#if defined(MV_USE_VTKMFCWINDOW)
+        m_MFCWindow->GetRenderWindow()->Render();      //  @replaces m_RenderWindow->Render()
 #else
-        m_MFCWindow->GetRenderWindow()->Render();    //  @replaces m_RenderWindow->Render()
+        m_RenderWindow->Render();
 #endif
         if (!GetDocument()->IsAnimating())
         {
@@ -266,6 +335,7 @@ BOOL CMvView::OnPreparePrinting(CPrintInfo *pInfo)
 
 void CMvView::OnBeginPrinting(CDC *pDC, CPrintInfo *pInfo)
 {
+#if !defined(MV_USE_VTKMFCWINDOW)
     if (pInfo->m_bPreview)
     {
         m_DPI = m_PreviewDPI;
@@ -278,6 +348,7 @@ void CMvView::OnBeginPrinting(CDC *pDC, CPrintInfo *pInfo)
         m_PrintDPI = (dlg.m_ImageQuality == 1) ? 300 : 100;
         m_DPI      = m_PrintDPI;
     }
+#endif
 }
 
 void CMvView::OnEndPrinting(CDC * /*pDC*/, CPrintInfo * /*pInfo*/)
@@ -321,9 +392,9 @@ CMvDoc *CMvView::GetDocument() // non-debug version is inline
 }
 #endif //_DEBUG
 
+#if !defined(MV_USE_VTKMFCWINDOW)
 /////////////////////////////////////////////////////////////////////////////
 // The Window Function -- overrides the one implemented in the base class
-#if 0                                                      //  @todo
 LRESULT CMvView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -353,10 +424,10 @@ LRESULT CMvView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 void CMvView::SetInteractorStyle(int interactorStyle)
 {
     // This assumes that the interactor style is an vtkInteractorStyleSwitch
-#if 0
-    vtkInteractorStyleSwitch *iss = vtkInteractorStyleSwitch::SafeDownCast(m_Interactor->GetInteractorStyle());
+#if defined(MV_USE_VTKMFCWINDOW)
+    vtkInteractorStyleSwitch *iss = vtkInteractorStyleSwitch::SafeDownCast(m_MFCWindow->GetInteractor()->GetInteractorStyle()); // @replaces m_Interactor->GetInteractorStyle()
 #else
-    vtkInteractorStyleSwitch *iss = vtkInteractorStyleSwitch::SafeDownCast(m_MFCWindow->GetInteractor()->GetInteractorStyle());  // @replaces m_Interactor->GetInteractorStyle()
+    vtkInteractorStyleSwitch *iss = vtkInteractorStyleSwitch::SafeDownCast(m_Interactor->GetInteractorStyle());
 #endif
     if (iss)
     {
@@ -516,147 +587,277 @@ void CMvView::PlaceHeadlightWithCamera()
     light->SetFocalPoint(camera->GetFocalPoint());
 }
 
+#if ((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION <= 3) || (VTK_MAJOR_VERSION < 6))
 void CMvView::WriteBmp(ofstream *file, BOOL useScreenResolution)
 {
-    //int  *size          = m_RenderWindow->GetSize();
+#if defined(MV_USE_VTKMFCWINDOW)
+    int *size           = m_MFCWindow->GetRenderWindow()->GetSize();
+#else
+    int *size           = m_RenderWindow->GetSize();
+#endif
 
-    //// Parameters for writing bitmap at screen resolution
-    //int   width         = size[0];
-    //int   height        = size[1];
-    //int   XPelsPerMeter = 0;
-    //int   YPelsPerMeter = 0;
-    //float magnification = 1;
+    // Parameters for writing bitmap at screen resolution
+    int   width         = size[0];
+    int   height        = size[1];
+    int   XPelsPerMeter = 0;
+    int   YPelsPerMeter = 0;
+    float magnification = 1;
 
-    //if (!useScreenResolution)
-    //{
-    //    if (m_BitmapResolutionOption == 1)
-    //    {
-    //        XPelsPerMeter = 5904; // 150 ppi
-    //        YPelsPerMeter = 5904;
-    //        if (m_BitmapSideOption == 0)
-    //        {
-    //            width         = m_BitmapWidthInInches * 150;
-    //            height        = (((long)width) * size[1]) / size[0];
-    //            magnification = ((float)width) / size[0];
-    //        }
-    //        else
-    //        {
-    //            height        = m_BitmapHeightInInches * 150;
-    //            width         = (((long)height) * size[0]) / size[1];
-    //            magnification = ((float)height) / size[1];
-    //        }
-    //    }
-    //    else if (m_BitmapResolutionOption == 2)
-    //    {
-    //        XPelsPerMeter = 11808; // 300 ppi
-    //        YPelsPerMeter = 11808;
-    //        if (m_BitmapSideOption == 0)
-    //        {
-    //            width         = m_BitmapWidthInInches * 300;
-    //            height        = (((long)width) * size[1]) / size[0];
-    //            magnification = ((float)width) / size[0];
-    //        }
-    //        else
-    //        {
-    //            height        = m_BitmapHeightInInches * 300;
-    //            width         = (((long)height) * size[0]) / size[1];
-    //            magnification = ((float)height) / size[1];
-    //        }
-    //    }
-    //}
-    //int dataWidth = ((width * 3 + 3) / 4) * 4;
+    if (!useScreenResolution)
+    {
+        if (m_BitmapResolutionOption == 1)
+        {
+            XPelsPerMeter = 5904; // 150 ppi
+            YPelsPerMeter = 5904;
+            if (m_BitmapSideOption == 0)
+            {
+                width         = m_BitmapWidthInInches * 150;
+                height        = (((long)width) * size[1]) / size[0];
+                magnification = ((float)width) / size[0];
+            }
+            else
+            {
+                height        = m_BitmapHeightInInches * 150;
+                width         = (((long)height) * size[0]) / size[1];
+                magnification = ((float)height) / size[1];
+            }
+        }
+        else if (m_BitmapResolutionOption == 2)
+        {
+            XPelsPerMeter = 11808; // 300 ppi
+            YPelsPerMeter = 11808;
+            if (m_BitmapSideOption == 0)
+            {
+                width         = m_BitmapWidthInInches * 300;
+                height        = (((long)width) * size[1]) / size[0];
+                magnification = ((float)width) / size[0];
+            }
+            else
+            {
+                height        = m_BitmapHeightInInches * 300;
+                width         = (((long)height) * size[0]) / size[1];
+                magnification = ((float)height) / size[1];
+            }
+        }
+    }
+    int dataWidth = ((width * 3 + 3) / 4) * 4;
 
-    //// write the bitmap file header
-    //file->put((char)66);
-    //file->put((char)77);
-    //long temp = (long)(dataWidth * height) + 54L;
-    //file->put((char)(temp % 256));
-    //file->put((char)((temp % 65536L) / 256));
-    //file->put((char)(temp / 65536L));
-    //for (int row = 0; row < 5; row++)
-    //{
-    //    file->put((char)0);
-    //}
-    //file->put((char)54);
-    //file->put((char)0);
-    //file->put((char)0);
-    //file->put((char)0);
+    // write the bitmap file header
+    file->put((char)66);
+    file->put((char)77);
+    long temp = (long)(dataWidth * height) + 54L;
+    file->put((char)(temp % 256));
+    file->put((char)((temp % 65536L) / 256));
+    file->put((char)(temp / 65536L));
+    for (int row = 0; row < 5; row++)
+    {
+        file->put((char)0);
+    }
+    file->put((char)54);
+    file->put((char)0);
+    file->put((char)0);
+    file->put((char)0);
 
-    //// write the bitmap info header
-    //file->put((char)40); // biSize
-    //file->put((char)0);
-    //file->put((char)0);
-    //file->put((char)0);
+    // write the bitmap info header
+    file->put((char)40); // biSize
+    file->put((char)0);
+    file->put((char)0);
+    file->put((char)0);
 
-    //file->put((char)(width % 256)); // biWidth
-    //file->put((char)(width / 256));
-    //file->put((char)0);
-    //file->put((char)0);
+    file->put((char)(width % 256)); // biWidth
+    file->put((char)(width / 256));
+    file->put((char)0);
+    file->put((char)0);
 
-    //file->put((char)(height % 256)); // biHeight
-    //file->put((char)(height / 256));
-    //file->put((char)0);
-    //file->put((char)0);
+    file->put((char)(height % 256)); // biHeight
+    file->put((char)(height / 256));
+    file->put((char)0);
+    file->put((char)0);
 
-    //file->put((char)1); // biPlanes
-    //file->put((char)0);
-    //file->put((char)24); // biBitCount
-    //file->put((char)0);
+    file->put((char)1); // biPlanes
+    file->put((char)0);
+    file->put((char)24); // biBitCount
+    file->put((char)0);
 
-    //for (int row = 0; row < 8; row++) // biCompression and biSizeImage
-    //{
-    //    file->put((char)0);
-    //}
+    for (int row = 0; row < 8; row++) // biCompression and biSizeImage
+    {
+        file->put((char)0);
+    }
 
-    //file->put((char)(XPelsPerMeter % 256)); // biXPelsPerMeter
-    //file->put((char)(XPelsPerMeter / 256));
-    //file->put((char)0);
-    //file->put((char)0);
+    file->put((char)(XPelsPerMeter % 256)); // biXPelsPerMeter
+    file->put((char)(XPelsPerMeter / 256));
+    file->put((char)0);
+    file->put((char)0);
 
-    //file->put((char)(XPelsPerMeter % 256)); // biYPelsPerMeter
-    //file->put((char)(XPelsPerMeter / 256));
-    //file->put((char)0);
-    //file->put((char)0);
+    file->put((char)(XPelsPerMeter % 256)); // biYPelsPerMeter
+    file->put((char)(XPelsPerMeter / 256));
+    file->put((char)0);
+    file->put((char)0);
 
-    //for (int row = 0; row < 8; row++) // biClrUsed and biClrImportant
-    //{
-    //    file->put((char)0);
-    //}
+    for (int row = 0; row < 8; row++) // biClrUsed and biClrImportant
+    {
+        file->put((char)0);
+    }
 
-    //// temporarily change color bar and text size
-    //CMvDoc       *pDoc              = GetDocument();
-    //int           colorBarWidth     = pDoc->GetColorBarWidth();
-    //int           colorBarHeight    = pDoc->GetColorBarHeight();
-    //int           colorBarOffset    = pDoc->GetColorBarOffset();
-    //int           colorBarFontSize  = pDoc->GetColorBarFontSize();
-    //int           timeLabelFontSize = pDoc->GetTimeLabelFontSize();
-    //const double *pos               = pDoc->GetTimeLabelPosition();
-    //double        timeLabelPos[2];
-    //timeLabelPos[0] = pos[0];
-    //timeLabelPos[1] = pos[1];
-    //if (magnification != 1)
-    //{
-    //    pDoc->SetColorBarSize((int)(colorBarWidth * magnification),
-    //                          (int)(colorBarHeight * magnification),
-    //                          (int)(colorBarOffset * magnification), FALSE);
-    //    pDoc->SetColorBarFontSize((int)(colorBarFontSize * magnification), FALSE);
-    //    pDoc->SetTimeLabelFontSize((int)(timeLabelFontSize * magnification), FALSE);
-    //    pDoc->SetTimeLabelPosition(timeLabelPos[0] * magnification,
-    //                               timeLabelPos[1] * magnification, FALSE);
-    //}
-    //// render to memory and write bitmap data
-    //m_RenderWindow->SetupMemoryRendering(width, height, GetDC()->GetSafeHdc());
-    //m_RenderWindow->Render();
-    //file->write((char *)m_RenderWindow->GetMemoryData(), dataWidth * height);
-    //if (magnification != 1)
-    //{
-    //    pDoc->SetColorBarSize(colorBarWidth, colorBarHeight, colorBarOffset, FALSE);
-    //    pDoc->SetColorBarFontSize(colorBarFontSize, FALSE);
-    //    pDoc->SetTimeLabelFontSize(timeLabelFontSize, FALSE);
-    //    pDoc->SetTimeLabelPosition(timeLabelPos[0], timeLabelPos[1], FALSE);
-    //}
-    //m_RenderWindow->ResumeScreenRendering();
+    // temporarily change color bar and text size
+    CMvDoc       *pDoc              = GetDocument();
+    int           colorBarWidth     = pDoc->GetColorBarWidth();
+    int           colorBarHeight    = pDoc->GetColorBarHeight();
+    int           colorBarOffset    = pDoc->GetColorBarOffset();
+    int           colorBarFontSize  = pDoc->GetColorBarFontSize();
+    int           timeLabelFontSize = pDoc->GetTimeLabelFontSize();
+    const double *pos               = pDoc->GetTimeLabelPosition();
+    double        timeLabelPos[2];
+    timeLabelPos[0] = pos[0];
+    timeLabelPos[1] = pos[1];
+    if (magnification != 1)
+    {
+        pDoc->SetColorBarSize((int)(colorBarWidth * magnification),
+                              (int)(colorBarHeight * magnification),
+                              (int)(colorBarOffset * magnification), FALSE);
+        pDoc->SetColorBarFontSize((int)(colorBarFontSize * magnification), FALSE);
+        pDoc->SetTimeLabelFontSize((int)(timeLabelFontSize * magnification), FALSE);
+        pDoc->SetTimeLabelPosition(timeLabelPos[0] * magnification,
+                                   timeLabelPos[1] * magnification, FALSE);
+    }
+    // render to memory and write bitmap data
+#if defined(MV_USE_VTKMFCWINDOW)
+    m_MFCWindow->GetRenderWindow()->SetupMemoryRendering(width, height, GetDC()->GetSafeHdc());
+    m_MFCWindow->GetRenderWindow()->Render();
+    file->write((char *)m_MFCWindow->GetRenderWindow()->GetMemoryData(), dataWidth * height);
+#else
+    m_RenderWindow->SetupMemoryRendering(width, height, GetDC()->GetSafeHdc());
+    m_RenderWindow->Render();
+    file->write((char *)m_RenderWindow->GetMemoryData(), dataWidth * height);
+#endif
+    if (magnification != 1)
+    {
+        pDoc->SetColorBarSize(colorBarWidth, colorBarHeight, colorBarOffset, FALSE);
+        pDoc->SetColorBarFontSize(colorBarFontSize, FALSE);
+        pDoc->SetTimeLabelFontSize(timeLabelFontSize, FALSE);
+        pDoc->SetTimeLabelPosition(timeLabelPos[0], timeLabelPos[1], FALSE);
+    }
+#if defined(MV_USE_VTKMFCWINDOW)
+    m_MFCWindow->GetRenderWindow()->ResumeScreenRendering();
+#else
+    m_RenderWindow->ResumeScreenRendering();
+#endif
 }
+#else
+void CMvView::WriteBmp(const char *filename, BOOL useScreenResolution)
+{
+    //SetRedraw(FALSE);
+    m_MFCWindow->GetRenderWindow()->SetUseOffScreenBuffers(true);
+
+    int size[2];
+    size[0] = m_MFCWindow->GetRenderWindow()->GetSize()[0];
+    size[1] = m_MFCWindow->GetRenderWindow()->GetSize()[1];
+
+    // Parameters for writing bitmap at screen resolution
+    int width = size[0];
+    int height = size[1];
+    float magnification = 1;
+
+    if (!useScreenResolution)
+    {
+        if (m_BitmapResolutionOption == 1)
+        {
+            // 150 ppi
+            if (m_BitmapSideOption == 0)
+            {
+                width = m_BitmapWidthInInches * 150;
+                height = (((long)width) * size[1]) / size[0];
+                magnification = ((float)width) / size[0];
+            }
+            else
+            {
+                height = m_BitmapHeightInInches * 150;
+                width = (((long)height) * size[0]) / size[1];
+                magnification = ((float)height) / size[1];
+            }
+        }
+        else if (m_BitmapResolutionOption == 2)
+        {
+            // 300 ppi
+            if (m_BitmapSideOption == 0)
+            {
+                width = m_BitmapWidthInInches * 300;
+                height = (((long)width) * size[1]) / size[0];
+                magnification = ((float)width) / size[0];
+            }
+            else
+            {
+                height = m_BitmapHeightInInches * 300;
+                width = (((long)height) * size[0]) / size[1];
+                magnification = ((float)height) / size[1];
+            }
+        }
+    }
+    int dataWidth = ((width * 3 + 3) / 4) * 4;
+
+    // temporarily change color bar and text size
+    CMvDoc *pDoc = GetDocument();
+    int colorBarWidth = pDoc->GetColorBarWidth();
+    int colorBarHeight = pDoc->GetColorBarHeight();
+    int colorBarOffset = pDoc->GetColorBarOffset();
+    int colorBarFontSize = pDoc->GetColorBarFontSize();
+    int timeLabelFontSize = pDoc->GetTimeLabelFontSize();
+    const double *pos = pDoc->GetTimeLabelPosition();
+    double timeLabelPos[2];
+    timeLabelPos[0] = pos[0];
+    timeLabelPos[1] = pos[1];
+    if (magnification != 1)
+    {
+        pDoc->SetColorBarSize((int)(colorBarWidth * magnification),
+                              (int)(colorBarHeight * magnification),
+                              (int)(colorBarOffset * magnification), FALSE);
+        pDoc->SetColorBarFontSize((int)(colorBarFontSize * magnification), FALSE);
+        pDoc->SetTimeLabelFontSize((int)(timeLabelFontSize * magnification), FALSE);
+        pDoc->SetTimeLabelPosition(timeLabelPos[0] * magnification,
+                                   timeLabelPos[1] * magnification, FALSE);
+    }
+    // render to memory and write bitmap data
+#if ((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION <= 3) || (VTK_MAJOR_VERSION < 6))
+    m_MFCWindow->GetRenderWindow()->SetupMemoryRendering(width, height, GetDC()->GetSafeHdc());
+#endif
+    m_MFCWindow->GetRenderWindow()->Render();
+#if ((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION <= 3) || (VTK_MAJOR_VERSION < 6))
+    file->write((char *)m_MFCWindow->GetRenderWindow()->GetMemoryData(), dataWidth * height);
+#else
+    {
+        // vtkRenderLargeImage
+        m_MFCWindow->GetRenderWindow()->SetSize(width, height);
+        
+        vtkNew<vtkRenderLargeImage> renderLarge;
+        renderLarge->SetInput(m_Renderer);
+        renderLarge->SetMagnification(1);
+
+        vtkNew<vtkBMPWriter> bmpWriter;
+        bmpWriter->SetFileName(filename);
+        bmpWriter->SetInputConnection(renderLarge->GetOutputPort());
+        bmpWriter->Write();
+    }
+#endif
+    if (magnification != 1)
+    {
+        pDoc->SetColorBarSize(colorBarWidth, colorBarHeight, colorBarOffset, FALSE);
+        pDoc->SetColorBarFontSize(colorBarFontSize, FALSE);
+        pDoc->SetTimeLabelFontSize(timeLabelFontSize, FALSE);
+        pDoc->SetTimeLabelPosition(timeLabelPos[0], timeLabelPos[1], FALSE);
+    }
+#if ((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION <= 3) || (VTK_MAJOR_VERSION < 6))
+    m_MFCWindow->GetRenderWindow()->ResumeScreenRendering();
+#else
+    if (magnification != 1)
+    {
+        m_MFCWindow->GetRenderWindow()->SetSize(size);
+    }
+    m_MFCWindow->GetRenderWindow()->SetUseOffScreenBuffers(false);
+    //SetRedraw(TRUE);
+#endif
+}
+
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // Overrides
@@ -664,16 +865,16 @@ void CMvView::WriteBmp(ofstream *file, BOOL useScreenResolution)
 void CMvView::OnInitialUpdate()
 {
     CView::OnInitialUpdate();
-#if 1
+#if defined(MV_USE_VTKMFCWINDOW)
     if (m_MFCWindow)
     {
-        ASSERT(_CrtIsValidHeapPointer(this->m_MFCWindow));
-        delete this->m_MFCWindow;
+        ASSERT(_CrtIsValidHeapPointer(m_MFCWindow));
+        delete m_MFCWindow;
     }
     m_MFCWindow = new vtkMFCWindow(this);
 
-    ASSERT(this->m_Renderer && _CrtIsValidHeapPointer(this->m_Renderer));
-    m_MFCWindow->GetRenderWindow()->AddRenderer(this->m_Renderer);  // @from CMvView ctor 
+    ASSERT(m_Renderer && _CrtIsValidHeapPointer(m_Renderer));
+    m_MFCWindow->GetRenderWindow()->AddRenderer(m_Renderer);        // @from CMvView ctor 
 #else
     m_RenderWindow->SetWindowId(m_hWnd);  // @done in vtkMFCWindow::SetRenderWindow
     m_RenderWindow->WindowInitialize();
@@ -710,7 +911,7 @@ int CMvView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
     if (CView::OnCreate(lpCreateStruct) == -1)
         return -1;
-#if 0
+#if !defined(MV_USE_VTKMFCWINDOW)
     m_RenderWindow->SetParentId(lpCreateStruct->hwndParent);  //  @done in vtkMFCWindow::SetRenderWindow
 #endif
     return 0;
@@ -724,58 +925,94 @@ BOOL CMvView::OnEraseBkgnd(CDC *pDC)
 void CMvView::OnSize(UINT nType, int cx, int cy)
 {
     CView::OnSize(nType, cx, cy);
-#if 0
+#if !defined(MV_USE_VTKMFCWINDOW)
     if (m_Interactor->GetInitialized())
     {
         m_Interactor->SetSize(cx, cy);
     }
 #else
-    if (this->m_MFCWindow)
+    if (m_MFCWindow)
     {
-        this->m_MFCWindow->MoveWindow(0, 0, cx, cy);  //       @replaces m_Interactor->SetSize(cx, cy)
+        m_MFCWindow->MoveWindow(0, 0, cx, cy);  //       @replaces m_Interactor->SetSize(cx, cy)
     }
 #endif
 }
 
 void CMvView::OnCopyDisplayToClipboard()
 {
-    //LPBITMAPINFOHEADER lpbi;
-    //DWORD              dwLen;
-    //HANDLE             hDIB      = NULL;
-    //int               *size      = m_RenderWindow->GetSize();
-    //int                dataWidth = ((size[0] * 3 + 3) / 4) * 4;
+#if ((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION <= 3) || (VTK_MAJOR_VERSION < 6))
+    LPBITMAPINFOHEADER lpbi;
+    DWORD              dwLen;
+    HANDLE             hDIB      = NULL;
+#if defined(MV_USE_VTKMFCWINDOW)
+    int *size = m_MFCWindow->GetRenderWindow()->GetSize();
+#else
+    int *size = m_RenderWindow->GetSize();
+#endif
+    int                dataWidth = ((size[0] * 3 + 3) / 4) * 4;
 
-    //if (OpenClipboard())
-    //{
-    //    BeginWaitCursor();
-    //    EmptyClipboard();
+    if (OpenClipboard())
+    {
+        BeginWaitCursor();
+        EmptyClipboard();
 
-    //    dwLen                = sizeof(BITMAPINFOHEADER) + dataWidth * size[1];
-    //    hDIB                 = ::GlobalAlloc(GHND, dwLen);
-    //    lpbi                 = (LPBITMAPINFOHEADER)::GlobalLock(hDIB);
+        dwLen                = sizeof(BITMAPINFOHEADER) + dataWidth * size[1];
+        hDIB                 = ::GlobalAlloc(GHND, dwLen);
+        lpbi                 = (LPBITMAPINFOHEADER)::GlobalLock(hDIB);
 
-    //    lpbi->biSize         = sizeof(BITMAPINFOHEADER);
-    //    lpbi->biWidth        = size[0];
-    //    lpbi->biHeight       = size[1];
-    //    lpbi->biPlanes       = 1;
-    //    lpbi->biBitCount     = 24;
-    //    lpbi->biCompression  = BI_RGB;
-    //    lpbi->biClrUsed      = 0;
-    //    lpbi->biClrImportant = 0;
-    //    lpbi->biSizeImage    = dataWidth * size[1];
+        lpbi->biSize         = sizeof(BITMAPINFOHEADER);
+        lpbi->biWidth        = size[0];
+        lpbi->biHeight       = size[1];
+        lpbi->biPlanes       = 1;
+        lpbi->biBitCount     = 24;
+        lpbi->biCompression  = BI_RGB;
+        lpbi->biClrUsed      = 0;
+        lpbi->biClrImportant = 0;
+        lpbi->biSizeImage    = dataWidth * size[1];
 
-    //    m_RenderWindow->SetupMemoryRendering(size[0], size[1], GetDC()->GetSafeHdc());
-    //    m_RenderWindow->Render();
+#if defined(MV_USE_VTKMFCWINDOW)
+        m_MFCWindow->GetRenderWindow()->SetupMemoryRendering(size[0], size[1], GetDC()->GetSafeHdc());
+        m_MFCWindow->GetRenderWindow()->Render();
 
-    //    memcpy((LPSTR)lpbi + lpbi->biSize, m_RenderWindow->GetMemoryData(),
-    //           dataWidth * size[1]);
+        memcpy((LPSTR)lpbi + lpbi->biSize, m_MFCWindow->GetRenderWindow()->GetMemoryData(),
+               dataWidth * size[1]);
+#else
+        m_RenderWindow->SetupMemoryRendering(size[0], size[1], GetDC()->GetSafeHdc());
+        m_RenderWindow->Render();
 
-    //    SetClipboardData(CF_DIB, hDIB);
-    //    ::GlobalUnlock(hDIB);
-    //    CloseClipboard();
-    //    m_RenderWindow->ResumeScreenRendering();
-    //    EndWaitCursor();
-    //}
+        memcpy((LPSTR)lpbi + lpbi->biSize, m_RenderWindow->GetMemoryData(),
+               dataWidth * size[1]);
+#endif
+
+        SetClipboardData(CF_DIB, hDIB);
+        ::GlobalUnlock(hDIB);
+        CloseClipboard();
+#if !defined(MV_USE_VTKMFCWINDOW)
+        m_RenderWindow->ResumeScreenRendering();
+#endif
+        EndWaitCursor();
+    }
+#else
+    CClientDC clientDC(this);
+
+    CDC memDC;
+    memDC.CreateCompatibleDC(&clientDC);
+
+    int *size = m_MFCWindow->GetRenderWindow()->GetSize();
+    int cx = size[0];
+    int cy = size[1];
+
+    CBitmap memBmp;
+    memBmp.CreateCompatibleBitmap(&clientDC, cx, cy);
+    CBitmap *pOldBmp = memDC.SelectObject(&memBmp);
+    memDC.BitBlt(0, 0, cx, cy, &clientDC, 0, 0, SRCCOPY);
+    
+    // Copy to clipboard
+    OpenClipboard();
+    EmptyClipboard();
+    SetClipboardData(CF_BITMAP, memBmp.Detach());
+    CloseClipboard();
+#endif
 }
 
 void CMvView::OnUpdateCopyDisplayToClipboard(CCmdUI *pCmdUI)
@@ -897,7 +1134,9 @@ void CMvView::OnExportAnimation()
     int       i          = StartIndex;
     int       fill;
 
+#if ((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION <= 3) || (VTK_MAJOR_VERSION < 6))
     ofstream *file = new ofstream;
+#endif
     while (1)
     {
         if (!dlg.m_Preview)
@@ -909,9 +1148,13 @@ void CMvView::OnExportAnimation()
             {
                 strcat(b1, "0");
             }
+#if ((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION <= 3) || (VTK_MAJOR_VERSION < 6))
             file->open((LPCTSTR)(path + b1 + b2 + ".bmp"), ios::out | ios::binary);
             WriteBmp(file, TRUE);
             file->close();
+#else
+            WriteBmp(path + b1 + b2 + ".bmp", TRUE);
+#endif
             fileNumber++;
         }
         i++;
@@ -935,7 +1178,9 @@ void CMvView::OnExportAnimation()
             pDoc->AdvanceOneTimePoint();
         }
     }
+#if ((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION <= 3) || (VTK_MAJOR_VERSION < 6))
     delete file;
+#endif
     pDoc->EndWaitCursor();
 }
 
@@ -994,10 +1239,14 @@ void CMvView::OnExportAsBmp()
     light->SetFocalPoint(camera->GetFocalPoint());
 
     BeginWaitCursor();
+#if ((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION <= 3) || (VTK_MAJOR_VERSION < 6))
     ofstream *file = new ofstream((LPCTSTR)fileName, ios::out | ios::binary);
     WriteBmp(file, m_BitmapResolutionOption == 0);
     file->close();
     delete file;
+#else
+    WriteBmp((LPCTSTR)fileName, m_BitmapResolutionOption == 0);
+#endif
     EndWaitCursor();
 }
 

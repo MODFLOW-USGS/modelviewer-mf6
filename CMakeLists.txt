@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 project (
-  MvProject
+  MvProject${VTK_SUFFIX}
   VERSION 1.1.0
   LANGUAGES CXX C
 )
@@ -68,12 +68,14 @@ if (${VTK_VERSION} VERSION_EQUAL "9.1")
       CommonMisc
       CommonSystem
       CommonTransforms
+      DICOMParser
       doubleconversion
       expat
       FiltersCore
       FiltersExtraction
       FiltersGeneral
       FiltersGeometry
+      FiltersHybrid
       FiltersModeling
       FiltersSources
       FiltersStatistics
@@ -81,24 +83,31 @@ if (${VTK_VERSION} VERSION_EQUAL "9.1")
       freetype
       glew
       GUISupportMFC
+      ImagingCore
+      ImagingSources
       InteractionStyle
       IOCore
+      IOImage
       IOLegacy
       IOXML
       IOXMLParser
+      jpeg
       kissfft
       loguru
       lz4
       lzma
+      metaio
       ParallelCore
       ParallelDIY
+      png
       pugixml
       RenderingCore
       RenderingFreeType
       RenderingLOD
       RenderingOpenGL2
       RenderingUI
-      vtksys  # had to add vtk
+      vtksys
+      tiff
       zlib
     REQUIRED
   )
@@ -133,3 +142,6 @@ add_subdirectory(doc)
 add_subdirectory(examples)
 add_subdirectory(mv)
 add_subdirectory(ModelViewer)
+
+# set default startup directory
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ModelViewer)

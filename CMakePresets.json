@@ -13,7 +13,8 @@
       "architecture": "x64",
       "binaryDir": "${sourceDir}/_${presetName}",
       "cacheVariables": {
-        "VTK_DIR" : "C:/VTK-6.3.0-vs2017-x64/lib/cmake/vtk-6.3"
+        "VTK_DIR" : "C:/VTK-6.3.0-vs2017-x64/lib/cmake/vtk-6.3",
+        "VTK_SUFFIX" : "-vtk-6.3"
       }
     },
     {
@@ -24,7 +25,31 @@
       "binaryDir": "${sourceDir}/_${presetName}",
       "cacheVariables": {
         "VTK_DIR" : "C:/VTK-6.3.0-leaks-vs2017-x64/lib/cmake/vtk-6.3",
-        "MV_DEBUG_MEMORY_LEAKS": "ON"
+        "MV_DEBUG_MEMORY_LEAKS": "ON",
+        "VTK_SUFFIX" : "-vtk-6.3"
+      }
+    },
+    {
+      "name": "vtk-9.1.0-vs2019-x64",
+      "displayName": "vs2019 x64 with vtk-9.1.0-vs2019-x64 (builds in _vtk-9.1.0-vs2019-x64)",
+      "generator": "Visual Studio 16 2019",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/_${presetName}",
+      "cacheVariables": {
+        "VTK_DIR" : "C:/VTK-9.1.0-vs2019-x64/lib/cmake/vtk-9.1",
+        "VTK_SUFFIX" : "-vtk-9.1"
+      }
+    },
+    {
+      "name": "vtk-9.1.0-leaks-vs2019-x64",
+      "displayName": "vs2019 x64 with VTK-9.1.0-leaks-vs2019-x64 (builds in _vtk-9.1.0-leaks-vs2019-x64)",
+      "generator": "Visual Studio 16 2019",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/_${presetName}",
+      "cacheVariables": {
+        "VTK_DIR" : "C:/VTK-9.1.0-leaks-vs2019-x64/lib/cmake/vtk-9.1",
+        "MV_DEBUG_MEMORY_LEAKS": "ON",
+        "VTK_SUFFIX" : "-vtk-9.1"
       }
     }
   ]
