@@ -243,12 +243,11 @@ BOOL CMvDoc::OnOpenDocument(LPCTSTR lpszPathName)
     mvGUISettings *gui = new mvGUISettings;
 
     // Deserialization is done by the visualization pipeline manager
-    char           errorMsg[100];
-    errorMsg[0] = '\0';
+    std::string    errorMsg;
     m_Manager->Deserialize(lpszPathName, gui, errorMsg);
-    if (strlen(errorMsg) > 0)
+    if (errorMsg.size())
     {
-        AfxMessageBox(errorMsg);
+        AfxMessageBox(errorMsg.c_str());
         delete gui;
         return FALSE;
     }

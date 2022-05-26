@@ -381,7 +381,7 @@ public:
 
     // Serialization
     char                              *Serialize(const char *fileName, mvGUISettings *gui) const;
-    void                               Deserialize(const char *fileName, mvGUISettings *gui, char *errorMsg);
+    void                               Deserialize(const char *fileName, mvGUISettings *gui, std::string &errorMsg);
 
 protected:
     int                                             m_ActivatedGridLinesVisibility;

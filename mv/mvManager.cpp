@@ -61,6 +61,8 @@
 
 #include "mvDefine.h"
 
+#include <sstream>
+
 using std::log;
 using std::ofstream;
 using std::pow;
@@ -5124,19 +5126,18 @@ char *mvManager::Serialize(const char *fileName, mvGUISettings *gui) const
 }
 
 // Read parameters from file
-void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *errorMsg)
+void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::string &errorMsg)
 {
     int    i, ivalue, i1, i2, i3, i4, i5, i6, i7, i8, i9;
     double fvalue, f1, f2, f3, f4, f5, f6;
     char   key[100], buffer[1024];
-    errorMsg[0] = '\0';
 
     // Open an input stream
     ifstream in(fileName, std::ifstream::in);
 
     if (!in.is_open())
     {
-        strcpy(errorMsg, "Unable to open the Model Viewer file.");
+        errorMsg = "Unable to open the Model Viewer file.";
         return;
     }
 
@@ -5169,7 +5170,7 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
     if (strcmp(buffer, "Model Viewer") != 0)
     {
         delete hashTable;
-        strcpy(errorMsg, "This file does not contain data for Model Viewer");
+        errorMsg = "This file does not contain data for Model Viewer";
         return;
     }
     buffer[0] = '\0';
@@ -5177,7 +5178,9 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
     if (strcmp(buffer, MV_VERSION) != 0)
     {
         delete hashTable;
-        sprintf(errorMsg, "This file does not contain data for Model Viewer version %s", MV_VERSION);
+        std::ostringstream oss;
+        oss << "This file does not contain data for Model Viewer version " << MV_VERSION;
+        errorMsg = oss.str();
         return;
     }
 
@@ -5190,7 +5193,7 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
     if (ncode == 0)
     {
         delete hashTable;
-        strcpy(errorMsg, "The Model Viewer file is damaged and cannot be loaded.");
+        errorMsg = "The Model Viewer file is damaged and cannot be loaded.";
         return;
     }
 
@@ -5208,7 +5211,7 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
         {
             delete hashTable;
             delete[] dataFileList;
-            strcpy(errorMsg, "The Model Viewer file is damaged and cannot be loaded.");
+            errorMsg = "The Model Viewer file is damaged and cannot be loaded.";
             return;
         }
         if (strlen(buffer))
@@ -5216,7 +5219,15 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
             strcpy(szDest, dirname.c_str());
             VERIFY(PathAppend(szDest, buffer));
             VERIFY(PathCanonicalize(fullpath, szDest));
-            VERIFY(PathFileExists(fullpath));
+            if (!PathFileExists(fullpath))
+            {
+                delete hashTable;
+                delete[] dataFileList;
+                std::ostringstream oss;
+                oss << "Unable to open \"" << fullpath << "\".";
+                errorMsg = oss.str();
+                return;
+            }
             strcat(dataFileList, fullpath);
         }
         else
@@ -5234,7 +5245,7 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
     if (err != 0)
     {
         delete hashTable;
-        strcpy(errorMsg, err);
+        errorMsg = err;
         return;
     }
 
