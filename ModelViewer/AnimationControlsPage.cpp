@@ -164,6 +164,7 @@ void CAnimationControlsPage::OnSetToTimePoint()
 
 void CAnimationControlsPage::SetAndDisplayCurrentTime(int timePointIndex)
 {
+    assert(m_TimePointLabels != nullptr);
     m_CurrentTimePointIndex = timePointIndex;
     GetDlgItem(IDC_CURRENT_TIME)->SetWindowText(m_TimePointLabels[timePointIndex]);
 }
