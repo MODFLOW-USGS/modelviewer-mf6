@@ -825,6 +825,21 @@ void CMvView::WriteBmp(const char *filename, BOOL useScreenResolution)
     file->write((char *)m_MFCWindow->GetRenderWindow()->GetMemoryData(), dataWidth * height);
 #else
     {
+#if ((VTK_MAJOR_VERSION == 7) && (VTK_MINOR_VERSION == 1))
+        // vtkRenderLargeImage
+        m_MFCWindow->GetRenderWindow()->SetSize(width, height);
+
+        //vtkNew<vtkRenderLargeImage> renderLarge;
+        vtkSmartPointer<vtkRenderLargeImage> renderLarge = vtkSmartPointer<vtkRenderLargeImage>::New();
+        renderLarge->SetInput(m_Renderer);
+        renderLarge->SetMagnification(1);
+
+        //vtkNew<vtkBMPWriter> bmpWriter;
+        vtkSmartPointer<vtkBMPWriter> bmpWriter = vtkSmartPointer<vtkBMPWriter>::New();
+        bmpWriter->SetFileName(filename);
+        bmpWriter->SetInputConnection(renderLarge->GetOutputPort());
+        bmpWriter->Write();
+#else
         // vtkRenderLargeImage
         m_MFCWindow->GetRenderWindow()->SetSize(width, height);
         
@@ -836,6 +851,7 @@ void CMvView::WriteBmp(const char *filename, BOOL useScreenResolution)
         bmpWriter->SetFileName(filename);
         bmpWriter->SetInputConnection(renderLarge->GetOutputPort());
         bmpWriter->Write();
+#endif
     }
 #endif
     if (magnification != 1)
