@@ -76,6 +76,7 @@ target_compile_definitions(mv PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
 
 # @TODO clean this up
 target_compile_definitions(mv PRIVATE MV_USE_VTKMFCWINDOW)
+target_compile_definitions(mv PRIVATE _WIN32_WINNT=_WIN32_WINNT_WIN7)
 
 if (MV_DEBUG_MEMORY_LEAKS)
   # set for all configs
