@@ -1,1 +1,2 @@
 misc/0001-update-for-memory-leaks.patch      text eol=lf
+*.ipynb                                      text eol=lf
