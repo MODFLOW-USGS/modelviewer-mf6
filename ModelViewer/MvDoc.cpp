@@ -543,8 +543,10 @@ void CMvDoc::OnLoadData()
     }
 
     // Load data
+    BeginWaitCursor();
     char *errorMsg = m_Manager->LoadData(selectedModel, dataFileList);
     delete[] dataFileList;
+    EndWaitCursor();
 
     // Check for error in reading data files
     if (errorMsg != 0)
@@ -562,6 +564,8 @@ void CMvDoc::OnLoadData()
     dlg2.m_TimeLabelOption         = m_Manager->GetTimeLabelOption();
     dlg2.m_InitialDisplayTimePoint = m_Manager->GetInitialDisplayTimePoint();
     dlg2.DoModal(); // Cancel not allowed.
+
+    BeginWaitCursor();
     m_Manager->SetTimePointTo(dlg2.m_SelectedTimePoint);
     m_Manager->SetScalarDataTypeTo(dlg2.m_SelectedDataType);
 
@@ -596,6 +600,7 @@ void CMvDoc::OnLoadData()
 
     // Redraw the view;
     UpdateAllViews(NULL);
+    EndWaitCursor();
 }
 
 void CMvDoc::OnUpdateFileSave(CCmdUI *pCmdUI)
