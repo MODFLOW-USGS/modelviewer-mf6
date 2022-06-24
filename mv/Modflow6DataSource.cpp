@@ -75,6 +75,9 @@ Modflow6DataSource::Modflow6DataSource()
     m_Delr                         = 0;
     m_Delc_revdir                  = 0;
     m_Elev                         = 0;
+    m_xorigin                      = 0.0;
+    m_yorigin                      = 0.0;
+    m_angrot                       = 0.0;
     m_BudgetText                   = 0;
     m_PeriodStep                   = 0;
     m_Rgba                         = 0;
@@ -359,6 +362,23 @@ int Modflow6DataSource::GetNumModelCells()
     return m_NumberOfModflowCells;
 }
 
+
+double Modflow6DataSource::GetXOrigin()const
+{
+    return m_xorigin;
+}
+
+double Modflow6DataSource::GetYOrigin()const
+{
+    return m_yorigin;
+}
+
+double Modflow6DataSource::GetAngRot()const
+{
+    return m_angrot;
+}
+
+
 char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
                                                         char *gridFile, char *headFile, char *budgetFile)
 {
@@ -537,6 +557,9 @@ char *Modflow6DataSource::CreateDisGrid(char *gridFile)
 
     m_Ncpl             = m_NumberOfCellRows * m_NumberOfCellColumns;
     m_NumberOfVTKCells = m_NumberOfModflowCells;
+    m_xorigin          = xorigin;
+    m_yorigin          = yorigin;
+    m_angrot           = angrot;
 
     // allocate arrays
     delr               = new double[m_NumberOfCellColumns];
@@ -654,7 +677,8 @@ char *Modflow6DataSource::CreateDisGrid(char *gridFile)
     double *x = new double[nx];
     double *y = new double[ny];
     double *z = new double[m_NumberOfVTKPoints];
-    xx        = xorigin;
+    //	xx        = xorigin;
+    xx        = 0;
     x[0]      = xx;
     for (i = 0; i < m_NumberOfCellColumns; i++)
     {

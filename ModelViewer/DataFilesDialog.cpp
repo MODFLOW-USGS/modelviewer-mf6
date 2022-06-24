@@ -25,7 +25,7 @@ char *DataFilesDialog::GetDataFileList(char *model)
 
 char *DataFilesDialog::GetModflow6DataFiles()
 {
-    CModflow6DataFilesDlg dlg;
+    CModflow6DataFilesDlg dlg(::AfxGetMainWnd());
     if (dlg.DoModal() != IDOK)
     {
         return NULL;

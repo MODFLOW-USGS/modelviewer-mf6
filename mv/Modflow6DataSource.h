@@ -32,6 +32,10 @@ public:
     virtual int  GetNumVTKCells();
     virtual int  GetNumModelCells();
 
+    double       GetXOrigin() const;
+    double       GetYOrigin() const;
+    double       GetAngRot() const;
+
     virtual int  GetNumberOfCellLayers() { return m_NumberOfCellLayers; }
     virtual int  GetNumberOfVTKCellsInLayer(int k);
 
@@ -79,6 +83,10 @@ protected:
     double     *m_Delr;
     double     *m_Delc_revdir;
     double     *m_Elev;
+
+    double      m_xorigin;
+    double      m_yorigin;
+    double      m_angrot;
 
     char       *ExtractModflowOutputFileNames(char *nameFile, char *gridFile, char *headFile, char *budgetFile);
     char       *CreateDisGrid(char *gridFile);

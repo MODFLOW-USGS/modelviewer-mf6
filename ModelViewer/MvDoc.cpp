@@ -571,6 +571,11 @@ void CMvDoc::OnLoadData()
 
     // Apply default settings and then turn on bounding box
     m_Manager->ApplyDefaultSettings();
+    if (Modflow6DataSource *modflow6 = dynamic_cast<Modflow6DataSource*>(m_Manager->m_DataSource))
+    {
+        m_Manager->SetOverlayCoordinatesAtGridOrigin(modflow6->GetXOrigin(), modflow6->GetYOrigin());
+        m_Manager->SetOverlayAngle(modflow6->GetAngRot());
+    }
 
     // If there are more than one time points, turn on the
     // time label
