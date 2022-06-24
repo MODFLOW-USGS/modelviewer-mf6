@@ -76,7 +76,7 @@ BOOL CModelViewerApp::InitInstance()
     AfxEnableMemoryLeakDump(FALSE);
     // Use the following to set breakpoint
     //
-    // _CrtSetBreakAlloc(1030);
+    // _CrtSetBreakAlloc(1046);
     //
     // This should be the only memory leak
     char* ptr = new char[10];

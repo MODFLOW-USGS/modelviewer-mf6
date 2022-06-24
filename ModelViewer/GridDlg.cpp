@@ -36,13 +36,17 @@ CGridDlg::CGridDlg(CWnd* pParent, CMvDoc* pDoc)
     m_SubgridPage               = new CSubgridPage;
     m_SubgridPage->m_pDoc       = pDoc;
     m_SubgridPage->m_Parent     = this;
+#ifdef ENABLE_CGRIDDISPLAYPAGE
     m_GridDisplayPage           = new CGridDisplayPage;
     m_GridDisplayPage->m_pDoc   = pDoc;
     m_GridDisplayPage->m_Parent = this;
+#endif
     m_PropertySheet->AddPage(m_GridLinesPage);
     m_PropertySheet->AddPage(m_GridShellPage);
     m_PropertySheet->AddPage(m_SubgridPage);
+#ifdef ENABLE_CGRIDDISPLAYPAGE
     m_PropertySheet->AddPage(m_GridDisplayPage);
+#endif
 }
 
 CGridDlg::~CGridDlg()
@@ -51,7 +55,9 @@ CGridDlg::~CGridDlg()
     delete m_GridLinesPage;
     delete m_GridShellPage;
     delete m_SubgridPage;
+#ifdef ENABLE_CGRIDDISPLAYPAGE
     delete m_GridDisplayPage;
+#endif
 }
 
 void CGridDlg::DoDataExchange(CDataExchange* pDX)
@@ -134,7 +140,9 @@ void CGridDlg::Reinitialize()
     m_GridLinesPage->Reinitialize();
     m_GridShellPage->Reinitialize();
     m_SubgridPage->Reinitialize();
+#ifdef ENABLE_CGRIDDISPLAYPAGE
     m_GridDisplayPage->Reinitialize();
+#endif
 }
 
 void CGridDlg::Activate(BOOL Activate)
@@ -143,7 +151,9 @@ void CGridDlg::Activate(BOOL Activate)
     m_GridLinesPage->Activate(b);
     m_GridShellPage->Activate(b);
     m_SubgridPage->Activate(b);
+#ifdef ENABLE_CGRIDDISPLAYPAGE
     m_GridDisplayPage->Activate(b);
+#endif
 }
 
 void CGridDlg::OnApply()

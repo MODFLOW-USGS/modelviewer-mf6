@@ -59,6 +59,9 @@ public:
     mvManager();
     virtual ~mvManager();
 
+    static std::string                 GetDirName(const char *fullPath);
+    static std::string                 GetRelativePath(const char *pszFrom, const char *pszTo);
+
     // Data set and animation control
     // void ClearData();
     char                              *LoadData(char *modelType, char *dataFileList);
@@ -66,10 +69,12 @@ public:
     int                                HasVectorData() const;
     int                                HasPathlineData() const;
     //	int AreAllCellsActive() const;
-    int                                GetGridType() const;
+    GridType                           GetGridType() const;
     bool                               GetIsStructuredGrid();
     void                               ApplyDefaultSettings();
-    void                               SetImmediateModeRendering(int b);
+#if ((VTK_MAJOR_VERSION == 8) && (VTK_MINOR_VERSION <= 1) || (VTK_MAJOR_VERSION < 8))  //  https://vtk.org/Wiki/VTK/API_Changes_8_0_1_to_8_1_0
+    void                               SetImmediateModeRendering(int b);  // deprecated vtk 8.1
+#endif
     void                               SetReleaseDataFlag(int b);
     const int                         *GetScalarGridDimensions() const;
     const int                         *GetVectorGridDimensions() const;
@@ -350,7 +355,7 @@ public:
     void                               SolidThresholdOff();
     int                                IsSolidThresholdOn() const;
     void                               SetSolidThresholdLimits(double minValue, double maxValue);
-    int                                GetSolidDisplayMode() const;
+    SolidDisplayType                   GetSolidDisplayMode() const;
     void                               GetSolidThresholdLimits(double *limits) const;
 
     // Isosurface Control
@@ -376,7 +381,7 @@ public:
 
     // Serialization
     char                              *Serialize(const char *fileName, mvGUISettings *gui) const;
-    void                               Deserialize(const char *fileName, mvGUISettings *gui, char *errorMsg);
+    void                               Deserialize(const char *fileName, mvGUISettings *gui, std::string &errorMsg);
 
 protected:
     int                                             m_ActivatedGridLinesVisibility;
@@ -416,7 +421,7 @@ protected:
     int                                            *m_NumberOfColorBands;
     int                                            *m_NumberOfCustomIsosurfaces;
     int                                            *m_NumberOfRegularIsosurfaces;
-    int                                            *m_SolidDisplayMode;
+    SolidDisplayType                               *m_SolidDisplayMode;
     int                                            *m_UseLogColorBar;
     int                                            *m_UseRegularIsosurface;
 

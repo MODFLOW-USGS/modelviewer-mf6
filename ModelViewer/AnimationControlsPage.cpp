@@ -6,6 +6,8 @@
 #include "AnimationOptionsPage.h"
 #include "MvDoc.h"
 
+#include <cassert>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -164,6 +166,7 @@ void CAnimationControlsPage::OnSetToTimePoint()
 
 void CAnimationControlsPage::SetAndDisplayCurrentTime(int timePointIndex)
 {
+    assert(m_TimePointLabels != nullptr);
     m_CurrentTimePointIndex = timePointIndex;
     GetDlgItem(IDC_CURRENT_TIME)->SetWindowText(m_TimePointLabels[timePointIndex]);
 }

@@ -25,6 +25,33 @@ jobs:
 
       - uses: actions/checkout@v2
 
+      - name: Install vs2017 build tools
+        shell: pwsh
+        run: |
+          $downloaded = $false
+          while (-Not $downloaded) {
+            try {
+              Invoke-WebRequest "https://aka.ms/vs/15/release/vs_buildtools.exe" -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
+              $downloaded = $true
+            }
+            catch {
+              Write-Output "Retry"
+            }
+          }
+          $arg = @(
+              "--add", "Microsoft.VisualStudio.Workload.VCTools", `
+              "--add", "Microsoft.VisualStudio.Workload.MSBuildTools", `
+              "--add", "Microsoft.VisualStudio.Component.VC.ATL", `
+              "--add", "Microsoft.VisualStudio.Component.VC.ATLMFC", `
+              "--includeRecommended", `
+              "--passive", `
+              "--wait", `
+              "--norestart", `
+              "--noUpdateInstaller"
+          )
+          $process = Start-Process -FilePath $env:TEMP\vs_buildtools.exe -ArgumentList $arg -Wait -PassThru
+          Write-Output $process.ExitCode
+
       - name: Export env
         env:
           type:     debug
@@ -122,6 +149,33 @@ jobs:
     steps:
     
       - uses: actions/checkout@v2
+
+      - name: Install vs2017 build tools
+        shell: pwsh
+        run: |
+          $downloaded = $false
+          while (-Not $downloaded) {
+            try {
+              Invoke-WebRequest "https://aka.ms/vs/15/release/vs_buildtools.exe" -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
+              $downloaded = $true
+            }
+            catch {
+              Write-Output "Retry"
+            }
+          }
+          $arg = @(
+              "--add", "Microsoft.VisualStudio.Workload.VCTools", `
+              "--add", "Microsoft.VisualStudio.Workload.MSBuildTools", `
+              "--add", "Microsoft.VisualStudio.Component.VC.ATL", `
+              "--add", "Microsoft.VisualStudio.Component.VC.ATLMFC", `
+              "--includeRecommended", `
+              "--passive", `
+              "--wait", `
+              "--norestart", `
+              "--noUpdateInstaller"
+          )
+          $process = Start-Process -FilePath $env:TEMP\vs_buildtools.exe -ArgumentList $arg -Wait -PassThru
+          Write-Output $process.ExitCode
 
       - name: Export env
         env:

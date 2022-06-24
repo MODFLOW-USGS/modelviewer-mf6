@@ -13,7 +13,7 @@ CModflow6DataFilesDlg::CModflow6DataFilesDlg(CWnd* pParent /*=NULL*/)
     : CDialog(CModflow6DataFilesDlg::IDD, pParent)
 {
     m_GwfModelNameFile        = _T("");
-    m_HeadFile                = _T("");
+    m_HeadOrConcFile          = _T("");
     m_GridFile                = _T("");
     m_BudgetFile              = _T("");
     m_FileSpecificationMethod = 0;
@@ -27,7 +27,7 @@ void CModflow6DataFilesDlg::DoDataExchange(CDataExchange* pDX)
 {
     CDialog::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_GWF_MODEL_NAME_FILE, m_GwfModelNameFile);
-    DDX_Text(pDX, IDC_GWF_MODEL_HEAD_FILE, m_HeadFile);
+    DDX_Text(pDX, IDC_GWF_MODEL_HEAD_FILE, m_HeadOrConcFile);
     DDX_Text(pDX, IDC_GWF_MODEL_GRID_FILE, m_GridFile);
     DDX_Text(pDX, IDC_GWF_MODEL_BUDGET_FILE, m_BudgetFile);
     DDX_Radio(pDX, IDC_SPECIFY_MODFLOW6_NAME_FILE, m_FileSpecificationMethod);
@@ -142,9 +142,12 @@ void CModflow6DataFilesDlg::OnBrowseGwfModelGridFile()
 
 void CModflow6DataFilesDlg::OnBrowseGwfModelHeadFile()
 {
-    CFileDialog fileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-                        "Head Files (*.hds; *.bhd; *.hdb; *.hed)|*.hds; *.bhd; *.hdb; *.hed|All Files (*.*)|*.*||");
-    fileDlg.m_ofn.lpstrTitle = "GWF Model Head File";
+    static TCHAR BASED_CODE szFilter[] = _T("Head & Concentration Files (*.hds; *.bhd; *.hdb; *.hed; *.ucn)|*.hds; *.bhd; *.hdb; *.hed; *.ucn|")
+                                         _T("Concentration Files (*.ucn)|*.ucn|")
+                                         _T("Head Files (*.hds; *.bhd; *.hdb; *.hed)|*.hds; *.bhd; *.hdb; *.hed|")
+                                         _T("All Files (*.*)|*.*||");
+    CFileDialog fileDlg(TRUE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter);
+    fileDlg.m_ofn.lpstrTitle = "GWF Model Head or GWT Model Concentration File";
     if (fileDlg.DoModal() != IDOK)
     {
         return;

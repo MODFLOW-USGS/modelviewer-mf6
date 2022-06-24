@@ -61,17 +61,22 @@
 
 #include "mvDefine.h"
 
+#include <sstream>
+
 using std::log;
 using std::ofstream;
 using std::pow;
 
 // This must be below vtkStandardNewMacro
-#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #include <afx.h>
+#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+// This must be below <afx.h>
+#include <shlwapi.h>
 
 mvManager::mvManager()
 {
@@ -621,7 +626,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     m_PointScalars->SetNumberOfComponents(1);
     m_CellScalars = vtkSmartPointer<vtkDoubleArray>::New();
     m_CellScalars->SetNumberOfComponents(1);
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         // DIS grid - interpolated
         m_ScalarLayeredGrid      = 0;
@@ -671,7 +676,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_StairsteppedGrid->SetCells(cellType, cellArray);
         delete[] cellType;
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         // DISV grid - interpolated
         m_ScalarStructuredGrid   = 0;
@@ -780,7 +785,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_StairsteppedGrid->SetCells(cellType, cellArray);
         delete[] cellType;
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         // DISU grid
         m_ScalarStructuredGrid   = 0;
@@ -841,7 +846,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     m_Vectors->SetNumberOfComponents(3);
     m_VectorMagnitudes = vtkSmartPointer<vtkDoubleArray>::New();
     m_VectorMagnitudes->SetNumberOfComponents(1);
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         m_VectorUnstructuredGrid = 0;
         m_VectorDataSet          = vtkSmartPointer<vtkStructuredGrid>::New();
@@ -851,7 +856,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_ExtractStructuredGridVector->SetInputData(m_VectorDataSet);
         m_ActiveVectorDataSet->SetInputConnection(m_ExtractStructuredGridVector->GetOutputPort());
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_VectorDataSet          = 0;
         m_VectorUnstructuredGrid = vtkSmartPointer<vtkUnstructuredGrid>::New();
@@ -875,7 +880,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     m_InterpolatedGridPoints->SetDataTypeToDouble();
     m_InterpolatedGridPoints->SetData(doubleArray);
 
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         vtkSmartPointer<vtkDoubleArray> doubleArray = vtkSmartPointer<vtkDoubleArray>::New();
         doubleArray->SetNumberOfComponents(3);
@@ -883,7 +888,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_StairsteppedGridPoints->SetDataTypeToDouble();
         m_StairsteppedGridPoints->SetData(doubleArray);
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         vtkSmartPointer<vtkDoubleArray> doubleArray = vtkSmartPointer<vtkDoubleArray>::New();
         doubleArray->SetNumberOfComponents(3);
@@ -892,7 +897,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_StairsteppedGridPoints->SetDataTypeToDouble();
         m_StairsteppedGridPoints->SetData(doubleArray);
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         vtkSmartPointer<vtkDoubleArray> doubleArray = vtkSmartPointer<vtkDoubleArray>::New();
         doubleArray->SetNumberOfComponents(3);
@@ -929,22 +934,27 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     }
     ComputeActiveScalarRange();
 
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         m_ScalarStructuredGrid->Modified();
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_ScalarLayeredGrid->Modified();
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         m_ScalarUnstructuredGrid->Modified();
     }
 
     // Define the cutoff value that indicates inactive cells.
     double cutoff = m_DataSource->GetInactiveCellValue() * 0.999;
-    m_ActiveScalarDataSet->ThresholdByLower(cutoff);
+#if ((VTK_MAJOR_VERSION == 9) && (VTK_MINOR_VERSION < 1) || (VTK_MAJOR_VERSION < 9))
+    m_ActiveScalarDataSet->ThresholdByLower(cutoff);    // deprecated as of VTK 9.1
+#else
+    m_ActiveScalarDataSet->SetThresholdFunction(vtkThreshold::THRESHOLD_LOWER);
+    m_ActiveScalarDataSet->SetLowerThreshold(cutoff);
+#endif
 
     // Bounding box
     SetBoundingBoxBounds();
@@ -972,17 +982,17 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
 
     // default Axes
     double bounds[6];
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         m_ScalarStructuredGrid->ComputeBounds();
         m_ScalarStructuredGrid->GetBounds(bounds);
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_ScalarLayeredGrid->ComputeBounds();
         m_ScalarLayeredGrid->GetBounds(bounds);
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         m_ScalarUnstructuredGrid->ComputeBounds();
         m_ScalarUnstructuredGrid->GetBounds(bounds);
@@ -998,13 +1008,13 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     if (m_DataSource->GetVectorArray() != 0)
     {
         int np;
-        if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+        if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
         {
             const int *vdim = m_DataSource->GetVectorGridDimensions();
             m_VectorDataSet->SetDimensions(vdim[0], vdim[1], vdim[2]);
             np = vdim[0] * vdim[1] * vdim[2];
         }
-        else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+        else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
         {
             np = m_DataSource->GetNumModelCells();
             // vtkCellArray *connectivity = vtkCellArray::New();
@@ -1066,13 +1076,13 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     if (m_DataSource->GetModelFeatureArray())
     {
         double rgba[4];
-        if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+        if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
         {
             m_ModelFeatures->SetGridTypeToStructuredGrid();
             m_ModelFeatures->SetFullGridDimensions(m_DataSource->GetScalarGridDimensions());
             m_ModelFeatures->SetGridPoints(m_InterpolatedGridPoints);
         }
-        else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+        else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
         {
             m_ModelFeatures->SetGridTypeToUnstructuredGrid();
             // Send the cell (connectivity) data from m_ScalarLayeredGrid to m_ModelFeatures
@@ -1081,7 +1091,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
                                                              m_ScalarLayeredGrid->GetCells());
             m_ModelFeatures->SetGridPoints(m_InterpolatedGridPoints);
         }
-        else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+        else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
         {
             m_ModelFeatures->SetGridTypeToUnstructuredGrid();
             // Send the cell (connectivity) data from m_ScalarUnstructuredGrid to m_ModelFeatures
@@ -1144,7 +1154,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     m_UseLogColorBar             = new int[m_NumScalarDataTypes];
     m_NumColorBarLabels          = new int[m_NumScalarDataTypes];
     m_ColorBarLabelPrecision     = new int[m_NumScalarDataTypes];
-    m_SolidDisplayMode           = new int[m_NumScalarDataTypes];
+    m_SolidDisplayMode           = new SolidDisplayType[m_NumScalarDataTypes];
     m_DoSolidThreshold           = new int[m_NumScalarDataTypes];
     m_SolidThresholdMax          = new double[m_NumScalarDataTypes];
     m_SolidThresholdMin          = new double[m_NumScalarDataTypes];
@@ -1164,13 +1174,13 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_UseLogColorBar[i]         = 0;
         m_NumColorBarLabels[i]      = 5;
         m_ColorBarLabelPrecision[i] = 3;
-        if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+        if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
         {
-            m_SolidDisplayMode[i] = MV_SOLID_BLOCKY;
+            m_SolidDisplayMode[i] = SolidDisplayType::MV_SOLID_BLOCKY;
         }
         else
         {
-            m_SolidDisplayMode[i] = MV_SOLID_SMOOTH;
+            m_SolidDisplayMode[i] = SolidDisplayType::MV_SOLID_SMOOTH;
         }
         m_DoSolidThreshold[i]           = 0;
         m_SolidThresholdMax[i]          = 1;
@@ -1184,7 +1194,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         m_CustomIsosurfaceValues[i]     = 0;
     }
 
-    if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         SetSolidDisplayToBlocky();
     }
@@ -1245,7 +1255,7 @@ void mvManager::ApplyDefaultSettings()
     SetCroppedAwayPiecesOpacity(0.2);
 
     // Subgrid
-    if (GetGridType() == MV_STRUCTURED_GRID)
+    if (GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         int *sdim = m_DataSource->GetScalarGridDimensions();
         SetScalarSubgridExtent(0, sdim[0] - 1, 0, sdim[1] - 1, 0, sdim[2] - 1);
@@ -1264,7 +1274,7 @@ void mvManager::ApplyDefaultSettings()
     }
     else
     {
-        if (m_DataSource->GetGridType() != MV_LAYERED_GRID)
+        if (m_DataSource->GetGridType() != GridType::MV_LAYERED_GRID)
         {
             int *sdim = m_DataSource->GetScalarGridDimensions();
             //		   SetGridLinePositions(sdim[0]/2, sdim[1]/2, sdim[2]/2);
@@ -1300,7 +1310,7 @@ void mvManager::ApplyDefaultSettings()
         SetColorBarLabelPrecision(3);
 
         // Solid amd Grid Display
-        if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+        if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
         {
             SetSolidDisplayToBlocky();
             SetGridDisplayToStairstepped();
@@ -1384,7 +1394,8 @@ void mvManager::ApplyDefaultSettings()
     // Grid Display
 }
 
-void mvManager::SetImmediateModeRendering(int b)
+#if ((VTK_MAJOR_VERSION == 8) && (VTK_MINOR_VERSION <= 1) || (VTK_MAJOR_VERSION < 8))  //  https://vtk.org/Wiki/VTK/API_Changes_8_0_1_to_8_1_0
+void mvManager::SetImmediateModeRendering(int b)  // deprecated vtk 8.1
 {
     m_SolidMapper->SetImmediateModeRendering(b);
     m_IsosurfaceMapper->SetImmediateModeRendering(b);
@@ -1398,6 +1409,7 @@ void mvManager::SetImmediateModeRendering(int b)
         m_GridLines[i]->SetImmediateModeRendering(b);
     }
 }
+#endif
 
 void mvManager::SetReleaseDataFlag(int b)
 {
@@ -1423,7 +1435,7 @@ void mvManager::SetReleaseDataFlag(int b)
     }
 }
 
-int mvManager::GetGridType() const
+GridType mvManager::GetGridType() const
 {
     if (m_DataSource != 0)
     {
@@ -1431,7 +1443,7 @@ int mvManager::GetGridType() const
     }
     else
     {
-        return 0;
+        return GridType::MV_GRID_NOT_DEFINED;
     }
 }
 
@@ -1657,7 +1669,7 @@ void mvManager::UpdateColorBands()
         delete[] values;
     }
 
-    if (m_SolidDisplayMode[m_ActiveDataType] == MV_SOLID_SMOOTH)
+    if (m_SolidDisplayMode[m_ActiveDataType] == SolidDisplayType::MV_SOLID_SMOOTH)
     {
         m_SolidMapper->SetScalarModeToUsePointData();
     }
@@ -1670,7 +1682,7 @@ void mvManager::UpdateColorBands()
 
 void mvManager::SetScalarSubgridExtent(int imin, int imax, int jmin, int jmax, int kmin, int kmax)
 {
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         // note that imin, imax, jmin, etc refer to point indices, starting from zero, and using vtk convention
         // In particular, k goes from bottom to top.
@@ -1696,7 +1708,7 @@ void mvManager::SetScalarSubgridExtent(int imin, int imax, int jmin, int jmax, i
         }
         m_ExtractCellsForSubgrid->SetCellList(cellList);
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         // kmin = top layer in subgrid
         // kmax = bottom layer in subgrid
@@ -1719,11 +1731,11 @@ void mvManager::SetScalarSubgridExtent(int imin, int imax, int jmin, int jmax, i
 
 const int *mvManager::GetScalarSubgridExtent()
 {
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         return m_ExtractStructuredGridForSubgrid->GetVOI();
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         // TO DO
         return 0;
@@ -1733,7 +1745,7 @@ const int *mvManager::GetScalarSubgridExtent()
 
 void mvManager::ScalarSubgridOn()
 {
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         const int *sdim = m_DataSource->GetScalarGridDimensions();
         int       *v    = m_ExtractStructuredGridForSubgrid->GetVOI();
@@ -1844,7 +1856,7 @@ void mvManager::ScalarSubgridOn()
             m_BlockySolidThreshold->SetInputConnection(m_ExtractCellsForSubgrid->GetOutputPort());
         }
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_ActiveScalarDataSet->SetInputConnection(m_ExtractCellsForSubgrid->GetOutputPort());
         m_BlockySolidThreshold->SetInputConnection(m_ExtractCellsForSubgrid->GetOutputPort());
@@ -1892,7 +1904,7 @@ void mvManager::ScalarSubgridOn()
 
 void mvManager::ScalarSubgridOff()
 {
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         if (m_GridDisplayMode == MV_GRID_INTERPOLATED)
         {
@@ -1921,7 +1933,7 @@ void mvManager::ScalarSubgridOff()
             m_ExtractFace[i]->SetInputConnection(m_ActiveScalarDataSet->GetOutputPort());
         }
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         if (m_GridDisplayMode == MV_GRID_INTERPOLATED)
         {
@@ -1976,7 +1988,7 @@ void mvManager::ScalarSubgridOff()
 
 int mvManager::IsScalarSubgridOn() const
 {
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         if (m_GridDisplayMode == MV_GRID_INTERPOLATED)
         {
@@ -1987,7 +1999,7 @@ int mvManager::IsScalarSubgridOn() const
             return (m_ActiveScalarDataSet->GetInput() == m_ExtractCellsForSubgrid->GetOutput());
         }
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         return (m_ActiveScalarDataSet->GetInput() == m_ExtractCellsForSubgrid->GetOutput());
     }
@@ -2186,7 +2198,7 @@ void mvManager::CropVectors(double xmin, double xmax,
         m_CropBoxForVectors->SetModelBounds(bounds);
         m_CropBoxForVectors->SetBounds(m_VectorBounds);
         m_CropBoxForVectors->SetAngle(m_VectorClippingAngle);
-        if (GetGridType() == MV_STRUCTURED_GRID)
+        if (GetGridType() == GridType::MV_STRUCTURED_GRID)
         {
             m_CropVectors->SetInputConnection(m_ExtractStructuredGridVector->GetOutputPort());
         }
@@ -2199,7 +2211,7 @@ void mvManager::CropVectors(double xmin, double xmax,
     }
     else
     {
-        if (GetGridType() == MV_STRUCTURED_GRID)
+        if (GetGridType() == GridType::MV_STRUCTURED_GRID)
         {
             m_ActiveVectorDataSet->SetInputConnection(m_ExtractStructuredGridVector->GetOutputPort());
         }
@@ -2613,7 +2625,7 @@ void mvManager::HideGridLines()
 
 void mvManager::ActivateGridLines(int i)
 {
-    if ((m_DataSource == 0) || (GetGridType() != MV_LAYERED_GRID))
+    if ((m_DataSource == 0) || (GetGridType() != GridType::MV_LAYERED_GRID))
     {
         m_GridLinesActivated[i] = 1;
         if (m_ActivatedGridLinesVisibility == 1)
@@ -2661,7 +2673,7 @@ void mvManager::SetGridLineColor(double r, double g, double b)
 
 int mvManager::AreGridLinesActive(int i) const
 {
-    if ((m_DataSource != 0) && (GetGridType() == MV_LAYERED_GRID))
+    if ((m_DataSource != 0) && (GetGridType() == GridType::MV_LAYERED_GRID))
     {
         return false;
     }
@@ -2945,15 +2957,15 @@ void mvManager::OnDataModified()
     //	{
     //		m_ScalarStructuredGrid->Modified();
     //	}
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         m_ScalarStructuredGrid->Modified();
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_ScalarLayeredGrid->Modified();
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         m_ScalarUnstructuredGrid->Modified();
     }
@@ -3091,17 +3103,17 @@ void mvManager::SetScalarDataTypeTo(int dataTypeIndex)
 
     int numPoints;
     int numCells;
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         numPoints = m_ScalarStructuredGrid->GetNumberOfPoints();
         numCells  = m_ScalarStructuredGrid->GetNumberOfCells();
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         numPoints = m_ScalarLayeredGrid->GetNumberOfPoints();
         numCells  = m_ScalarLayeredGrid->GetNumberOfCells();
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         numPoints = m_ScalarUnstructuredGrid->GetNumberOfPoints();
         numCells  = m_ScalarUnstructuredGrid->GetNumberOfCells();
@@ -3124,15 +3136,15 @@ void mvManager::SetScalarDataTypeTo(int dataTypeIndex)
     }
     ComputeActiveScalarRange();
 
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         m_ScalarStructuredGrid->Modified();
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_ScalarLayeredGrid->Modified();
     }
-    else if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         m_ScalarUnstructuredGrid->Modified();
     }
@@ -3154,11 +3166,11 @@ void mvManager::SetScalarDataTypeTo(int dataTypeIndex)
     SetColorBarNumberOfLabels(m_NumColorBarLabels[dataTypeIndex]);
     SetColorBarLabelPrecision(m_ColorBarLabelPrecision[dataTypeIndex]);
 
-    if (m_SolidDisplayMode[dataTypeIndex] == MV_SOLID_BLOCKY)
+    if (m_SolidDisplayMode[dataTypeIndex] == SolidDisplayType::MV_SOLID_BLOCKY)
     {
         SetSolidDisplayToBlocky();
     }
-    else if (m_SolidDisplayMode[dataTypeIndex] == MV_SOLID_BANDED)
+    else if (m_SolidDisplayMode[dataTypeIndex] == SolidDisplayType::MV_SOLID_BANDED)
     {
         SetSolidDisplayToBanded();
     }
@@ -3204,26 +3216,26 @@ void mvManager::SetScalarDataTypeTo(int dataTypeIndex)
 
 void mvManager::SetSolidDisplayToBlocky()
 {
-    m_SolidDisplayMode[m_ActiveDataType] = MV_SOLID_BLOCKY;
+    m_SolidDisplayMode[m_ActiveDataType] = SolidDisplayType::MV_SOLID_BLOCKY;
     m_SolidMapper->SetScalarModeToUseCellData();
     BuildPipelineForSolid();
 }
 
 void mvManager::SetSolidDisplayToSmooth()
 {
-    m_SolidDisplayMode[m_ActiveDataType] = MV_SOLID_SMOOTH;
+    m_SolidDisplayMode[m_ActiveDataType] = SolidDisplayType::MV_SOLID_SMOOTH;
     m_SolidMapper->SetScalarModeToUsePointData();
     BuildPipelineForSolid();
 }
 
 void mvManager::SetSolidDisplayToBanded()
 {
-    m_SolidDisplayMode[m_ActiveDataType] = MV_SOLID_BANDED;
+    m_SolidDisplayMode[m_ActiveDataType] = SolidDisplayType::MV_SOLID_BANDED;
     m_SolidMapper->SetScalarModeToUseCellData();
     BuildPipelineForSolid();
 }
 
-int mvManager::GetSolidDisplayMode() const
+SolidDisplayType mvManager::GetSolidDisplayMode() const
 {
     if (m_SolidDisplayMode != 0)
     {
@@ -3231,7 +3243,7 @@ int mvManager::GetSolidDisplayMode() const
     }
     else
     {
-        return 0;
+        return SolidDisplayType::MV_SOLID_SMOOTH;
     }
 }
 
@@ -4128,13 +4140,25 @@ void mvManager::SolidThresholdOff()
 
 void mvManager::SetSolidThresholdLimits(double minValue, double maxValue)
 {
-    m_BlockySolidThreshold->ThresholdBetween(minValue, maxValue);
+#if ((VTK_MAJOR_VERSION == 9) && (VTK_MINOR_VERSION < 1) || (VTK_MAJOR_VERSION < 9))
+    m_BlockySolidThreshold->ThresholdBetween(minValue, maxValue);    // deprecated as of VTK 9.1
+#else
+    m_BlockySolidThreshold->SetThresholdFunction(vtkThreshold::THRESHOLD_BETWEEN);
+    m_BlockySolidThreshold->SetLowerThreshold(minValue);
+    m_BlockySolidThreshold->SetUpperThreshold(maxValue);
+#endif
     m_GridShellClipMin->SetValue(minValue);
     m_GridShellClipMax->SetValue(maxValue);
     m_SmoothSolidIsosurface->GenerateValues(2, minValue, maxValue);
     m_FacesClipMin->SetValue(minValue);
     m_FacesClipMax->SetValue(maxValue);
-    m_FacesThreshold->ThresholdBetween(minValue, maxValue);
+#if ((VTK_MAJOR_VERSION == 9) && (VTK_MINOR_VERSION < 1) || (VTK_MAJOR_VERSION < 9))
+    m_FacesThreshold->ThresholdBetween(minValue, maxValue);    // deprecated as of VTK 9.1
+#else
+    m_FacesThreshold->SetThresholdFunction(vtkThreshold::THRESHOLD_BETWEEN);
+    m_FacesThreshold->SetLowerThreshold(minValue);
+    m_FacesThreshold->SetUpperThreshold(maxValue);
+#endif
     m_SolidThresholdMin[m_ActiveDataType] = minValue;
     m_SolidThresholdMax[m_ActiveDataType] = maxValue;
 }
@@ -4366,7 +4390,7 @@ void mvManager::BuildPipelineForSolid()
     vtkAlgorithmOutput *previousAlgorithmOutput;
     if (m_DoSolidThreshold[m_ActiveDataType])
     {
-        if (m_SolidDisplayMode[m_ActiveDataType] == MV_SOLID_SMOOTH || m_SolidDisplayMode[m_ActiveDataType] == MV_SOLID_BANDED)
+        if (m_SolidDisplayMode[m_ActiveDataType] == SolidDisplayType::MV_SOLID_SMOOTH || m_SolidDisplayMode[m_ActiveDataType] == SolidDisplayType::MV_SOLID_BANDED)
         {
             previousAlgorithmOutput = m_SmoothSolid->GetOutputPort();
         }
@@ -4626,7 +4650,7 @@ void mvManager::BuildPipelineForSolid()
             if (m_DoSolidThreshold[m_ActiveDataType])
             {
                 // for smooth or banded solid, we clip
-                if (m_SolidDisplayMode[m_ActiveDataType] == MV_SOLID_SMOOTH || m_SolidDisplayMode[m_ActiveDataType] == MV_SOLID_BANDED)
+                if (m_SolidDisplayMode[m_ActiveDataType] == SolidDisplayType::MV_SOLID_SMOOTH || m_SolidDisplayMode[m_ActiveDataType] == SolidDisplayType::MV_SOLID_BANDED)
                 {
                     m_FacesClipMin->SetInputConnection(m_Faces->GetOutputPort());
                     m_CroppedSolid->AddInputConnection(m_FacesClipMax->GetOutputPort());
@@ -4653,7 +4677,7 @@ void mvManager::BuildPipelineForSolid()
     }
 
     // Create color bands
-    if (m_SolidDisplayMode[m_ActiveDataType] == MV_SOLID_BANDED)
+    if (m_SolidDisplayMode[m_ActiveDataType] == SolidDisplayType::MV_SOLID_BANDED)
     {
         m_ColorBandFilter->SetInputConnection(previousAlgorithmOutput);
         previousAlgorithmOutput = m_ColorBandFilter->GetOutputPort();
@@ -4823,7 +4847,9 @@ char *mvManager::Serialize(const char *fileName, mvGUISettings *gui) const
     {
         cr    = strchr(code, '\n');
         *(cr) = '\0';
-        out << "File code " << (i + 1) << " = " << code << endl;
+        // Get relative paths for all file codes
+        std::string relative = GetRelativePath(fileName, code);
+        out << "File code " << (i + 1) << " = " << relative.c_str() << endl;
         code = cr + 1;
     }
 
@@ -4888,7 +4914,7 @@ char *mvManager::Serialize(const char *fileName, mvGUISettings *gui) const
         out << "Color bar " << (i + 1) << " label precision = " << m_ColorBarLabelPrecision[i] << endl;
 
         // Solid Control
-        out << "Solid " << (i + 1) << " display mode = " << m_SolidDisplayMode[i] << endl;
+        out << "Solid " << (i + 1) << " display mode = " << static_cast<int>(m_SolidDisplayMode[i]) << endl;
         out << "Solid " << (i + 1) << " apply threshold = " << m_DoSolidThreshold[i] << endl;
         out << "Solid " << (i + 1) << " threshold lower limit = " << m_SolidThresholdMin[i] << endl;
         out << "Solid " << (i + 1) << " threshold upper limit = " << m_SolidThresholdMax[i] << endl;
@@ -4971,7 +4997,7 @@ char *mvManager::Serialize(const char *fileName, mvGUISettings *gui) const
     }
     out << "Model feature glyph size = " << m_ModelFeatures->GetGlyphSize() << endl;
 
-    if (GetGridType() == MV_STRUCTURED_GRID)
+    if (GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         // Subgrid
         int *subg = m_ExtractStructuredGridForSubgrid->GetVOI();
@@ -5100,19 +5126,18 @@ char *mvManager::Serialize(const char *fileName, mvGUISettings *gui) const
 }
 
 // Read parameters from file
-void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *errorMsg)
+void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::string &errorMsg)
 {
     int    i, ivalue, i1, i2, i3, i4, i5, i6, i7, i8, i9;
     double fvalue, f1, f2, f3, f4, f5, f6;
     char   key[100], buffer[1024];
-    errorMsg[0] = '\0';
 
     // Open an input stream
     ifstream in(fileName, std::ifstream::in);
 
     if (!in.is_open())
     {
-        strcpy(errorMsg, "Unable to open the Model Viewer file.");
+        errorMsg = "Unable to open the Model Viewer file.";
         return;
     }
 
@@ -5145,7 +5170,7 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
     if (strcmp(buffer, "Model Viewer") != 0)
     {
         delete hashTable;
-        strcpy(errorMsg, "This file does not contain data for Model Viewer");
+        errorMsg = "This file does not contain data for Model Viewer";
         return;
     }
     buffer[0] = '\0';
@@ -5153,7 +5178,9 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
     if (strcmp(buffer, MV_VERSION) != 0)
     {
         delete hashTable;
-        sprintf(errorMsg, "This file does not contain data for Model Viewer version %s", MV_VERSION);
+        std::ostringstream oss;
+        oss << "This file does not contain data for Model Viewer version " << MV_VERSION;
+        errorMsg = oss.str();
         return;
     }
 
@@ -5166,12 +5193,16 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
     if (ncode == 0)
     {
         delete hashTable;
-        strcpy(errorMsg, "The Model Viewer file is damaged and cannot be loaded.");
+        errorMsg = "The Model Viewer file is damaged and cannot be loaded.";
         return;
     }
 
-    char *dataFileList = new char[ncode * 1024];
-    dataFileList[0]    = '\0';
+    // Get absolute paths for all file codes
+    std::string dirname = GetDirName(fileName);
+    char        szDest[MAX_PATH];
+    char        fullpath[MAX_PATH];
+    char *      dataFileList = new char[ncode * 1024];
+    dataFileList[0]          = '\0';
     for (i = 0; i < ncode; i++)
     {
         buffer[0] = '\0';
@@ -5180,10 +5211,29 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
         {
             delete hashTable;
             delete[] dataFileList;
-            strcpy(errorMsg, "The Model Viewer file is damaged and cannot be loaded.");
+            errorMsg = "The Model Viewer file is damaged and cannot be loaded.";
             return;
         }
-        strcat(dataFileList, buffer);
+        if (strlen(buffer))
+        {
+            strcpy(szDest, dirname.c_str());
+            VERIFY(PathAppend(szDest, buffer));
+            VERIFY(PathCanonicalize(fullpath, szDest));
+            if (!PathFileExists(fullpath))
+            {
+                delete hashTable;
+                delete[] dataFileList;
+                std::ostringstream oss;
+                oss << "Unable to open \"" << fullpath << "\".";
+                errorMsg = oss.str();
+                return;
+            }
+            strcat(dataFileList, fullpath);
+        }
+        else
+        {
+            strcat(dataFileList, "");
+        }
         strcat(dataFileList, "\n");
     }
 
@@ -5195,7 +5245,7 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
     if (err != 0)
     {
         delete hashTable;
-        strcpy(errorMsg, err);
+        errorMsg = err;
         return;
     }
 
@@ -5576,7 +5626,13 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, char *erro
                 m_NumColorBarLabels          = numColorBarLabels;
                 m_ColorBarLabelPrecision     = colorBarLabelPrecision;
 
-                m_SolidDisplayMode           = solidDisplayMode;
+                m_SolidDisplayMode           = new SolidDisplayType[numDataTypes];
+                for (i = 0; i < numDataTypes; ++i)
+                {
+                    m_SolidDisplayMode[i] = static_cast<SolidDisplayType>(solidDisplayMode[i]);
+                }
+                delete[] solidDisplayMode;
+
                 m_DoSolidThreshold           = applySolidThreshold;
                 m_SolidThresholdMax          = solidThresholdMax;
                 m_SolidThresholdMin          = solidThresholdMin;
@@ -6158,7 +6214,7 @@ void mvManager::RemoveOverlay()
 
 bool mvManager::GetIsStructuredGrid()
 {
-    return (GetGridType() == MV_STRUCTURED_GRID);
+    return (GetGridType() == GridType::MV_STRUCTURED_GRID);
 };
 
 void mvManager::SetBoundingBoxBounds()
@@ -6220,11 +6276,11 @@ int mvManager::GetNumberOfLayersInUnstructuredGrid() const
 
 void mvManager::SetGridDisplayToInterpolated()
 {
-    if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         return;
     }
-    if (m_DataSource->GetGridType() == MV_STRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_STRUCTURED_GRID)
     {
         if (IsScalarSubgridOn())
         {
@@ -6235,7 +6291,7 @@ void mvManager::SetGridDisplayToInterpolated()
             m_ActiveScalarDataSet->SetInputData(m_ScalarStructuredGrid);
         }
     }
-    else if (m_DataSource->GetGridType() == MV_LAYERED_GRID)
+    else if (m_DataSource->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         m_ExtractCellsForSubgrid->SetInputData(m_ScalarLayeredGrid);
         if (IsScalarSubgridOn())
@@ -6260,7 +6316,7 @@ void mvManager::SetGridDisplayToInterpolated()
 
 void mvManager::SetGridDisplayToStairstepped()
 {
-    if (m_DataSource->GetGridType() == MV_UNSTRUCTURED_GRID)
+    if (m_DataSource->GetGridType() == GridType::MV_UNSTRUCTURED_GRID)
     {
         return;
     }
@@ -6286,7 +6342,7 @@ void mvManager::SetGridDisplayToStairstepped()
     // Set solid display mode to blocky for all data types
     for (int i = 0; i < m_NumScalarDataTypes; i++)
     {
-        m_SolidDisplayMode[i] = MV_SOLID_BLOCKY;
+        m_SolidDisplayMode[i] = SolidDisplayType::MV_SOLID_BLOCKY;
     }
     BuildPipelineForSolid();
 }
@@ -6294,4 +6350,34 @@ void mvManager::SetGridDisplayToStairstepped()
 int mvManager::GetGridDisplayMode()
 {
     return m_GridDisplayMode;
+}
+
+std::string mvManager::GetRelativePath(const char *pszFrom, const char *pszTo)
+{
+    TCHAR szOut[MAX_PATH] = "";
+    if (strlen(pszTo) && PathIsSameRoot(pszFrom, pszTo))
+    {
+        std::string cpTo(pszTo);
+        std::replace(cpTo.begin(), cpTo.end(), '/', '\\');
+        VERIFY(PathCanonicalize(szOut, cpTo.c_str()));
+        cpTo = szOut;
+        VERIFY(PathRelativePathTo(szOut, pszFrom, FILE_ATTRIBUTE_NORMAL, cpTo.c_str(), FILE_ATTRIBUTE_NORMAL));
+        return std::string(szOut);
+    }
+    return std::string(pszTo);
+}
+
+std::string mvManager::GetDirName(const char *fullPath)
+{
+    char szPath[MAX_PATH];
+    char szOut[MAX_PATH];
+    char szDrive[_MAX_DRIVE];
+    char szDir[_MAX_DIR];
+    char szDest[MAX_PATH];
+
+    ASSERT(!PathIsRelative(fullPath));
+    VERIFY(_tsplitpath_s(fullPath, szDrive, _MAX_DRIVE, szDir, _MAX_DIR, NULL, 0, NULL, 0) == 0);
+    VERIFY(_tmakepath_s(szPath, _MAX_DIR, szDrive, szDir, NULL, NULL) == 0);
+
+    return std::string(szPath);
 }

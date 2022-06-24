@@ -31,7 +31,9 @@ public:
     CGridLinesPage   *m_GridLinesPage;
     CGridShellPage   *m_GridShellPage;
     CSubgridPage     *m_SubgridPage;
+#ifdef ENABLE_CGRIDDISPLAYPAGE
     CGridDisplayPage *m_GridDisplayPage;
+#endif
 
     // Dialog Data
     //{{AFX_DATA(CGridDlg)

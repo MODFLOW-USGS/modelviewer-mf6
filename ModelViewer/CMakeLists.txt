@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project (
   ModelViewer
-  VERSION ${MvProject_VERSION_MAJOR}.${MvProject_VERSION_MINOR}.${MvProject_VERSION_PATCH}
+  VERSION ${MvProject${VTK_SUFFIX}_VERSION_MAJOR}.${MvProject${VTK_SUFFIX}_VERSION_MINOR}.${MvProject${VTK_SUFFIX}_VERSION_PATCH}
   LANGUAGES CXX
 )
 
@@ -141,10 +141,42 @@ add_executable(ModelViewer WIN32
   VectorThresholdPage.h
 )
 
+if (${VTK_VERSION} VERSION_GREATER_EQUAL "9.0")
+  # vtk 9.1.0
+  #
+  # VTK::RenderingFreeType fixes
+  #   ERROR: In C:\VTK-9.1.0\Rendering\Core\vtkTextMapper.cxx, line 522
+  #   vtkOpenGLTextMapper (0000023EAF61D1A0): Could not locate vtkTextRenderer object.
+  #
+  # VTK::InteractionStyle fixes
+  #   Warning: In C:\VTK-9.1.0\Rendering\Core\vtkInteractorStyleSwitchBase.cxx, line 37
+  #   vtkInteractorStyleSwitchBase (000001CF38197220): Warning: Link to vtkInteractionStyle for default style selection.
+  #
+  #   Before adding, vtkWindowInteractor was broken (mouse did nothing)
+  #
+  # vtk_module_autoinit(
+  #   TARGETS
+  #     ModelViewer
+  #   MODULES
+  #     VTK::RenderingFreeType   #  Fixes ERROR: In C:\VTK-9.1.0\Rendering\Core\vtkTextMapper.cxx, line 522
+  #     VTK::InteractionStyle    #  Fixes nothing happens when interacting with the mouse
+  # )
+  vtk_module_autoinit(
+    TARGETS
+      ModelViewer
+    MODULES
+      ${VTK_LIBRARIES}
+  )
+endif()
+
 # modify ModelViewer executable name
 set_target_properties(ModelViewer PROPERTIES OUTPUT_NAME mvmf6)
 
 target_compile_definitions(ModelViewer PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
+
+# @TODO clean this up
+target_compile_definitions(ModelViewer PRIVATE MV_USE_VTKMFCWINDOW)
+target_compile_definitions(ModelViewer PRIVATE _WIN32_WINNT=_WIN32_WINNT_WIN7)
 
 if (MV_DEBUG_MEMORY_LEAKS)
   # set for all configs
@@ -201,6 +233,7 @@ if (MSVC)
     COMMAND ${CMAKE_COMMAND} -E echo Copying VTK dlls...
   )
   foreach(_lib ${VTK_LIBRARIES})
+    # message(STATUS "_lib=${_lib}")
     add_custom_command(TARGET ModelViewer POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${_lib}> $<TARGET_FILE_DIR:ModelViewer>
     )

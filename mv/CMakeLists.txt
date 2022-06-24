@@ -2,14 +2,12 @@ cmake_minimum_required(VERSION 3.20)
 
 project (
   mv
-  VERSION ${MvProject_VERSION_MAJOR}.${MvProject_VERSION_MINOR}.${MvProject_VERSION_PATCH}
+  VERSION ${MvProject${VTK_SUFFIX}_VERSION_MAJOR}.${MvProject${VTK_SUFFIX}_VERSION_MINOR}.${MvProject${VTK_SUFFIX}_VERSION_PATCH}
   LANGUAGES CXX C
 )
 
-if (MV_DEBUG_MEMORY_LEAKS)
-  # This sets 'Use MFC in a Shared DLL' -- automatically sets _AFXDLL
-  set(CMAKE_MFC_FLAG 2)
-endif()
+# This sets 'Use MFC in a Shared DLL' -- automatically sets _AFXDLL
+set(CMAKE_MFC_FLAG 2)
 
 add_library(mv
   Modflow6DataSource.cpp
@@ -75,6 +73,10 @@ generate_export_header(mv
 )
 
 target_compile_definitions(mv PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
+
+# @TODO clean this up
+target_compile_definitions(mv PRIVATE MV_USE_VTKMFCWINDOW)
+target_compile_definitions(mv PRIVATE _WIN32_WINNT=_WIN32_WINNT_WIN7)
 
 if (MV_DEBUG_MEMORY_LEAKS)
   # set for all configs

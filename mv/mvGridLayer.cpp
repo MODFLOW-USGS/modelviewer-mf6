@@ -93,13 +93,26 @@ void mvGridLayer::Build()
     m_Threshold->SetInputData(polyData);
     polyData->Delete();
     m_LayerPosition = 0;
-    m_Threshold->ThresholdBetween(-0.5, 0.5);
+#if ((VTK_MAJOR_VERSION == 9) && (VTK_MINOR_VERSION < 1) || (VTK_MAJOR_VERSION < 9))
+    m_Threshold->ThresholdBetween(-0.5, 0.5);      // deprecated as of VTK 9.1
+#else
+    m_Threshold->SetThresholdFunction(vtkThreshold::THRESHOLD_BETWEEN);
+    m_Threshold->SetLowerThreshold(-0.5);
+    m_Threshold->SetUpperThreshold(0.5);
+#endif
 }
 
 void mvGridLayer::SetLayerPosition(int layerPosition)
 {
     m_LayerPosition = layerPosition;
-    m_Threshold->ThresholdBetween(layerPosition - 0.5, layerPosition + 0.5);
+
+#if ((VTK_MAJOR_VERSION == 9) && (VTK_MINOR_VERSION < 1) || (VTK_MAJOR_VERSION < 9))
+    m_Threshold->ThresholdBetween(layerPosition - 0.5, layerPosition + 0.5);    // deprecated as of VTK 9.1
+#else
+    m_Threshold->SetThresholdFunction(vtkThreshold::THRESHOLD_BETWEEN);
+    m_Threshold->SetLowerThreshold(layerPosition - 0.5);
+    m_Threshold->SetUpperThreshold(layerPosition + 0.5);
+#endif
 }
 
 int mvGridLayer::GetLayerPosition() const

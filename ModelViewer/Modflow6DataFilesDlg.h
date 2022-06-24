@@ -20,7 +20,7 @@ protected:
 public:
     afx_msg void OnBrowseGwfModelNameFile();
     CString      m_GwfModelNameFile;
-    CString      m_HeadFile;
+    CString      m_HeadOrConcFile;
     CString      m_GridFile;
     CString      m_BudgetFile;
     virtual BOOL OnInitDialog();

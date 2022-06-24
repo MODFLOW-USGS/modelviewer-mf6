@@ -258,33 +258,35 @@ int mvColorBar::RenderOpaqueGeometry(vtkViewport *viewport)
         }
 
         // polygons & cell colors
-        unsigned char *rgba, *rgb;
         vtkIdType      ptIds[4];
         for (i = 0; i < m_NumberOfColors; i++)
         {
-            ptIds[0] = 2 * i;
+            ptIds[0] = 2 * (vtkIdType)i;
             ptIds[1] = ptIds[0] + 1;
             ptIds[2] = ptIds[1] + 2;
             ptIds[3] = ptIds[0] + 2;
             polys->InsertNextCell(4, ptIds);
 
+            unsigned char *rgb = colors->GetPointer(3 * i); // write into array directly
             if ((strcmp(m_LookupTable->GetClassName(), "vtkLogLookupTable") == 0) || (strcmp(m_LookupTable->GetClassName(), "mvLogColorTable") == 0))
             {
                 double logRange0 = log(range[0]) / log(10.0);
                 double logRange1 = log(range[1]) / log(10.0);
                 double e         = logRange0 + (logRange1 - logRange0) *
                                            ((double)i / (m_NumberOfColors - 1.0));
-                rgba = m_LookupTable->MapValue(pow(10.0, e));
+                const unsigned char *rgba = m_LookupTable->MapValue(pow(10.0, e));
+                rgb[0]                    = rgba[0];
+                rgb[1]                    = rgba[1];
+                rgb[2]                    = rgba[2];
             }
             else
             {
-                rgba = m_LookupTable->MapValue(range[0] + (range[1] - range[0]) *
+                const unsigned char *rgba = m_LookupTable->MapValue(range[0] + (range[1] - range[0]) *
                                                               ((double)i / (m_NumberOfColors - 1.0)));
+                rgb[0]                    = rgba[0];
+                rgb[1]                    = rgba[1];
+                rgb[2]                    = rgba[2];
             }
-            rgb    = colors->GetPointer(3 * i); // write into array directly
-            rgb[0] = rgba[0];
-            rgb[1] = rgba[1];
-            rgb[2] = rgba[2];
         }
 
         // Now position everything properly

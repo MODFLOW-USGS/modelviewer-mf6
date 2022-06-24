@@ -46,7 +46,7 @@ void CSubgridPage::DoDataExchange(CDataExchange* pDX)
     {
         DDX_Check(pDX, IDC_ACTIVATE_SUBGRID, m_ActivateSubgrid);
 
-        if (m_pDoc->GetGridType() == MV_STRUCTURED_GRID)
+        if (m_pDoc->GetGridType() == GridType::MV_STRUCTURED_GRID)
         {
             DDX_Text(pDX, IDC_ILOW, m_col_min);
             DDX_Text(pDX, IDC_IHIGH, m_col_max);
@@ -71,7 +71,7 @@ void CSubgridPage::DoDataExchange(CDataExchange* pDX)
                 }
             }
         }
-        if (m_pDoc->GetGridType() == MV_STRUCTURED_GRID || m_pDoc->GetGridType() == MV_LAYERED_GRID)
+        if (m_pDoc->GetGridType() == GridType::MV_STRUCTURED_GRID || m_pDoc->GetGridType() == GridType::MV_LAYERED_GRID)
         {
             DDX_Text(pDX, IDC_KLOW, m_lay_min);
             DDX_Text(pDX, IDC_KHIGH, m_lay_max);
@@ -127,9 +127,9 @@ void CSubgridPage::Reinitialize()
 
 void CSubgridPage::Activate(BOOL b)
 {
-    GetDlgItem(IDC_ACTIVATE_SUBGRID)->EnableWindow(b && m_pDoc->GetGridType() != MV_UNSTRUCTURED_GRID);
+    GetDlgItem(IDC_ACTIVATE_SUBGRID)->EnableWindow(b && m_pDoc->GetGridType() != GridType::MV_UNSTRUCTURED_GRID);
     BOOL bb  = ((CButton*)GetDlgItem(IDC_ACTIVATE_SUBGRID))->GetCheck();
-    BOOL bbb = b && bb && m_pDoc->GetGridType() == MV_STRUCTURED_GRID;
+    BOOL bbb = b && bb && m_pDoc->GetGridType() == GridType::MV_STRUCTURED_GRID;
     GetDlgItem(IDC_ILOW)->EnableWindow(bbb);
     GetDlgItem(IDC_IHIGH)->EnableWindow(bbb);
     GetDlgItem(IDC_JLOW)->EnableWindow(bbb);
@@ -138,7 +138,7 @@ void CSubgridPage::Activate(BOOL b)
     GetDlgItem(IDC_IHIGH_SPIN)->EnableWindow(bbb);
     GetDlgItem(IDC_JLOW_SPIN)->EnableWindow(bbb);
     GetDlgItem(IDC_JHIGH_SPIN)->EnableWindow(bbb);
-    bbb = b && bb && m_pDoc->GetGridType() != MV_UNSTRUCTURED_GRID;
+    bbb = b && bb && m_pDoc->GetGridType() != GridType::MV_UNSTRUCTURED_GRID;
     GetDlgItem(IDC_KLOW)->EnableWindow(bbb);
     GetDlgItem(IDC_KHIGH)->EnableWindow(bbb);
     GetDlgItem(IDC_KLOW_SPIN)->EnableWindow(bbb);
@@ -162,7 +162,7 @@ void CSubgridPage::Apply()
 {
     if (CustomUpdateData(TRUE) && m_ActivateSubgrid)
     {
-        if (m_pDoc->GetGridType() == MV_STRUCTURED_GRID)
+        if (m_pDoc->GetGridType() == GridType::MV_STRUCTURED_GRID)
         {
             if (m_col_min < 1)
             {
@@ -181,7 +181,7 @@ void CSubgridPage::Apply()
                 m_row_max = m_row_upper_limit;
             }
         }
-        if (m_pDoc->GetGridType() == MV_STRUCTURED_GRID || m_pDoc->GetGridType() == MV_LAYERED_GRID)
+        if (m_pDoc->GetGridType() == GridType::MV_STRUCTURED_GRID || m_pDoc->GetGridType() == GridType::MV_LAYERED_GRID)
         {
             if (m_lay_min < 1)
             {
@@ -201,7 +201,7 @@ void CSubgridPage::OnActivateSubgrid()
 {
     // TODO: Add your control notification handler code here
     BOOL b  = ((CButton*)GetDlgItem(IDC_ACTIVATE_SUBGRID))->GetCheck();
-    BOOL bb = b && m_pDoc->GetGridType() == MV_STRUCTURED_GRID;
+    BOOL bb = b && m_pDoc->GetGridType() == GridType::MV_STRUCTURED_GRID;
     GetDlgItem(IDC_ILOW)->EnableWindow(bb);
     GetDlgItem(IDC_IHIGH)->EnableWindow(bb);
     GetDlgItem(IDC_JLOW)->EnableWindow(bb);
@@ -210,7 +210,7 @@ void CSubgridPage::OnActivateSubgrid()
     GetDlgItem(IDC_IHIGH_SPIN)->EnableWindow(bb);
     GetDlgItem(IDC_JLOW_SPIN)->EnableWindow(bb);
     GetDlgItem(IDC_JHIGH_SPIN)->EnableWindow(bb);
-    if (m_pDoc->GetGridType() == MV_STRUCTURED_GRID || m_pDoc->GetGridType() == MV_LAYERED_GRID)
+    if (m_pDoc->GetGridType() == GridType::MV_STRUCTURED_GRID || m_pDoc->GetGridType() == GridType::MV_LAYERED_GRID)
     {
         GetDlgItem(IDC_KLOW)->EnableWindow(b);
         GetDlgItem(IDC_KHIGH)->EnableWindow(b);

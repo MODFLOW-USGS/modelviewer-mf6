@@ -10,6 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include "vtkSmartPointer.h"
+#include "mvDefine.h"
 
 class mvManager;
 class mvGUISettings;
@@ -55,7 +56,7 @@ public:
     void                               GetVectorMagnitudeRange(double* range);
     char*                              GetModelName();
     char*                              GetDataName();
-    int                                GetGridType();
+    GridType                           GetGridType();
 
     // Callback functions for modeless dialog boxes (tools)
 

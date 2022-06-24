@@ -16,8 +16,12 @@ using std::ofstream;
 
 class vtkLight;
 class vtkRenderer;
+#if defined(MV_USE_VTKMFCWINDOW)
+class vtkMFCWindow; // @replaces vtkWin32OpenGLRenderWindow and vtkWin32RenderWindowInteractor
+#else
 class vtkWin32OpenGLRenderWindow;
 class vtkWin32RenderWindowInteractor;
+#endif
 class mvGUISettings;
 
 class CMvView : public CView
@@ -32,8 +36,13 @@ public:
 
     // Operations
 public:
-    void SetPrintDPI(int dpi) { m_PrintDPI = dpi; };
+#if !defined(MV_USE_VTKMFCWINDOW)
+    void SetPrintDPI(int dpi)
+    {
+        m_PrintDPI = dpi;
+    };
     int  GetPrintDPI() { return m_PrintDPI; };
+#endif
     void ResetExportImageParameters();
     void RotateCamera(double angle);
     void ElevateCamera(double angle);
@@ -83,8 +92,12 @@ protected:
 
     // Objects for vtk rendering
     vtkRenderer*                    m_Renderer;
-    vtkWin32OpenGLRenderWindow*     m_RenderWindow;
-    vtkWin32RenderWindowInteractor* m_Interactor;
+#if defined(MV_USE_VTKMFCWINDOW)
+    vtkMFCWindow*                   m_MFCWindow; // @replaces m_RenderWindow and m_Interactor
+#else
+    vtkWin32OpenGLRenderWindow*     m_RenderWindow;        // replaced by m_MFCWindow->GetRenderWindow()
+    vtkWin32RenderWindowInteractor* m_Interactor;          // replaced by m_MFCWindow->GetInteractor()
+#endif
     vtkLight*                       m_Headlight;
     vtkLight*                       m_AuxiliaryLight;
 
@@ -96,10 +109,12 @@ protected:
     int                             m_ViewFromDirection;
     BOOL                            m_DoResetViewpoint;
 
+#if !defined(MV_USE_VTKMFCWINDOW)
     // Parameters for printing
     int                             m_PrintDPI;
     int                             m_PreviewDPI;
     int                             m_DPI;
+#endif
 
     // Parameters for exporting bitmap
     int                             m_BitmapResolutionOption;
@@ -119,9 +134,15 @@ protected:
     CString                         m_FileStartNumber;
 
     // Protected methods
-    virtual LRESULT                 WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+#if !defined(MV_USE_VTKMFCWINDOW)
+    virtual LRESULT                 WindowProc(UINT message, WPARAM wParam, LPARAM lParam);  // @todo
+#endif
     void                            PlaceHeadlightWithCamera();
+#if ((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION <= 3) || (VTK_MAJOR_VERSION < 6))
     void                            WriteBmp(ofstream* file, BOOL useScreenResolution);
+#else
+    void                            WriteBmp(const char *filename, BOOL useScreenResolution);
+#endif
 
     // Generated message map functions
 protected:

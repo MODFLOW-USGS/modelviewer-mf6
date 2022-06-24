@@ -152,6 +152,9 @@ void mvColorTable::Build()
                 c_rgba[3] = static_cast<unsigned char>(rgba[3] * 255.0f + 0.5f);
             }
         }
+#if ((VTK_MAJOR_VERSION == 7) && (VTK_MINOR_VERSION >= 1)) || (VTK_MAJOR_VERSION > 7)
+        this->BuildSpecialColors();
+#endif
         this->BuildTime.Modified();
     }
 }
