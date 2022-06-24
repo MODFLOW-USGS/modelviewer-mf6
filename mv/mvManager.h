@@ -572,6 +572,8 @@ protected:
     void                                            BuildPipelineForIsosurface();
     //	void ReleaseArrayMemory();
     //	void UpdateLogTransformedData();
+
+    friend class CMvDoc;
 };
 
 #endif
