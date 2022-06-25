@@ -17,7 +17,7 @@ public:
     mvOverlay();
     ~mvOverlay();
 
-    void  SetFileName(char *filename);
+    void  SetFileName(const char *filename);
     void  SetType(int type);
     void  SetCoordinatesAtGridOrigin(double xorig, double yorig);
     void  SetAngle(double angle);
