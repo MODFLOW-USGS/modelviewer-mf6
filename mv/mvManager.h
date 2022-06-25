@@ -190,7 +190,7 @@ public:
     void                               HideOverlay();
     int                                IsOverlayVisible() const;
     void                               ClearOverlayData();
-    void                               SetOverlayFileName(char *filename);
+    void                               SetOverlayFileName(const char *filename);
     void                               SetOverlayType(int type);
     void                               SetOverlayCoordinatesAtGridOrigin(double xorig, double yorig);
     void                               SetOverlayElevation(double elev);

@@ -64,6 +64,8 @@ add_library(mv
   mvUtil.h
   shpopen.c
   shapefil.h
+  win32/mvSaveCurrentDirectory.cpp
+  win32/mvSaveCurrentDirectory.h
 )
 
 # generate mvHeader for dll linkage
@@ -86,6 +88,10 @@ if (MV_DEBUG_MEMORY_LEAKS)
 endif()
 
 target_include_directories(mv PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
+if (WIN32)
+  target_include_directories(mv PRIVATE win32)
+endif()
 
 target_link_libraries(mv ${VTK_LIBRARIES})
 

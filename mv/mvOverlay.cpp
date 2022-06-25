@@ -150,7 +150,7 @@ void mvOverlay::ClearData()
     m_YMax = 0;
 }
 
-void mvOverlay::SetFileName(char *filename)
+void mvOverlay::SetFileName(const char *filename)
 {
     if (!filename)
     {

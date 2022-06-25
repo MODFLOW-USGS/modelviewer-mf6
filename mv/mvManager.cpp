@@ -1,61 +1,61 @@
 #include "mvManager.h"
-#include "mvCustomAppendPolyData.h"
-#include "mvModelList.h"
-#include "mvGUISettings.h"
-#include "mvPathlines.h"
-#include "mvGridLines.h"
-#include "mvGridLayer.h"
-#include "mvGridShell.h"
-#include "mvHashTable.h"
-#include "mvBoundingBox.h"
+
 #include "mvAxes.h"
-#include "mvModelFeatures.h"
-#include "mvColorBar.h"
-#include "mvDisplayText.h"
-#include "mvOverlay.h"
-#include "mvColorTable.h"
-#include "mvLogColorTable.h"
+#include "mvBoundingBox.h"
 #include "mvClipBox.h"
+#include "mvColorBar.h"
+#include "mvColorTable.h"
+#include "mvCustomAppendPolyData.h"
+#include "mvDisplayText.h"
+#include "mvGridLayer.h"
+#include "mvGridLines.h"
+#include "mvGridShell.h"
+#include "mvGUISettings.h"
+#include "mvHashTable.h"
+#include "mvLogColorTable.h"
+#include "mvModelFeatures.h"
+#include "mvModelList.h"
+#include "mvOverlay.h"
+#include "mvPathlines.h"
+#include "mvSaveCurrentDirectory.h"
 #include "mvUtil.h"
 
 #include "vtkActor.h"
+#include "vtkAlgorithmOutput.h"
 #include "vtkBandedPolyDataContourFilter.h"
+#include "vtkCellArray.h"
+#include "vtkCellData.h"
 #include "vtkClipPolyData.h"
 #include "vtkContourFilter.h"
 #include "vtkCubeSource.h"
 #include "vtkCutter.h"
 #include "vtkDataSetMapper.h"
-#include "vtkExtractGrid.h"
-#include "vtkExtractCells.h"
 #include "vtkDoubleArray.h"
+#include "vtkExtractCells.h"
+#include "vtkExtractGeometry.h"
+#include "vtkExtractGrid.h"
 #include "vtkGeometryFilter.h"
 #include "vtkGlyph3D.h"
 #include "vtkHedgeHog.h"
-#include "vtkLookupTable.h"
+#include "vtkHexagonalPrism.h"
+#include "vtkHexahedron.h"
 #include "vtkLogLookupTable.h"
+#include "vtkLookupTable.h"
+#include "vtkMaskPoints.h"
+#include "vtkPentagonalPrism.h"
 #include "vtkPlane.h"
+#include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkPropCollection.h"
-#include "vtkStructuredGrid.h"
-#include "vtkThreshold.h"
-#include "vtkThresholdPoints.h"
-#include "vtkMaskPoints.h"
-#include "vtkExtractGeometry.h"
-#include "vtkPointData.h"
 #include "vtkProperty.h"
 #include "vtkProperty2D.h"
-#include "vtkUnstructuredGrid.h"
-#include "vtkCellData.h"
+#include "vtkStructuredGrid.h"
 #include "vtkTextProperty.h"
-#include "vtkAlgorithmOutput.h"
+#include "vtkThreshold.h"
+#include "vtkThresholdPoints.h"
+#include "vtkUnstructuredGrid.h"
 #include "vtkWedge.h"
-#include "vtkHexahedron.h"
-#include "vtkPentagonalPrism.h"
-#include "vtkHexagonalPrism.h"
-#include "vtkCellArray.h"
-
-#include "vtkConeSource.h"
 
 #include <direct.h>
 
@@ -4848,7 +4848,7 @@ char *mvManager::Serialize(const char *fileName, mvGUISettings *gui) const
         cr    = strchr(code, '\n');
         *(cr) = '\0';
         // Get relative paths for all file codes
-        std::string relative = GetRelativePath(fileName, code);
+        std::string relative = mvSaveCurrentDirectory::GetRelativePath(fileName, code);
         out << "File code " << (i + 1) << " = " << relative.c_str() << endl;
         code = cr + 1;
     }
@@ -5101,7 +5101,9 @@ char *mvManager::Serialize(const char *fileName, mvGUISettings *gui) const
     // Overlay
     if (m_Overlay->HasData())
     {
-        out << "Overlay file = " << m_Overlay->GetFileName() << endl;
+        std::string dir      = mvSaveCurrentDirectory::GetDirName(fileName);
+        std::string relative = mvSaveCurrentDirectory::GetRelativePath(dir.c_str(), m_Overlay->GetFileName());
+        out << "Overlay file = " << relative << endl;
     }
     out << "Overlay data type = " << m_Overlay->GetType() << endl;
     double x, y;
@@ -5141,8 +5143,9 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
         return;
     }
 
+#if defined(_DEBUG)
     // Set the working directory to the directory that contains
-    // the document (.mv) file. We assume that model data files
+    // the document (.mvmf6) file. We assume that model data files
     // are also in this directory.
     strcpy(buffer, fileName);
     char *p = strrchr(buffer, '\\');
@@ -5151,7 +5154,11 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
         p++;
     }
     *p = '\0';
-    _chdir(buffer);
+    ///_chdir(buffer);
+    char curdir[1024];
+    ::GetCurrentDirectory(1023, curdir);
+    ASSERT(strcmp(curdir, buffer) == 0);
+#endif
 
     // Create a hash table and read the data file into the hash table
     mvHashTable *hashTable = new mvHashTable;
@@ -5198,7 +5205,7 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
     }
 
     // Get absolute paths for all file codes
-    std::string dirname = GetDirName(fileName);
+    std::string dirname = mvSaveCurrentDirectory::GetDirName(fileName);
     char        szDest[MAX_PATH];
     char        fullpath[MAX_PATH];
     char *      dataFileList = new char[ncode * 1024];
@@ -5235,6 +5242,13 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
             strcat(dataFileList, "");
         }
         strcat(dataFileList, "\n");
+    }
+
+    std::shared_ptr<mvSaveCurrentDirectory> spCurDir;
+    if (ncode == 1)
+    {
+        // save current directory and cd to dataFileList
+        spCurDir.reset(new mvSaveCurrentDirectory(dataFileList));
     }
 
     // Load the data and set up the visualization pipeline
@@ -6014,7 +6028,7 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
     char *errMsg = 0;
     if (hashTable->GetHashTableValue("Overlay file", filename))
     {
-        SetOverlayFileName(filename);
+        SetOverlayFileName(mvSaveCurrentDirectory::GetFullPath(filename, dirname.c_str()).c_str());
         if (!UpdateOverlay(errMsg))
         {
             strcat(m_WarningMessage, "Unable to load overlay file. Overlay will not be displayed.");
@@ -6087,7 +6101,7 @@ void mvManager::ClearOverlayData()
     m_Overlay->ClearData();
 }
 
-void mvManager::SetOverlayFileName(char *filename)
+void mvManager::SetOverlayFileName(const char *filename)
 {
     m_Overlay->SetFileName(filename);
 }
@@ -6350,34 +6364,4 @@ void mvManager::SetGridDisplayToStairstepped()
 int mvManager::GetGridDisplayMode()
 {
     return m_GridDisplayMode;
-}
-
-std::string mvManager::GetRelativePath(const char *pszFrom, const char *pszTo)
-{
-    TCHAR szOut[MAX_PATH] = "";
-    if (strlen(pszTo) && PathIsSameRoot(pszFrom, pszTo))
-    {
-        std::string cpTo(pszTo);
-        std::replace(cpTo.begin(), cpTo.end(), '/', '\\');
-        VERIFY(PathCanonicalize(szOut, cpTo.c_str()));
-        cpTo = szOut;
-        VERIFY(PathRelativePathTo(szOut, pszFrom, FILE_ATTRIBUTE_NORMAL, cpTo.c_str(), FILE_ATTRIBUTE_NORMAL));
-        return std::string(szOut);
-    }
-    return std::string(pszTo);
-}
-
-std::string mvManager::GetDirName(const char *fullPath)
-{
-    char szPath[MAX_PATH];
-    char szOut[MAX_PATH];
-    char szDrive[_MAX_DRIVE];
-    char szDir[_MAX_DIR];
-    char szDest[MAX_PATH];
-
-    ASSERT(!PathIsRelative(fullPath));
-    VERIFY(_tsplitpath_s(fullPath, szDrive, _MAX_DRIVE, szDir, _MAX_DIR, NULL, 0, NULL, 0) == 0);
-    VERIFY(_tmakepath_s(szPath, _MAX_DIR, szDrive, szDir, NULL, NULL) == 0);
-
-    return std::string(szPath);
 }
