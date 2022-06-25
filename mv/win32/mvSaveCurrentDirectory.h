@@ -4,11 +4,11 @@
 class mvSaveCurrentDirectory
 {
 public:
-	mvSaveCurrentDirectory(void);
+    mvSaveCurrentDirectory(void);
     mvSaveCurrentDirectory(const char* szNewPath);
-	~mvSaveCurrentDirectory(void);
+    ~mvSaveCurrentDirectory(void);
 
-	bool changeDir(const char* szPathName);
+    bool changeDir(const char* szPathName);
 
     static std::string GetDirName(const char* fullPath);
     static std::string GetFullPath(const char* szMore, const char* szDirectory);
