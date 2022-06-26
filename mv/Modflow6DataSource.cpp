@@ -966,6 +966,10 @@ char *Modflow6DataSource::CreateDisvGrid(char *gridFile)
         return "Error encountered while reading the binary grid file.";
     }
 
+    m_xorigin   = xorigin;
+    m_yorigin   = yorigin;
+    m_angrot    = angrot;
+
     // allocate arrays to contain read data
     m_Elev      = new double[m_Ncpl + m_NumberOfModflowCells]; // first ncpl elements contains top of grid, remaining entries contain botm of layer
     vert        = new double[2 * m_Nvert];
@@ -1489,6 +1493,10 @@ char *Modflow6DataSource::CreateDisuGrid(char *gridFile)
         delete[] aRecord;
         return "Error encountered while reading the binary grid file.";
     }
+
+    m_xorigin       = xorigin;
+    m_yorigin       = yorigin;
+    m_angrot        = angrot;
 
     // allocate arrays
     top             = new double[m_NumberOfModflowCells];

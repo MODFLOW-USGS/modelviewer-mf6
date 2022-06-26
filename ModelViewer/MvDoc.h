@@ -233,6 +233,10 @@ protected:
     BOOL               m_IsAnimating;
     mvGUISettings*     m_GUI;
 
+    double             m_default_xorigin;
+    double             m_default_yorigin;
+    double             m_default_angrot;
+
     // The visualization pipeline manager
     mvManager*         m_Manager;
 

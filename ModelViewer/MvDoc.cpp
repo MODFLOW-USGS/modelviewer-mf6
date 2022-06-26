@@ -137,6 +137,10 @@ CMvDoc::CMvDoc()
     m_AnimationType  = atTime;
     m_AnimationSteps = 10;
 
+    m_default_xorigin = 0.;
+    m_default_yorigin = 0.;
+    m_default_angrot  = 0.;
+
     // Get the models supported by this application
     m_NumberOfModels = mvModelList::GetNumberOfModels();
     m_ModelNames     = new char *[m_NumberOfModels];
@@ -279,6 +283,12 @@ BOOL CMvDoc::OnOpenDocument(LPCTSTR lpszPathName)
     // If we are not at startup, then update the tool dialog boxes
     else
     {
+        if (Modflow6DataSource *modflow6 = dynamic_cast<Modflow6DataSource *>(m_Manager->m_DataSource))
+        {
+            m_default_xorigin = modflow6->GetXOrigin();
+            m_default_yorigin = modflow6->GetYOrigin();
+            m_default_angrot  = modflow6->GetAngRot();
+        }
         UpdateToolDialogs(gui);
         delete gui;
     }
@@ -573,6 +583,10 @@ void CMvDoc::OnLoadData()
     m_Manager->ApplyDefaultSettings();
     if (Modflow6DataSource *modflow6 = dynamic_cast<Modflow6DataSource*>(m_Manager->m_DataSource))
     {
+        m_default_xorigin = modflow6->GetXOrigin();
+        m_default_yorigin = modflow6->GetYOrigin();
+        m_default_angrot  = modflow6->GetAngRot();
+
         m_Manager->SetOverlayCoordinatesAtGridOrigin(modflow6->GetXOrigin(), modflow6->GetYOrigin());
         m_Manager->SetOverlayAngle(modflow6->GetAngRot());
     }
@@ -1306,6 +1320,11 @@ void CMvDoc::UpdateOverlayDlg()
     }
     else
     {
+        m_OverlayDlg->m_ControlsPage->m_XOrig = m_default_xorigin;
+        m_OverlayDlg->m_ControlsPage->m_YOrig = m_default_yorigin;
+        m_OverlayDlg->m_ControlsPage->m_Angle = m_default_angrot;
+        m_OverlayDlg->m_ControlsPage->UpdateData(FALSE);
+
         m_OverlayDlg->m_FilePage->m_Filename = _T("");
         m_OverlayDlg->m_FilePage->m_TypeComboBox.SetCurSel(0);
         m_OverlayDlg->m_FilePage->UpdateData(FALSE);

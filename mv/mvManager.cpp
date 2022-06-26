@@ -5143,23 +5143,6 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
         return;
     }
 
-#if defined(_DEBUG)
-    // Set the working directory to the directory that contains
-    // the document (.mvmf6) file. We assume that model data files
-    // are also in this directory.
-    strcpy(buffer, fileName);
-    char *p = strrchr(buffer, '\\');
-    if (*(p + 1) == ':')
-    {
-        p++;
-    }
-    *p = '\0';
-    ///_chdir(buffer);
-    char curdir[1024];
-    ::GetCurrentDirectory(1023, curdir);
-    ASSERT(strcmp(curdir, buffer) == 0);
-#endif
-
     // Create a hash table and read the data file into the hash table
     mvHashTable *hashTable = new mvHashTable;
     while (!in.eof())
