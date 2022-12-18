@@ -1,4 +1,5 @@
 #include "mvOverlay.h"
+#include "mvUtil.h"
 #include "shapefil.h"
 #include "vtkPolyData.h"
 #include "vtkClipPolyData.h"
@@ -10,7 +11,7 @@
 #include "mvDxfReader.h"
 
 // This must be below vtkStandardNewMacro
-#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #include <afx.h>
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -163,7 +164,7 @@ void mvOverlay::SetFileName(const char *filename)
     }
     if (m_FileName != 0)
     {
-        if (stricmp(m_FileName, filename) == 0)
+        if (mvUtil::stricmp(m_FileName, filename) == 0)
         {
             return;
         }
@@ -247,7 +248,7 @@ void mvOverlay::SetFullGrid(vtkStructuredGrid *fg)
     m_FullGrid = fg;
 }
 
-int mvOverlay::Update(char *errMsg)
+int mvOverlay::Update(const char *errMsg)
 {
     if (m_NewFile)
     {
@@ -271,7 +272,7 @@ int mvOverlay::Update(char *errMsg)
         }
     }
     Build();
-    errMsg = 0;
+    errMsg = nullptr;
     return 1;
 }
 
@@ -586,7 +587,7 @@ void mvOverlay::Build()
     }
 }
 
-int mvOverlay::ReadESRIShapeFile(char *errMsg)
+int mvOverlay::ReadESRIShapeFile(const char *errMsg)
 {
     SHPHandle hSHP;
     int       nShapeType, nEntities, i, iPart;
@@ -669,16 +670,16 @@ int mvOverlay::ReadESRIShapeFile(char *errMsg)
     m_YMax        = adfMaxBound[1];
     m_NumEntities = nEntities;
     m_NewFile     = 0;
-    errMsg        = 0;
+    errMsg        = nullptr;
     return 1;
 }
 
-int mvOverlay::ReadDxfFile(char *errMsg)
+int mvOverlay::ReadDxfFile(const char *errMsg)
 {
     int          i;
     mvDxfReader *dxf = new mvDxfReader;
     dxf->SetFileName(m_FileName);
-    errMsg = 0;
+    errMsg = nullptr;
     if (!dxf->Read(errMsg))
     {
         delete dxf;

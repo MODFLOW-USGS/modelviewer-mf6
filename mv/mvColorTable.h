@@ -15,7 +15,9 @@
 #if !defined mvColorTable_h
 #define mvColorTable_h
 
-#include "vtkLookupTable.h"
+#include <cstdint>
+
+#include <vtkLookupTable.h>
 
 #define MV_CT_UNDEFINED_COLOR_SCHEME         -1
 #define MV_CT_DEFAULT_C0LOR_SCHEME           0
@@ -32,16 +34,16 @@
 class mvColorTable : public vtkLookupTable
 {
 protected:
-    void          FillColorTable(unsigned long lowercolor, unsigned long uppercolor);
+    void          FillColorTable(std::uint32_t lowercolor, std::uint32_t uppercolor);
     bool          m_TransformValues;
     int           m_ColorScheme;
-    unsigned long m_FirstCustomColor;
-    unsigned long m_LastCustomColor;
+    std::uint32_t m_FirstCustomColor;
+    std::uint32_t m_LastCustomColor;
 
 public:
     vtkTypeMacro(mvColorTable, vtkLookupTable);
     
-    virtual void         Build();
+    void                 Build() override;
     static mvColorTable *New();
     bool                 GetTransformValues() { return m_TransformValues; }
     void                 SetTransformValues(bool Value);
@@ -53,10 +55,10 @@ public:
     void                 SetReversedModifiedColorScheme();
     void                 SetCustomColorScheme();
     void                 SetReversedCustomColorScheme();
-    unsigned long        GetFirstCustomColor() { return m_FirstCustomColor; };
-    unsigned long        GetLastCustomColor() { return m_LastCustomColor; };
-    void                 SetFirstCustomColor(unsigned long value);
-    void                 SetLastCustomColor(unsigned long value);
+    std::uint32_t        GetFirstCustomColor() { return m_FirstCustomColor; };
+    std::uint32_t        GetLastCustomColor() { return m_LastCustomColor; };
+    void                 SetFirstCustomColor(std::uint32_t value);
+    void                 SetLastCustomColor(std::uint32_t value);
 
 protected:
     mvColorTable();

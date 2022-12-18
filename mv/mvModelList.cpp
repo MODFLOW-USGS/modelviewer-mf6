@@ -3,6 +3,7 @@
 #define MV_MODFLOW6
 
 #include "mvModelList.h"
+#include "mvUtil.h"
 
 #ifdef MV_MODFLOW6
 #include "Modflow6DataSource.h"
@@ -11,7 +12,7 @@
 #include <string.h>
 
 // This must be below vtkStandardNewMacro
-#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #include <afx.h>
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -44,7 +45,7 @@ void mvModelList::GetModelNames(char **buffer)
 mvDataSource *mvModelList::CreateDataSource(char *model)
 {
 #ifdef MV_MODFLOW6
-    if (stricmp(model, Modflow6DataSource::GetNameStatic()) == 0)
+    if (mvUtil::stricmp(model, Modflow6DataSource::GetNameStatic()) == 0)
     {
         return new Modflow6DataSource;
     }

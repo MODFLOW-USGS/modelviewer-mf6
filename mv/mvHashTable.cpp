@@ -1,9 +1,10 @@
 #include "mvHashTable.h"
+#include "mvUtil.h"
 #include <string.h>
 #include <stdlib.h>
 
 // This must be below vtkStandardNewMacro
-#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #include <afx.h>
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -37,7 +38,7 @@ mvHashTable::~mvHashTable()
     }
 }
 
-void mvHashTable::AddHashEntry(char *key, char *value)
+void mvHashTable::AddHashEntry(const char *key, const char *value)
 {
     mvHashNode *pos;
     mvHashNode *newpos;
@@ -65,7 +66,7 @@ void mvHashTable::AddHashEntry(char *key, char *value)
     pos->next = newpos;
 }
 
-char *mvHashTable::GetHashTableValue(char *key)
+char *mvHashTable::GetHashTableValue(const char *key) const
 {
     mvHashNode *pos;
     int         loc = HashFunction(key);
@@ -76,7 +77,7 @@ char *mvHashTable::GetHashTableValue(char *key)
     {
         return 0;
     }
-    while ((pos) && (stricmp(pos->key, key) != 0))
+    while ((pos) && (mvUtil::stricmp(pos->key, key) != 0))
     {
         pos = pos->next;
     }
@@ -87,7 +88,7 @@ char *mvHashTable::GetHashTableValue(char *key)
     return 0;
 }
 
-int mvHashTable::GetHashTableValue(char *key, double &v)
+int mvHashTable::GetHashTableValue(const char *key, double &v) const
 {
     char *str = GetHashTableValue(key);
     if (!str)
@@ -98,7 +99,7 @@ int mvHashTable::GetHashTableValue(char *key, double &v)
     return 1;
 }
 
-int mvHashTable::GetHashTableValue(char *key, int &v)
+int mvHashTable::GetHashTableValue(const char *key, int &v) const
 {
     char *str = GetHashTableValue(key);
     if (!str)
@@ -109,7 +110,7 @@ int mvHashTable::GetHashTableValue(char *key, int &v)
     return 1;
 }
 
-int mvHashTable::GetHashTableValue(char *key, char *v)
+int mvHashTable::GetHashTableValue(const char *key, char *v) const
 {
     char *str = GetHashTableValue(key);
     if (!str)
@@ -120,7 +121,7 @@ int mvHashTable::GetHashTableValue(char *key, char *v)
     return 1;
 }
 
-int mvHashTable::HashFunction(char *str)
+int mvHashTable::HashFunction(const char *str) const
 {
     unsigned int hashval;
 

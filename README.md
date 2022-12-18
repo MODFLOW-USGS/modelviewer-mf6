@@ -5,57 +5,60 @@ This is the development repository for the USGS Model Viewer for MODFLOW 6 Graph
 
 # Building Model Viewer for MODFLOW 6
 
-## Prerequisite Software
+## Prerequisites
 
-* 7-Zip 
-* CMake 3.20 or newer
-* Git 2.31 or newer
-* Microsoft Visual Studio 2019
-
-  * Workloads:
-    
-    Desktop development with C++  :ballot_box_with_check:
-  
-  * Individual components
-    
-    :ballot_box_with_check: C++ MFC for latest v142 build tools (x86 & x64)
+* CMake 3.21 or newer
+* Qt 5.15.2
+* VTK 9.1.0
+* Ninja build system
+* Visual Studio 2019 64-bit (windows)
+* gcc 64-bit (linux)
+* clang 64-bit (macOS)
 
 ## Building
 
-Open a command prompt window and download the precompiled VTK 6.3.0 libraries
-      
-      cd %USERPROFILE%\Downloads
-      curl -L -O https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/vtk-6.3.0-vs2017-x64/vtk-6.3.0-vs2017-x64.7z
+Install Qt 5.15.2 for open source use (https://www.qt.io/download)
 
-Using 7-zip unzip the vtk libraries
+Download the VTK 9.1.0 Source (https://github.com/Kitware/VTK/releases/tag/v9.1.0)
 
-      cd /D C:\
-      7z x %USERPROFILE%\Downloads\vtk-6.3.0-vs2017-x64.7z
-      
-Clone your fork of modelviewer-mf6
+Download the modelviewer-mf6 source version 1.1 or later
 
-      mkdir %USERPROFILE%\source\repos
-      cd %USERPROFILE%\source\repos
-      git clone git@github.com:<YOUR-GITHUB-USER-NAME>/modelviewer-mf6.git
+Copy the misc/CMakePresets-vtk-9.1.0-qt-5.15.2.json file to the top-level
+of the VTK source tree and rename it to CMakePresets.json.
 
-Use CMake to configure
+Set the following environment variables or manually edit
+the default presets in the CMakePresets.json file:
 
-      cd modelviewer-mf6
-      cmake --preset vs2019
-      
-Use CMake to build
+      $env{RUNNER_WORKSPACE}  = <location to build vtk>
+      $env{VTK_VER}           = 9.1.0
+      $env{AQT_VER}           = 5.15.2
 
-      cmake --build --preset vs2019
+On Linux run
 
-Use CMake to open the project in Visual Studio
+      cmake --preset gcc_64
+      cmake --build --preset gcc_64 --config Release
+      cmake --install $RUNNER_WORKSPACE/qt5-vtk-$VTK_VER-build --config Release
 
-      cmake --open _vs2019
-      
-To debug in Visual Studio
+On macOS run
 
-      Right-click 'ModelViewer' within the 'Solution Explorer' tab and select 
-      'Set as Startup Project'.  Press the F5 key to begin debugging.
-      
+      cmake --preset clang_64
+      cmake --build --preset clang_64 --config Release
+      cmake --install $RUNNER_WORKSPACE/qt5-vtk-$VTK_VER-build --config Release
+
+On Windows run
+
+      cmake --preset win64_msvc2019_64
+      cmake --build --preset win64_msvc2019_64 --config Release
+      cmake --install %RUNNER_WORKSPACE%/qt5-vtk-%VTK_VER%-build --config Release
+
+Download (or clone) the modelviewer-mf6 source
+
+Within the top-level directory of modelviewer-mf6 run
+
+      cmake -S . -B ./_ninja_multi -G "Ninja Multi-Config"
+      cmake --build ./_ninja_multi --config Release
+
+
 Disclaimer
 ----------
 

@@ -24,8 +24,17 @@ Help/mvmf6.chm
 # Visual Studio history directories
 .vshistory/
 
+# Apple Desktop Services Store
+.DS_Store
+
+# vscode settings
+.vscode/
+
 # local cmake presets
 CMakeUserPresets.json
+
+# read-the-docs
+docs/build
 
 # Backup files
 *.BAK

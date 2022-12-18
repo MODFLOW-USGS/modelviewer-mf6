@@ -1,0 +1,17 @@
+#ifndef MV_VERSION_H
+#define MV_VERSION_H
+
+#define MV_VERSION_MAJOR        "@PROJECT_VERSION_MAJOR@"
+#define MV_VERSION_MINOR        "@PROJECT_VERSION_MINOR@"
+#define MV_VERSION_PATCH        "@PROJECT_VERSION_PATCH@"
+
+#define MV_VERSION_PRERELEASE   "@MV_VERSION_PRERELEASE@"
+
+// $(git rev-parse --short HEAD)
+#define MV_SHORT_SHA1           "@MV_SHORT_SHA1@"
+
+// $(Get-Date -UFormat '%Y-%d-%m (compiled %b %d %Y %T)')
+// $(date --rfc-3339=date) (compiled $(date "+%b %d %Y %H:%M:%S"))
+#define MV_DATE_COMPILED        "@MV_DATE_COMPILED@"
+
+#endif // MV_VERSION_H

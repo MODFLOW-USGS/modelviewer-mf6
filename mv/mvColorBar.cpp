@@ -13,7 +13,7 @@
 vtkStandardNewMacro(mvColorBar);
 
 // This must be below vtkStandardNewMacro
-#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #include <afx.h>
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -30,8 +30,8 @@ mvColorBar::mvColorBar()
     m_Precision           = 3;
     m_NumberOfColors      = 64;
     m_NumberOfLabelsBuilt = 0;
-    m_LabelFormat         = new char[16];
-    sprintf(m_LabelFormat, "%s%d.%dg", "%-#", m_Precision + 8, m_Precision);
+    m_LabelFormat         = new char[30];
+    sprintf(m_LabelFormat, "%s%d.%d%c", "%-#", m_Precision + 8, m_Precision, 'g');
     m_LookupTable    = 0;
     m_ColorBar       = vtkPolyData::New();
     m_ColorBarMapper = vtkPolyDataMapper2D::New();

@@ -2,13 +2,13 @@
 #include "mvSaveCurrentDirectory.h"
 
 // This must be below vtkStandardNewMacro
-#include <afx.h>
+////#include <afx.h>
 #include <shlwapi.h>
-#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+//#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+//#define new DEBUG_NEW
+//#undef THIS_FILE
+//static char THIS_FILE[] = __FILE__;
+//#endif
 
 mvSaveCurrentDirectory::mvSaveCurrentDirectory(void)
     : m_path(0)
@@ -49,8 +49,9 @@ mvSaveCurrentDirectory::~mvSaveCurrentDirectory(void)
         BOOL bRet = ::SetCurrentDirectory(m_path);
         if (bRet == 0)
         {
-            TRACE("::SetCurrentDirectory(%s) failed (%d)\n", m_path, ::GetLastError());
-            ASSERT(false);
+            //TRACE("::SetCurrentDirectory(%s) failed (%d)\n", m_path, ::GetLastError());
+            //ASSERT(false);
+            assert(false);
         }
         delete[] m_path;
     }
@@ -62,7 +63,7 @@ bool mvSaveCurrentDirectory::changeDir(const char* lpPathName)
     bool bRet = false;
     if (lpPathName)
     {
-        CString strPathName(lpPathName);
+        //CString strPathName(lpPathName);
 
         DWORD   len     = ::GetCurrentDirectory(0, nullptr);
         char * current = new char[len];
@@ -74,8 +75,8 @@ bool mvSaveCurrentDirectory::changeDir(const char* lpPathName)
                 bRet = ::SetCurrentDirectory(lpPathName);
                 if (bRet == 0)
                 {
-                    TRACE("::SetCurrentDirectory failed (%d)\n", ::GetLastError());
-                    ASSERT(false);
+                    //TRACE("::SetCurrentDirectory failed (%d)\n", ::GetLastError());
+                    assert(false);
                 }
             }
             delete[] current;
@@ -85,8 +86,8 @@ bool mvSaveCurrentDirectory::changeDir(const char* lpPathName)
             bRet = ::SetCurrentDirectory(lpPathName);
             if (bRet == 0)
             {
-                TRACE("::SetCurrentDirectory failed (%d)\n", ::GetLastError());
-                ASSERT(false);
+                //TRACE("::SetCurrentDirectory failed (%d)\n", ::GetLastError());
+                assert(false);
             }
         }
     }
@@ -100,11 +101,13 @@ std::string mvSaveCurrentDirectory::GetDirName(const char* fullPath)
     char szDir[_MAX_DIR];
     char szDest[MAX_PATH];
 
-    ASSERT(!PathIsRelative(fullPath));
-    VERIFY(_tsplitpath_s(fullPath, szDrive, _MAX_DRIVE, szDir, _MAX_DIR, nullptr, 0, nullptr, 0) == 0);
+    //ASSERT(!PathIsRelative(fullPath));
+    //VERIFY(_tsplitpath_s(fullPath, szDrive, _MAX_DRIVE, szDir, _MAX_DIR, nullptr, 0, nullptr, 0) == 0);
+    _splitpath_s(fullPath, szDrive, _MAX_DRIVE, szDir, _MAX_DIR, nullptr, 0, nullptr, 0);
 
     char szPath[MAX_PATH];
-    VERIFY(_tmakepath_s(szPath, _MAX_DIR, szDrive, szDir, nullptr, nullptr) == 0);
+    //VERIFY(_tmakepath_s(szPath, _MAX_DIR, szDrive, szDir, nullptr, nullptr) == 0);
+    _makepath_s(szPath, _MAX_DIR, szDrive, szDir, nullptr, nullptr);
 
     return std::string(szPath);
 }
@@ -116,9 +119,11 @@ std::string mvSaveCurrentDirectory::GetRelativePath(const char* pszFrom, const c
     {
         std::string cpTo(pszTo);
         std::replace(cpTo.begin(), cpTo.end(), '/', '\\');
-        VERIFY(PathCanonicalize(szOut, cpTo.c_str()));
+        //VERIFY(PathCanonicalize(szOut, cpTo.c_str()));
+        PathCanonicalize(szOut, cpTo.c_str());
         cpTo = szOut;
-        VERIFY(PathRelativePathTo(szOut, pszFrom, FILE_ATTRIBUTE_NORMAL, cpTo.c_str(), FILE_ATTRIBUTE_NORMAL));
+        //VERIFY(PathRelativePathTo(szOut, pszFrom, FILE_ATTRIBUTE_NORMAL, cpTo.c_str(), FILE_ATTRIBUTE_NORMAL));
+        PathRelativePathTo(szOut, pszFrom, FILE_ATTRIBUTE_NORMAL, cpTo.c_str(), FILE_ATTRIBUTE_NORMAL);
         return std::string(szOut);
     }
     return std::string(pszTo);
@@ -128,16 +133,16 @@ std::string mvSaveCurrentDirectory::GetFullPath(const char* szMore, const char* 
 {
     if (PathIsRelative(szMore))
     {
-        ASSERT(szDirectory);
-        ASSERT(PathIsDirectory(szDirectory));
+        assert(szDirectory);
+        assert(PathIsDirectory(szDirectory));
 
         char buffer[MAX_PATH];
         strcpy(buffer, szDirectory);
         PathAddBackslash(buffer);
-        VERIFY(PathAppend(buffer, szMore));
+        PathAppend(buffer, szMore);
 
         char canon[MAX_PATH];
-        VERIFY(PathCanonicalize(canon, buffer));
+        PathCanonicalize(canon, buffer);
 
         return std::string(canon);
     }

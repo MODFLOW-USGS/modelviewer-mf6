@@ -1,0 +1,114 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+      "major": 3,
+      "minor": 18,
+      "patch": 0
+    },
+    "configurePresets": [
+      {
+        "name": "default",
+        "hidden": true,
+        "binaryDir": "$env{RUNNER_WORKSPACE}/qt5-vtk-$env{VTK_VER}-build",
+        "cacheVariables": {
+          "BUILD_TESTING": "OFF",
+          "CMAKE_DEBUG_POSTFIX": "d",
+          "CMAKE_INSTALL_PREFIX": "$env{RUNNER_WORKSPACE}/qt5-vtk-$env{VTK_VER}",
+          "VTK_GROUP_ENABLE_Qt" : "YES",
+          "VTK_QT_VERSION": "5",
+          "VTK_MODULE_ENABLE_VTK_RenderingQt": "YES",
+          "VTK_MODULE_ENABLE_VTK_ViewsQt": "YES",
+          "VTK_MODULE_ENABLE_VTK_GUISupportQt": "YES",
+          "VTK_MODULE_ENABLE_VTK_GUISupportQtQuick": "DONT_WANT",
+          "VTK_MODULE_ENABLE_VTK_GUISupportQtSQL":"YES"
+        },
+        "generator": "Ninja Multi-Config",
+        "environment": {
+          "Qt5_DIR": "$env{RUNNER_WORKSPACE}/Qt/$env{AQT_VER}/${presetName}/lib/cmake/Qt5"
+        }
+      },
+      {
+        "name": "win64_msvc2019_64",
+        "inherits": "default",
+        "displayName": "vtk-9.1.0 with VTK_MODULE_ENABLE_VTK_GUISupportQt=YES using msvc2019_64",
+        "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Windows"
+        },
+        "vendor": {
+          "usgs.gov/modflow": {
+            "Name": "U.S. Geological Survey",
+            "Notes": "This file should be placed in the root directory of VTK-9.1.0",
+            "Configure": "cmake --preset ${presetName}",
+            "Build-debug": "cmake --build --preset ${presetName} --config Debug",
+            "Build-release": "cmake --build --preset ${presetName} --config Release",
+            "Install-debug": "cmake --install ${binaryDir} --config Debug",
+            "Install-release": "cmake --install ${binaryDir} --config Release"
+          }
+        }
+      },
+      {
+        "name": "gcc_64",
+        "inherits": "default",
+        "displayName": "vtk-9.1.0 with VTK_MODULE_ENABLE_VTK_GUISupportQt=YES using gcc_64",
+        "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Linux"
+        },
+        "cacheVariables": {
+          "CMAKE_INSTALL_RPATH": "$ORIGIN"
+        },
+        "vendor": {
+          "usgs.gov/modflow": {
+            "Name": "U.S. Geological Survey",
+            "Notes": "This file should be placed in the root directory of VTK-9.1.0",
+            "Configure": "cmake --preset ${presetName}",
+            "Build-debug": "cmake --build --preset ${presetName} --config Debug",
+            "Build-release": "cmake --build --preset ${presetName} --config Release",
+            "Install-debug": "cmake --install ${binaryDir} --config Debug",
+            "Install-release": "cmake --install ${binaryDir} --config Release"
+          }
+        }
+      },
+      {
+        "name": "clang_64",
+        "inherits": "default",
+        "displayName": "vtk-9.1.0 with VTK_MODULE_ENABLE_VTK_GUISupportQt=YES using clang_64",
+        "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Darwin"
+        },  
+        "vendor": {
+          "usgs.gov/modflow": {
+            "Name": "U.S. Geological Survey",
+            "Notes": "This file should be placed in the root directory of VTK-9.1.0",
+            "Configure": "cmake --preset ${presetName}",
+            "Build-debug": "cmake --build --preset ${presetName} --config Debug",
+            "Build-release": "cmake --build --preset ${presetName} --config Release",
+            "Install-debug": "cmake --install ${binaryDir} --config Debug",
+            "Install-release": "cmake --install ${binaryDir} --config Release"
+          }
+        }
+      }
+    ],
+    "buildPresets": [
+      {
+        "name": "win64_msvc2019_64",
+        "configurePreset": "win64_msvc2019_64"
+      },
+      {
+        "name": "gcc_64",
+        "configurePreset": "gcc_64"
+      },
+      {
+        "name": "clang_64",
+        "configurePreset": "clang_64"
+      }
+    ],
+    "vendor": {
+      "Note": ""
+    }
+  }

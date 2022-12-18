@@ -1,4 +1,4 @@
-#include <String.h>
+#include <string.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -9,7 +9,7 @@
 const double PI = 3.14159265;
 
 // This must be below vtkStandardNewMacro
-#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #include <afx.h>
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -78,7 +78,7 @@ void mvDxfReader::SetFileName(char *filename)
     }
     if (m_FileName != 0)
     {
-        if (stricmp(m_FileName, filename) == 0)
+        if (mvUtil::stricmp(m_FileName, filename) == 0)
         {
             return;
         }
@@ -124,7 +124,7 @@ int mvDxfReader::GetCoordinates(int entity, int vertex, double &x, double &y)
     return 1;
 }
 
-int mvDxfReader::Read(char *errMsg)
+int mvDxfReader::Read(const char *errMsg)
 {
     double Xoff = 0.0;
     double Yoff = 0.0;
@@ -132,7 +132,7 @@ int mvDxfReader::Read(char *errMsg)
     int    test, code;
     char   buffer[1024];
     num_layers = 0;
-    errMsg     = 0;
+    errMsg     = nullptr;
     ClearData();
 
     // Open DXF file
@@ -150,8 +150,8 @@ int mvDxfReader::Read(char *errMsg)
     int found = 0;
     do
     {
-        if (fgets(buffer, 1024, fdxf) == 0) break;
-        if (stricmp(buffer, "$ucsorg\n") == 0)
+        if (fgets(buffer, 1024, fdxf) == nullptr) break;
+        if (mvUtil::stricmp(buffer, "$ucsorg\n") == 0)
         {
             for (;;)
             {
@@ -170,7 +170,8 @@ int mvDxfReader::Read(char *errMsg)
                 }
                 else
                 {
-                    fgets(buffer, 1024, fdxf);
+                    char* s = fgets(buffer, 1024, fdxf);
+                    assert(s);
                 }
             }
             found = 1;
@@ -190,35 +191,35 @@ int mvDxfReader::Read(char *errMsg)
     mvLinkList *lines = new mvLinkList;
     do
     {
-        if (fgets(buffer, 1024, fdxf) == 0)
+        if (fgets(buffer, 1024, fdxf) == nullptr)
         {
             break;
         }
-        if (!stricmp(buffer, "polyline\n"))
+        if (!mvUtil::stricmp(buffer, "polyline\n"))
         {
             process_poly(lines);
         }
-        else if (!stricmp(buffer, "lwpolyline\n"))
+        else if (!mvUtil::stricmp(buffer, "lwpolyline\n"))
         {
             process_lwpoly(lines);
         }
-        else if (!stricmp(buffer, "line\n"))
+        else if (!mvUtil::stricmp(buffer, "line\n"))
         {
             process_line(lines);
         }
-        else if (!stricmp(buffer, "text\n"))
+        else if (!mvUtil::stricmp(buffer, "text\n"))
         {
             process_text();
         }
-        else if (!stricmp(buffer, "circle\n"))
+        else if (!mvUtil::stricmp(buffer, "circle\n"))
         {
             process_circle(lines);
         }
-        else if (!stricmp(buffer, "arc\n"))
+        else if (!mvUtil::stricmp(buffer, "arc\n"))
         {
             process_arc(lines);
         }
-        else if (!stricmp(buffer, "endsec\n"))
+        else if (!mvUtil::stricmp(buffer, "endsec\n"))
         {
             break;
         }
@@ -288,13 +289,13 @@ void mvDxfReader::get_layer_info(void)
 
     do
     {
-        if (fgets(buffer, 1024, fdxf) == 0) goto ProcessLayers;
-        if (stricmp(buffer, "tables\n") == 0)
+        if (fgets(buffer, 1024, fdxf) == nullptr) goto ProcessLayers;
+        if (mvUtil::stricmp(buffer, "tables\n") == 0)
         {
             do
             {
-                if (fgets(buffer, 1024, fdxf) == 0) goto ProcessLayers;
-                if (stricmp(buffer, "layer\n") == 0)
+                if (fgets(buffer, 1024, fdxf) == nullptr) goto ProcessLayers;
+                if (mvUtil::stricmp(buffer, "layer\n") == 0)
                 {
                     for (;;)
                     {
@@ -302,8 +303,9 @@ void mvDxfReader::get_layer_info(void)
                         if (code == 2)
                         {
                             char *name = new char[1024];
-                            fgets(name, 1024, fdxf);
-                            names->AddItem(name);
+                            char *s    = fgets(name, 1024, fdxf);
+                            assert(s);
+                            if (s != nullptr) names->AddItem(name);
                         }
                         else if (code == 62)
                         {
@@ -317,11 +319,12 @@ void mvDxfReader::get_layer_info(void)
                         }
                         else
                         {
-                            fgets(buffer, 1024, fdxf);
+                            char* s = fgets(buffer, 1024, fdxf);
+                            assert(s != nullptr);
                         }
                     }
                 }
-                else if (stricmp(buffer, "endsec\n") == 0)
+                else if (mvUtil::stricmp(buffer, "endsec\n") == 0)
                 {
                     goto ProcessLayers;
                 }
@@ -362,7 +365,7 @@ int mvDxfReader::get_layer(char *lname)
 
     for (i = 0; i < num_layers; i++)
     {
-        if (stricmp(layer_name[i], lname) == 0)
+        if (mvUtil::stricmp(layer_name[i], lname) == 0)
         {
             return layer_color[i];
         }
@@ -381,7 +384,7 @@ int mvDxfReader::find_entity(void)
 
     do
     {
-        if (fgets(buffer, 1024, fdxf) == NULL)
+        if (fgets(buffer, 1024, fdxf) == nullptr)
         {
             test = feof(fdxf);
             if (test)
@@ -393,13 +396,14 @@ int mvDxfReader::find_entity(void)
                 }
                 do
                 {
-                    if (fgets(buffer, 1024, fdxf) == NULL)
+                    if (fgets(buffer, 1024, fdxf) == nullptr)
                     {
                         return 0;
                     }
-                    if (stricmp(buffer, "entities\n") == 0)
+                    if (mvUtil::stricmp(buffer, "entities\n") == 0)
                     {
-                        fgets(buffer, 1024, fdxf);
+                        char* s = fgets(buffer, 1024, fdxf);
+                        assert(s);
                         return 1;
                     }
                 } while (1);
@@ -409,9 +413,10 @@ int mvDxfReader::find_entity(void)
                 return 0;
             }
         }
-        if (stricmp(buffer, "entities\n") == 0)
+        if (mvUtil::stricmp(buffer, "entities\n") == 0)
         {
-            fgets(buffer, 1024, fdxf);
+            char *s = fgets(buffer, 1024, fdxf);
+            assert(s);
             return 1;
         }
     } while (1);
@@ -429,6 +434,7 @@ void mvDxfReader::process_line(mvLinkList *lines)
     char   buffer2[1024];
     double x1, y1;
     double x2, y2;
+    char * s;
 
     color             = 1;
 
@@ -442,7 +448,8 @@ void mvDxfReader::process_line(mvLinkList *lines)
         switch (code)
         {
         case 8: /*----- layer name -----*/
-            fgets(buffer2, 1024, fdxf);
+            s = fgets(buffer2, 1024, fdxf);
+            assert(s);
             color = get_layer(buffer2);
             break;
         case 10:
@@ -463,7 +470,8 @@ void mvDxfReader::process_line(mvLinkList *lines)
         case 0:
             break;
         default:
-            fgets(buffer2, 1024, fdxf);
+            s = fgets(buffer2, 1024, fdxf);
+            assert(s);
             break;
         }
     } while (code != 0);
@@ -493,6 +501,7 @@ void mvDxfReader::process_poly(mvLinkList *lines)
     char   buffer2[1024];
     double x1, y1;
     double x2, y2;
+    char * s;
 
     color             = 1;
     quit              = 0;
@@ -510,7 +519,8 @@ void mvDxfReader::process_poly(mvLinkList *lines)
         switch (code)
         {
         case 8: /*----- layer name -----*/
-            fgets(buffer2, 1024, fdxf);
+            s = fgets(buffer2, 1024, fdxf);
+            assert(s);
             color = get_layer(buffer2);
             break;
 
@@ -532,7 +542,8 @@ void mvDxfReader::process_poly(mvLinkList *lines)
         case 0:
             break;
         default:
-            fgets(buffer2, 1024, fdxf);
+            s = fgets(buffer2, 1024, fdxf);
+            assert(s);
             break;
         }
     } while (code != 0);
@@ -541,8 +552,9 @@ void mvDxfReader::process_poly(mvLinkList *lines)
     vert_num = 0;
     do
     {
-        fgets(buffer2, 1024, fdxf);
-        if (strstr(strlwr(buffer2), "vertex"))
+        s = fgets(buffer2, 1024, fdxf);
+        assert(s);
+        if (strstr(mvUtil::strlwr(buffer2), "vertex"))
         {
             vert_num++;
             do
@@ -551,7 +563,8 @@ void mvDxfReader::process_poly(mvLinkList *lines)
                 switch (code)
                 {
                 case 8: /*----- layer name -----*/
-                    fgets(buffer2, 1024, fdxf);
+                    s = fgets(buffer2, 1024, fdxf);
+                    assert(s);
                     // if(strstr(buffer2,"HARD") != NULL) found = 1;
                     // if(strstr(buffer2,"TOP") != NULL) found = 1;
                     /*                       color = get_layer(buffer2);*/
@@ -580,7 +593,8 @@ void mvDxfReader::process_poly(mvLinkList *lines)
                 case 0:
                     break;
                 default:
-                    fgets(buffer2, 1024, fdxf);
+                    s = fgets(buffer2, 1024, fdxf);
+                    assert(s);
                     break;
                 }
             } while (code != 0);
@@ -614,14 +628,16 @@ void mvDxfReader::process_poly(mvLinkList *lines)
                 switch (code)
                 {
                 case 8: /*----- layer name -----*/
-                    fgets(buffer2, 1024, fdxf);
+                    s = fgets(buffer2, 1024, fdxf);
+                    assert(s);
                     color = get_layer(buffer2);
                     if (color <= 0) color = 1;
                     break;
                 case 0:
                     break;
                 default:
-                    fgets(buffer2, 1024, fdxf);
+                    s = fgets(buffer2, 1024, fdxf);
+                    assert(s);
                     break;
                 }
             } while (code != 0);
@@ -652,6 +668,7 @@ void mvDxfReader::process_lwpoly(mvLinkList *lines)
     char   buffer2[1024];
     double x1, y1;
     double x2, y2;
+    char * s;
 
     color             = 1;
     quit              = 0;
@@ -671,7 +688,8 @@ void mvDxfReader::process_lwpoly(mvLinkList *lines)
         switch (code)
         {
         case 8: /*----- layer name -----*/
-            fgets(buffer2, 1024, fdxf);
+            s = fgets(buffer2, 1024, fdxf);
+            assert(s);
             color = get_layer(buffer2);
             break;
 
@@ -699,7 +717,8 @@ void mvDxfReader::process_lwpoly(mvLinkList *lines)
         case 0:
             break;
         default:
-            fgets(buffer2, 1024, fdxf);
+            s = fgets(buffer2, 1024, fdxf);
+            assert(s);
             break;
         }
         if (code == 20)
@@ -745,6 +764,7 @@ void mvDxfReader::process_text(void)
     double height;
     char   buffer2[1024];
     double x1, y1;
+    char * s;
 
     angle  = 0.0;
     symbol = -1;
@@ -757,7 +777,8 @@ void mvDxfReader::process_text(void)
         switch (code)
         {
         case 8: /*----- layer name -----*/
-            fgets(buffer2, 1024, fdxf);
+            s = fgets(buffer2, 1024, fdxf);
+            assert(s);
             color = get_layer(buffer2);
             break;
         case 10:
@@ -776,12 +797,14 @@ void mvDxfReader::process_text(void)
             test = ReadValue(fdxf, &color);
             break;
         case 1:
-            fgets(buffer2, 1024, fdxf);
+            s = fgets(buffer2, 1024, fdxf);
+            assert(s);
             break;
         case 0:
             break;
         default:
-            fgets(buffer2, 1024, fdxf);
+            s = fgets(buffer2, 1024, fdxf);
+            assert(s);
             break;
         }
     } while (code != 0);
@@ -801,6 +824,7 @@ void mvDxfReader::process_circle(mvLinkList *lines)
     char   buffer2[1024];
     double x1, y1;
     double x2, y2;
+    char * s;
 
     radius = 0.0;
     angle  = 0.0;
@@ -817,7 +841,8 @@ void mvDxfReader::process_circle(mvLinkList *lines)
         switch (code)
         {
         case 8: /*----- layer name -----*/
-            fgets(buffer2, 1024, fdxf);
+            s = fgets(buffer2, 1024, fdxf);
+            assert(s);
             color = get_layer(buffer2);
             break;
         case 10:
@@ -835,7 +860,8 @@ void mvDxfReader::process_circle(mvLinkList *lines)
         case 0:
             break;
         default:
-            fgets(buffer2, 1024, fdxf);
+            s = fgets(buffer2, 1024, fdxf);
+            assert(s);
             break;
         }
     } while (code != 0);
@@ -873,6 +899,7 @@ void mvDxfReader::process_arc(mvLinkList *lines)
     char   buffer2[1024];
     double x1, y1;
     double x2, y2;
+    char * s;
 
     radius = 0.0;
     aend = astart = 0.0;
@@ -893,7 +920,8 @@ void mvDxfReader::process_arc(mvLinkList *lines)
         switch (code)
         {
         case 8: /*----- layer name -----*/
-            fgets(buffer2, 1024, fdxf);
+            s = fgets(buffer2, 1024, fdxf);
+            assert(s);
             color = get_layer(buffer2);
             break;
         case 10:
@@ -917,7 +945,8 @@ void mvDxfReader::process_arc(mvLinkList *lines)
         case 0:
             break;
         default:
-            fgets(buffer2, 1024, fdxf);
+            s = fgets(buffer2, 1024, fdxf);
+            assert(s);
             break;
         }
     } while (code != 0);
@@ -958,6 +987,7 @@ void mvDxfReader::process_none(void)
     int  test;
     int  code;
     char buffer3[275];
+    char *s;
 
     do
     {
@@ -967,7 +997,8 @@ void mvDxfReader::process_none(void)
         case 0:
             break;
         default:
-            fgets(buffer3, 274, fdxf);
+            s = fgets(buffer3, 274, fdxf);
+            assert(s);
             break;
         }
     } while (code != 0);

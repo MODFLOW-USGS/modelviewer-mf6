@@ -13,7 +13,7 @@ public:
     ~mvDxfReader();
 
     void SetFileName(char *filename);
-    int  Read(char *errMsg);
+    int  Read(const char *errMsg);
     int  GetNumberOfEntities();
     int  GetNumberOfVerticesInEntity(int i);
     int  GetCoordinates(int entity, int vertex, double &x, double &y);

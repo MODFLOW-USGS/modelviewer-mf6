@@ -1,0 +1,165 @@
+{
+  "version": 2,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "default qt-vtk build",
+      "description": "TODO desc",
+      "generator": "Visual Studio 16 2019",
+      "binaryDir": "${sourceDir}/_${presetName}",
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/_${presetName}/INSTALL",
+        "VTK_DIR": "C:/QT-VTK-9.1.0-leaks-vs2019-x64/lib/cmake/vtk-9.1",
+        "Qt5_DIR": "C:/qt/5.15.2/msvc2019_64/lib/cmake/Qt5"
+      },
+      "environment": {},
+      "vendor": {}
+    },
+    {
+      "name": "default-clang-tidy",
+      "displayName": "default qt-vtk clang-tidy build",
+      "description": "TODO desc",
+      "generator": "Visual Studio 16 2019",
+      "toolset": "ClangCl",
+      "binaryDir": "${sourceDir}/_${presetName}",
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/_${presetName}/INSTALL",
+        "VTK_DIR": "C:/QT-VTK-9.1.0-leaks-vs2019-x64/lib/cmake/vtk-9.1",
+        "Qt5_DIR": "C:/qt/5.15.2/msvc2019_64/lib/cmake/Qt5",
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy;--checks=-*,modernize-use-nullptr"
+      },
+      "environment": {},
+      "vendor": {}
+    },
+    {
+      "name": "default-apple",
+      "displayName": "macOS Ninja Multi-Config qt-vtk build",
+      "description": "macOS build using Ninja Multi-Config",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/_${presetName}",
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/_${presetName}/INSTALL",
+        "VTK_DIR": "$env{HOME}/qt5-vtk-9.1.0/lib/cmake/vtk-9.1",
+        "Qt5_DIR": "$env{HOME}/Qt/5.15.2/clang_64/lib/cmake/Qt5"
+      },
+      "environment": {},
+      "vendor": {}
+    },
+    {
+      "name": "xcode",
+      "displayName": "macOS xcode qt-vtk build",
+      "description": "macOS build using Xcode",
+      "generator": "Xcode",
+      "binaryDir": "${sourceDir}/_${presetName}",
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/_${presetName}/INSTALL",
+        "VTK_DIR": "$env{HOME}/qt5-vtk-9.1.0/lib/cmake/vtk-9.1",
+        "Qt5_DIR": "$env{HOME}/Qt/5.15.2/clang_64/lib/cmake/Qt5"
+      },
+      "environment": {},
+      "vendor": {}
+    },
+    {
+      "name": "focal",
+      "displayName": "focal -- Ubuntu 20.04 gcc_64 build",
+      "description": "focal -- Ubuntu 20.04 gcc_64 build using make",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/_${presetName}",
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/_${presetName}/INSTALL",
+        "VTK_DIR": "$env{HOME}/work/modelviewer-mf6/qt5-vtk-9.1.0/lib/cmake/vtk-9.1",
+        "Qt5_DIR": "$env{HOME}/work/modelviewer-mf6/Qt/5.15.2/gcc_64/lib/cmake/Qt5"
+      },
+      "environment": {},
+      "vendor": {}
+    },
+    {
+      "name": "focal-ninja",
+      "inherits": "focal",
+      "displayName": "focal-ninja -- Ubuntu 20.04 gcc_64 build",
+      "description": "focal-ninja -- Ubuntu 20.04 gcc_64 build using Ninja",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/_${presetName}",
+      "cacheVariables": {},
+      "environment": {},
+      "vendor": {}
+    },
+    {
+      "name": "focal-ninja-multi",
+      "inherits": "focal",
+      "displayName": "focal-ninja-multi -- Ubuntu 20.04 gcc_64 build",
+      "description": "focal-ninja-multi -- Ubuntu 20.04 gcc_64 build using Ninja Multi-Config",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/_${presetName}",
+      "cacheVariables": {},
+      "environment": {},
+      "vendor": {}
+    },
+    {
+      "name": "memory",
+      "displayName": "default qt-vtk build",
+      "description": "TODO desc",
+      "generator": "Visual Studio 16 2019",
+      "binaryDir": "${sourceDir}/_${presetName}",
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/_${presetName}/INSTALL",
+        "VTK_DIR": "C:/QT-VTK-9.1.0-leaks-vs2019-x64/lib/cmake/vtk-9.1",
+        "Qt5_DIR": "C:/qt/5.15.2/msvc2019_64/lib/cmake/Qt5",
+        "MV_DEBUG_MEMORY_LEAKS": "ON"
+      },
+      "environment": {},
+      "vendor": {}
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default"
+    },
+    {
+      "name": "default-apple",
+      "configurePreset": "default-apple"
+    },
+    {
+      "name": "focal",
+      "configurePreset": "focal"
+    },
+    {
+      "name": "focal-ninja",
+      "configurePreset": "focal-ninja"
+    },
+    {
+      "name": "focal-ninja-multi",
+      "configurePreset": "focal-ninja-multi"
+    },
+    {
+      "name": "xcode",
+      "configurePreset": "xcode"
+    },
+    {
+      "name": "memory",
+      "configurePreset": "memory"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default",
+      "environment": {
+        "PATH": "C:/QT-VTK-9.1.0-leaks-vs2019-x64/bin;C:/Qt/5.15.2/msvc2019_64/bin;$penv{PATH}"
+      },
+      "output": {"outputOnFailure": true},
+      "execution": {"noTestsAction": "error", "stopOnFailure": true}
+    }
+  ],
+  "vendor": {
+    "example.com/ExampleIDE/1.0": {
+      "autoFormat": false
+    }
+  }
+}

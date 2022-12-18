@@ -40,8 +40,10 @@ public:
     int    parallelProjection;
     double parallelScale;
 
+public:
     mvGUISettings();
-    int Serialize(ofstream *out);
+
+    int Serialize(ofstream *out) const;
     int Deserialize(mvHashTable *hashTable);
 };
 

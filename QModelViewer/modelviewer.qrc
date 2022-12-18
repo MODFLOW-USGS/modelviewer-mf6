@@ -1,0 +1,6 @@
+<RCC>
+    <qresource>
+        <file>images/ModelViewer-16x16.png</file>
+        <file>images/ModelViewer-32x32.png</file>
+    </qresource>
+</RCC>

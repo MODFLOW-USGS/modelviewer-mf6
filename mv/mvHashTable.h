@@ -15,14 +15,14 @@ public:
     mvHashTable();
     ~mvHashTable();
     mvHashNode *(m_Nodes[64]);
-    void AddHashEntry(char *key, char *value);
-    int  GetHashTableValue(char *key, double &v);
-    int  GetHashTableValue(char *key, int &v);
-    int  GetHashTableValue(char *key, char *v);
+    void AddHashEntry(const char *key, const char *value);
+    int  GetHashTableValue(const char *key, double &v) const;
+    int  GetHashTableValue(const char *key, int &v) const;
+    int  GetHashTableValue(const char *key, char *v) const;
 
 protected:
-    char *GetHashTableValue(char *key);
-    int   HashFunction(char *str);
+    char *GetHashTableValue(const char *key) const;
+    int   HashFunction(const char *str) const;
 };
 
 #endif
