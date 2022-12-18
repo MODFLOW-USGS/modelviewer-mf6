@@ -7,8 +7,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(QT_GUI_LIB)
+#include <QDebug>
+#include <QDir>
+#include <QString>
+#endif
+
 // This must be below vtkStandardNewMacro
-#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #include <afx.h>
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -144,17 +150,17 @@ void Modflow6DataSource::GetDefaultModelFeatureColor(int i, double *rgba)
     }
 }
 
-char *Modflow6DataSource::LoadData(char *dataFileList)
+const char *Modflow6DataSource::LoadData(char *dataFileList)
 {
     char nameFile[256];
     char gridFile[256];
     char headFile[256];
     char budgetFile[256];
-    gridFile[0]   = '\0';
-    headFile[0]   = '\0';
-    budgetFile[0] = '\0';
-    char *errMsg  = 0;
-    int   i;
+    gridFile[0]        = '\0';
+    headFile[0]        = '\0';
+    budgetFile[0]      = '\0';
+    const char *errMsg = nullptr;
+    int         i;
 
     // Save the dataFileList. This is needed for serialization.
     // Also, mvDoc checks this variable to determine if data has been loaded.
@@ -231,7 +237,7 @@ char *Modflow6DataSource::LoadData(char *dataFileList)
     }
 
     // construct the grid
-    errMsg = 0;
+    errMsg = nullptr;
     switch (m_GridType)
     {
     case GridType::MV_STRUCTURED_GRID:
@@ -242,6 +248,9 @@ char *Modflow6DataSource::LoadData(char *dataFileList)
         break;
     case GridType::MV_UNSTRUCTURED_GRID:
         errMsg = CreateDisuGrid(gridFile);
+        break;
+    case GridType::MV_GRID_NOT_DEFINED:
+        errMsg = "Grid has not been defined";
         break;
     }
     if (errMsg) return errMsg;
@@ -327,7 +336,7 @@ char *Modflow6DataSource::LoadData(char *dataFileList)
     // Count budget file and model features
     m_HasSpecificDischargeData = 0;
     m_ModelFeatureArraySize    = 0;
-    errMsg                     = 0;
+    errMsg                     = nullptr;
     if (m_IfBudget.is_open())
     {
         errMsg = CountBudgetAndFeatures();
@@ -344,7 +353,7 @@ char *Modflow6DataSource::LoadData(char *dataFileList)
             m_VectorArray = new double[3 * m_NumberOfModflowCells];
         }
     }
-    return 0;
+    return nullptr;
 }
 
 int Modflow6DataSource::GetNumVTKPoints()
@@ -379,11 +388,11 @@ double Modflow6DataSource::GetAngRot()const
 }
 
 
-char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
-                                                        char *gridFile, char *headFile, char *budgetFile)
+const char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
+                                                              char *gridFile, char *headFile, char *budgetFile)
 {
     char  aline[300];
-    char  ocFile[256];
+    char  ocFile[300];
     char *p;
     headFile[0]   = '\0';
     budgetFile[0] = '\0';
@@ -406,34 +415,62 @@ char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
         mvUtil::TrimRight(aline);
         if (strlen(aline) > 0 && aline[0] != '#')
         {
-            if (!_strnicmp(aline, "dis6 ", 5))
+            if (!mvUtil::strnicmp(aline, "dis6 ", 5))
             {
+#if defined(QT_GUI_LIB)
+                QString gf(aline + 5);
+                gf = gf.trimmed();
+                gf = mvUtil::toNativeSeparators(gf);
+                strcpy(gridFile, gf.toLocal8Bit().data());
+#else
                 strcpy(gridFile, aline + 5);
                 mvUtil::TrimLeft(gridFile);
+#endif
                 ExtractFileName(gridFile);
                 strcat(gridFile, ".grb");
                 m_GridType = GridType::MV_STRUCTURED_GRID;
             }
-            else if (!_strnicmp(aline, "disv6 ", 6))
+            else if (!mvUtil::strnicmp(aline, "disv6 ", 6))
             {
+#if defined(QT_GUI_LIB)
+                QString gf(aline + 6);
+                gf = gf.trimmed();
+                gf = mvUtil::toNativeSeparators(gf);
+                strcpy(gridFile, gf.toLocal8Bit().data());
+#else
                 strcpy(gridFile, aline + 6);
                 mvUtil::TrimLeft(gridFile);
+#endif
                 ExtractFileName(gridFile);
                 strcat(gridFile, ".grb");
                 m_GridType = GridType::MV_LAYERED_GRID;
             }
-            else if (!_strnicmp(aline, "disu6 ", 5))
+            else if (!mvUtil::strnicmp(aline, "disu6 ", 6))
             {
+#if defined(QT_GUI_LIB)
+                QString gf(aline + 6);
+                gf = gf.trimmed();
+                gf = mvUtil::toNativeSeparators(gf);
+                strcpy(gridFile, gf.toLocal8Bit().data());
+#else
                 strcpy(gridFile, aline + 5);
                 mvUtil::TrimLeft(gridFile);
-                strcat(gridFile, ".grb");
+#endif
                 ExtractFileName(gridFile);
+                strcat(gridFile, ".grb");
                 m_GridType = GridType::MV_UNSTRUCTURED_GRID;
             }
-            if (!_strnicmp(aline, "oc6 ", 4))
+            if (!mvUtil::strnicmp(aline, "oc6 ", 4))
             {
+#if defined(QT_GUI_LIB)
+                QString oc(aline + 4);
+                oc = oc.trimmed();
+                oc = mvUtil::toNativeSeparators(oc);
+                strcpy(ocFile, oc.toLocal8Bit().data());
+#else
                 strcpy(ocFile, aline + 4);
                 mvUtil::TrimLeft(ocFile);
+#endif
                 ExtractFileName(ocFile);
             }
         }
@@ -445,6 +482,9 @@ char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
     {
         return "Error: Unable to determine the oc file.";
     }
+#if !defined(NDEBUG)
+    qDebug() << "attempting to open " << ocFile;
+#endif
     in.open(ocFile, ios::in);
     if (!in.is_open())
     {
@@ -460,10 +500,10 @@ char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
         mvUtil::TrimRight(aline);
         if (strlen(aline) > 0 && aline[0] != '#')
         {
-            if (!_strnicmp(aline, "head ", 5))
+            if (!mvUtil::strnicmp(aline, "head ", 5))
             {
                 p = mvUtil::NextNonSpaceChar(aline + 5, (int)strlen(aline) - 5);
-                if (!_strnicmp(p, "fileout ", 8))
+                if (!mvUtil::strnicmp(p, "fileout ", 8))
                 {
                     strcpy(headFile, p + 8);
                     mvUtil::TrimLeft(headFile);
@@ -471,10 +511,10 @@ char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
                     mvUtil::RemoveDoubleQuotes(headFile);
                 }
             }
-            if (!_strnicmp(aline, "budget ", 7))
+            if (!mvUtil::strnicmp(aline, "budget ", 7))
             {
                 p = mvUtil::NextNonSpaceChar(aline + 7, (int)strlen(aline) - 7);
-                if (!_strnicmp(p, "fileout ", 8))
+                if (!mvUtil::strnicmp(p, "fileout ", 8))
                 {
                     strcpy(budgetFile, p + 8);
                     mvUtil::TrimLeft(budgetFile);
@@ -482,10 +522,10 @@ char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
                     mvUtil::RemoveDoubleQuotes(budgetFile);
                 }
             }
-            if (!_strnicmp(aline, "end ", 4))
+            if (!mvUtil::strnicmp(aline, "end ", 4))
             {
                 p = mvUtil::NextNonSpaceChar(aline + 4, (int)strlen(aline) - 4);
-                if (!_strnicmp(p, "options ", 8))
+                if (!mvUtil::strnicmp(p, "options ", 8))
                 {
                     break;
                 }
@@ -493,10 +533,10 @@ char *Modflow6DataSource::ExtractModflowOutputFileNames(char *nameFile,
         }
     }
     in.close();
-    return 0;
+    return nullptr;
 }
 
-char *Modflow6DataSource::CreateDisGrid(char *gridFile)
+const char *Modflow6DataSource::CreateDisGrid(char *gridFile)
 {
     int      i, j, k;
     int      nx, ny, nz, nxy;
@@ -905,10 +945,10 @@ char *Modflow6DataSource::CreateDisGrid(char *gridFile)
     delete[] elev;
     delete[] delr;
     delete[] delc;
-    return 0;
+    return nullptr;
 }
 
-char *Modflow6DataSource::CreateDisvGrid(char *gridFile)
+const char *Modflow6DataSource::CreateDisvGrid(char *gridFile)
 {
     int      i, j, k, m, index;
 
@@ -1421,10 +1461,10 @@ char *Modflow6DataSource::CreateDisvGrid(char *gridFile)
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
-char *Modflow6DataSource::CreateDisuGrid(char *gridFile)
+const char *Modflow6DataSource::CreateDisuGrid(char *gridFile)
 {
     int      i, j;
     ifstream in(gridFile, ios::in | ios::binary);
@@ -1703,10 +1743,10 @@ char *Modflow6DataSource::CreateDisuGrid(char *gridFile)
         m++;
     }
 
-    return 0;
+    return nullptr;
 }
 
-char *Modflow6DataSource::CountHead(char *dataTypeLabel)
+const char *Modflow6DataSource::CountHead(char *dataTypeLabel)
 {
     int    kstp, kper, n1, n2, n3, j, jmax, k, kmax;
     double pertim, totim, value;
@@ -1756,10 +1796,10 @@ char *Modflow6DataSource::CountHead(char *dataTypeLabel)
     strncpy(dataTypeLabel, text, 16);
     dataTypeLabel[16] = '\0';
     mvUtil::TrimRight(dataTypeLabel);
-    return 0;
+    return nullptr;
 }
 
-char *Modflow6DataSource::CountBudgetAndFeatures()
+const char *Modflow6DataSource::CountBudgetAndFeatures()
 {
     int    kstp, kper, ndim1, ndim2, ndim3, imeth, i, j, nlist, nval, match;
     double delt, pertim, totim, value, t1;
@@ -1791,7 +1831,7 @@ char *Modflow6DataSource::CountBudgetAndFeatures()
                 delete vtk_cell_count;
                 m_HasSpecificDischargeData = 0;
                 m_ModelFeatureArraySize    = 0;
-                return 0;
+                return nullptr;
             }
             if (kper != perstp[0] || kstp != perstp[1])
             {
@@ -1800,7 +1840,7 @@ char *Modflow6DataSource::CountBudgetAndFeatures()
                 delete vtk_cell_count;
                 m_HasSpecificDischargeData = 0;
                 m_ModelFeatureArraySize    = 0;
-                return 0;
+                return nullptr;
             }
             else
             {
@@ -1947,7 +1987,7 @@ char *Modflow6DataSource::CountBudgetAndFeatures()
         m_HasSpecificDischargeData = 0;
     }
 
-    return 0;
+    return nullptr;
 }
 
 void Modflow6DataSource::GetTimePoints(double *timePoints, int *periods, int *steps)

@@ -50,7 +50,7 @@ public:
         ymax = m_YMax;
     }
 
-    int  Update(char *errMsg);
+    int  Update(const char *errMsg);
     void ClearData();
     int  HasData();
     void SetFullGrid(vtkStructuredGrid *fg);
@@ -98,8 +98,8 @@ protected:
     vtkPlane          *m_Plane[4];
     vtkClipPolyData   *m_Cropper[4];
 
-    int                ReadESRIShapeFile(char *errMsg);
-    int                ReadDxfFile(char *errMsg);
+    int                ReadESRIShapeFile(const char *errMsg);
+    int                ReadDxfFile(const char *errMsg);
     void               Build();
 };
 

@@ -57,9 +57,11 @@
 #include "vtkUnstructuredGrid.h"
 #include "vtkWedge.h"
 
-#include <direct.h>
-
 #include "mvDefine.h"
+
+#if defined(QT_GUI_LIB)
+#include <QDir>
+#endif
 
 #include <sstream>
 
@@ -68,17 +70,27 @@ using std::ofstream;
 using std::pow;
 
 // This must be below vtkStandardNewMacro
-#include <afx.h>
+#if defined(_MSC_VER)
+//#include <afx.h>
 #if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+#endif
 
-// This must be below <afx.h>
-#include <shlwapi.h>
+#if !defined(MAX_PATH)
+constexpr auto MAX_PATH = 4096;
+#endif
+
+#if !defined(VERIFY)
+#define VERIFY(f) ((void)(f))
+#endif
 
 mvManager::mvManager()
+//{{
+    : m_ColorBarDataSource{0}
+//}}
 {
     // initial values
     m_ActiveDataType             = 0;
@@ -594,7 +606,7 @@ mvManager::~mvManager()
     }
 }
 
-char *mvManager::LoadData(char *modelName, char *dataFileList)
+const char *mvManager::LoadData(char *modelName, char *dataFileList)
 {
     // Reading data from a file is done in "Deserialize".
 
@@ -606,8 +618,8 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
 
     m_WarningMessage[0] = '\0';
 
-    char *errMsg        = newDataSource->LoadData(dataFileList);
-    if (errMsg != 0)
+    const char *errMsg  = newDataSource->LoadData(dataFileList);
+    if (errMsg != nullptr)
     {
         delete newDataSource;
         return errMsg;
@@ -911,7 +923,7 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
     m_PointScalars->Modified();
 
     // Set Cell data
-    if (m_DataSource->GetPrimaryScalarMode() == MV_CELL_SCALARS)
+    if (m_DataSource->GetPrimaryScalarMode() == ScalarMode::MV_CELL_SCALARS)
     {
         m_CellScalars->SetArray(m_DataSource->GetScalarArray() + numVTKPoints, numVTKCells, 1);
         m_CellScalars->Modified();
@@ -1199,7 +1211,12 @@ char *mvManager::LoadData(char *modelName, char *dataFileList)
         SetSolidDisplayToBlocky();
     }
 
-    return 0;
+    return nullptr;
+}
+
+const mvDataSource *mvManager::GetDataSource() const
+{
+    return m_DataSource;
 }
 
 void mvManager::ApplyDefaultSettings()
@@ -1519,7 +1536,7 @@ char **mvManager::GetDataTypeLabels() const
     }
 }
 
-char *mvManager::GetActiveScalarDataName() const
+const char *mvManager::GetActiveScalarDataName() const
 {
     if (!m_DataSource)
     {
@@ -1531,7 +1548,7 @@ char *mvManager::GetActiveScalarDataName() const
     }
 }
 
-int mvManager::GetPrimaryScalarMode() const
+ScalarMode mvManager::GetPrimaryScalarMode() const
 {
     if (m_DataSource)
     {
@@ -1539,11 +1556,11 @@ int mvManager::GetPrimaryScalarMode() const
     }
     else
     {
-        return 0;
+        return ScalarMode::MV_CELL_SCALARS;
     }
 }
 
-char *mvManager::GetModelName() const
+const char *mvManager::GetModelName() const
 {
     if (m_DataSource)
     {
@@ -1551,7 +1568,7 @@ char *mvManager::GetModelName() const
     }
     else
     {
-        return "";
+        return nullptr;
     }
 }
 
@@ -2483,12 +2500,20 @@ int mvManager::HasModelFeatures() const
 
 int mvManager::GetNumberOfModelFeatureTypes() const
 {
-    return m_DataSource->GetNumberOfModelFeatureTypes();
+    if (m_DataSource)
+    {
+        return m_DataSource->GetNumberOfModelFeatureTypes();
+    }
+    return 0;
 }
 
 const char *mvManager::GetModelFeatureLabels() const
 {
-    return m_DataSource->GetModelFeatureLabels();
+    if (m_DataSource)
+    {
+        return m_DataSource->GetModelFeatureLabels();
+    }
+    return nullptr;
 }
 
 int *mvManager::GetModelFeatureDisplayOrder()
@@ -2511,7 +2536,7 @@ int mvManager::GetModelFeatureDisplayMode() const
     return m_DataSource->GetModelFeatureDisplayMode();
 }
 
-void mvManager::SetModelFeatureColor(char *modelFeatureName, double *rgba)
+void mvManager::SetModelFeatureColor(const char *modelFeatureName, double *rgba)
 {
     char *names = m_DataSource->GetModelFeatureLabels();
     for (int i = 0; i < m_DataSource->GetNumberOfModelFeatureTypes(); i++)
@@ -2524,7 +2549,7 @@ void mvManager::SetModelFeatureColor(char *modelFeatureName, double *rgba)
     }
 }
 
-void mvManager::GetModelFeatureColor(char *modelFeatureName, double *rgba)
+void mvManager::GetModelFeatureColor(const char *modelFeatureName, double *rgba)
 {
     char *names = m_DataSource->GetModelFeatureLabels();
     for (int i = 0; i < m_DataSource->GetNumberOfModelFeatureTypes(); i++)
@@ -2969,7 +2994,7 @@ void mvManager::OnDataModified()
     {
         m_ScalarUnstructuredGrid->Modified();
     }
-    if (m_DataSource->GetPrimaryScalarMode() == MV_CELL_SCALARS)
+    if (m_DataSource->GetPrimaryScalarMode() == ScalarMode::MV_CELL_SCALARS)
     {
         m_CellScalars->Modified();
     }
@@ -3123,7 +3148,7 @@ void mvManager::SetScalarDataTypeTo(int dataTypeIndex)
     m_PointScalars->SetArray(m_DataSource->GetScalarArray(), numPoints, 1);
     m_PointScalars->Modified();
 
-    if (m_DataSource->GetPrimaryScalarMode() == MV_CELL_SCALARS)
+    if (m_DataSource->GetPrimaryScalarMode() == ScalarMode::MV_CELL_SCALARS)
     {
         // Set Cell data
         m_CellScalars->SetArray(m_DataSource->GetScalarArray() + numPoints, numCells, 1);
@@ -3685,13 +3710,13 @@ void mvManager::SetColorBarTextColor(double r, double g, double b)
 void mvManager::SetColorBarNumberOfLabels(int n)
 {
     m_ColorBar->SetNumberOfLabels(n);
-    m_NumColorBarLabels[m_ActiveDataType] = n;
+    if (m_NumColorBarLabels) m_NumColorBarLabels[m_ActiveDataType] = n;
 }
 
 void mvManager::SetColorBarLabelPrecision(int d)
 {
     m_ColorBar->SetLabelPrecision(d);
-    m_ColorBarLabelPrecision[m_ActiveDataType] = d;
+    if (m_ColorBarLabelPrecision) m_ColorBarLabelPrecision[m_ActiveDataType] = d;
 }
 
 void mvManager::SetColorBarColorScheme(int value)
@@ -3838,17 +3863,17 @@ int mvManager::GetColorBarColorScheme() const
     return m_ColorBar->GetColorScheme();
 }
 
-unsigned long mvManager::GetColorBarFirstCustomColor() const
+std::uint32_t mvManager::GetColorBarFirstCustomColor() const
 {
     return dynamic_cast<mvColorTable *>(m_LutCustomScale)->GetFirstCustomColor();
 }
 
-unsigned long mvManager::GetColorBarLastCustomColor() const
+std::uint32_t mvManager::GetColorBarLastCustomColor() const
 {
     return dynamic_cast<mvColorTable *>(m_LutCustomScale)->GetLastCustomColor();
 }
 
-void mvManager::SetColorBarFirstCustomColor(unsigned long value)
+void mvManager::SetColorBarFirstCustomColor(std::uint32_t value)
 {
     dynamic_cast<mvColorTable *>(m_LutCustomScale)->SetFirstCustomColor(value);
     dynamic_cast<mvColorTable *>(m_LutCustomScale)->SetCustomColorScheme();
@@ -3863,7 +3888,7 @@ void mvManager::SetColorBarFirstCustomColor(unsigned long value)
     dynamic_cast<mvLogColorTable *>(m_LogLutReversedCustomScale)->SetReversedCustomColorScheme();
 }
 
-void mvManager::SetColorBarLastCustomColor(unsigned long value)
+void mvManager::SetColorBarLastCustomColor(std::uint32_t value)
 {
     dynamic_cast<mvColorTable *>(m_LutCustomScale)->SetLastCustomColor(value);
     dynamic_cast<mvColorTable *>(m_LutCustomScale)->SetCustomColorScheme();
@@ -4869,8 +4894,8 @@ char *mvManager::Serialize(const char *fileName, mvGUISettings *gui) const
     out << "Color bar label color option = " << (int)(rgb[0] * 2 + .1) << endl;
     out << "Color bar color scheme = " << GetColorBarColorScheme() << endl;
 
-    unsigned long color = GetColorBarFirstCustomColor();
-    unsigned long red, green, blue;
+    std::uint32_t color = GetColorBarFirstCustomColor();
+    std::uint32_t red, green, blue;
     // red
     red   = color;
     red   = red << 24;
@@ -5206,10 +5231,25 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
         }
         if (strlen(buffer))
         {
+#if defined(QT_GUI_LIB)
+            QString dest(dirname.c_str());
+            dest = mvUtil::PathAppendA(dest, buffer);
+            QString fullPath = mvUtil::PathCanonicalizeA(dest);
+            if (!mvUtil::PathFileExistsA(fullPath))
+            {
+                delete hashTable;
+                delete[] dataFileList;
+                std::ostringstream oss;
+                oss << "Unable to open \"" << fullpath << "\".";
+                errorMsg = oss.str();
+                return;
+            }
+            strcat(dataFileList, mvUtil::toNativeSeparators(fullPath).toLocal8Bit().data());
+#else
             strcpy(szDest, dirname.c_str());
-            VERIFY(PathAppend(szDest, buffer));
-            VERIFY(PathCanonicalize(fullpath, szDest));
-            if (!PathFileExists(fullpath))
+            mvUtil::PathAppendA(szDest, buffer);
+            mvUtil::PathCanonicalizeA(fullpath, szDest);
+            if (!mvUtil::PathFileExistsA(fullpath))
             {
                 delete hashTable;
                 delete[] dataFileList;
@@ -5219,6 +5259,7 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
                 return;
             }
             strcat(dataFileList, fullpath);
+#endif
         }
         else
         {
@@ -5236,10 +5277,10 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
 
     // Load the data and set up the visualization pipeline
 
-    char *err = LoadData(modelName, dataFileList);
+    const char *err = LoadData(modelName, dataFileList);
     delete[] dataFileList;
 
-    if (err != 0)
+    if (err)
     {
         delete hashTable;
         errorMsg = err;
@@ -5378,7 +5419,7 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
     {
         SetColorBarColorScheme(ivalue);
     }
-    unsigned long color, red, green, blue;
+    std::uint32_t color, red, green, blue;
     if (hashTable->GetHashTableValue("Color bar first custom color red", ivalue))
     {
         red = ivalue;
@@ -5678,6 +5719,10 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
 
     // Surface lighting
     SetDiffuseLighting(1.0); // diffuse lighting is hard wired
+    // if (hashTable->GetHashTableValue("Lighting diffuse", fvalue))
+    // {
+    //     SetDiffuseLighting(fvalue);
+    // }
     if (hashTable->GetHashTableValue("Lighting ambient", fvalue))
     {
         SetAmbientLighting(fvalue);
@@ -6008,7 +6053,7 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
         SetOverlayDrapeGap(dvalue);
     }
     char  filename[1024];
-    char *errMsg = 0;
+    const char *errMsg = nullptr;
     if (hashTable->GetHashTableValue("Overlay file", filename))
     {
         SetOverlayFileName(mvSaveCurrentDirectory::GetFullPath(filename, dirname.c_str()).c_str());
@@ -6134,7 +6179,7 @@ void mvManager::SetOverlayDrapeGap(double d)
     m_Overlay->SetDrapeGap(d);
 }
 
-int mvManager::UpdateOverlay(char *errMsg)
+int mvManager::UpdateOverlay(const char *errMsg)
 {
     return m_Overlay->Update(errMsg);
 }

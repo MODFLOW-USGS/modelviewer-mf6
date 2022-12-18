@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GeometryDialog</class>
+ <widget class="QDialog" name="GeometryDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>265</width>
+    <height>228</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Geometry</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tabScale">
+      <attribute name="title">
+       <string>Scale</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>y:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>x:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>z:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLineEdit" name="lineEditXScale"/>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="lineEditYScale"/>
+       </item>
+       <item row="2" column="3">
+        <widget class="QLineEdit" name="lineEditZScale"/>
+       </item>
+       <item row="0" column="4">
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabAxesSymbol">
+      <attribute name="title">
+       <string>Axes Symbol</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="3">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>x:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>z:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" colspan="2">
+        <widget class="QLineEdit" name="lineEditAxesSize"/>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QRadioButton" name="radioButtonTube">
+         <property name="text">
+          <string>Tube</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>y:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QLineEdit" name="lineEditPositionX"/>
+       </item>
+       <item row="2" column="0" rowspan="2">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Tube Diam</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" rowspan="2" colspan="2">
+        <widget class="QLineEdit" name="lineEditTubeDiameter"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Size:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="4">
+        <widget class="QLineEdit" name="lineEditPositionY"/>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Position:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="4">
+        <widget class="QLineEdit" name="lineEditPositionZ"/>
+       </item>
+       <item row="0" column="2">
+        <widget class="QRadioButton" name="radioButtonLine">
+         <property name="text">
+          <string>Line</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Bounding Box</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <spacer name="horizontalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>77</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="1">
+        <widget class="QRadioButton" name="radioButtonBlack">
+         <property name="text">
+          <string>black</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QRadioButton" name="radioButtonGray">
+         <property name="text">
+          <string>gray</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <spacer name="horizontalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>76</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="1">
+        <widget class="QRadioButton" name="radioButtonWhite">
+         <property name="text">
+          <string>white</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonApply">
+        <property name="text">
+         <string>Apply</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonDone">
+        <property name="text">
+         <string>Done</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>lineEditXScale</tabstop>
+  <tabstop>lineEditYScale</tabstop>
+  <tabstop>lineEditZScale</tabstop>
+  <tabstop>radioButtonTube</tabstop>
+  <tabstop>radioButtonLine</tabstop>
+  <tabstop>lineEditAxesSize</tabstop>
+  <tabstop>lineEditTubeDiameter</tabstop>
+  <tabstop>lineEditPositionX</tabstop>
+  <tabstop>lineEditPositionY</tabstop>
+  <tabstop>lineEditPositionZ</tabstop>
+  <tabstop>radioButtonBlack</tabstop>
+  <tabstop>radioButtonGray</tabstop>
+  <tabstop>radioButtonWhite</tabstop>
+  <tabstop>pushButtonApply</tabstop>
+  <tabstop>pushButtonDone</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

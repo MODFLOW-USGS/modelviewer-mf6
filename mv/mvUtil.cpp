@@ -2,14 +2,24 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#include <XSTRING>
+
+#if defined(QT_GUI_LIB)
+#include <QDir>
+#endif
 
 // This must be below vtkStandardNewMacro
-#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #include <afx.h>
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
+#endif
+
+#if !defined(QT_GUI_LIB)
+#if defined(_MSC_VER)
+// This must be below <afx.h>
+#include <shlwapi.h>
+#endif
 #endif
 
 void mvUtil::interp2d(double *x, double *y, double *z, double *dx, double *dy, double *zc,
@@ -397,18 +407,175 @@ void mvUtil::Wavelength2RGBA(double wavelength, double *RGBA)
 
 void mvUtil::RemoveQuotes(char* aString)
 {
-	size_t len = strlen(aString);
-	if (aString[0] == '\'' && aString[len - 1] == '\'') {
-		aString[len - 1] = '\0';
-		memmove(aString, aString + 1, len - 1);
-	}
+    size_t len = strlen(aString);
+    if (aString[0] == '\'' && aString[len - 1] == '\'')
+    {
+        aString[len - 1] = '\0';
+        memmove(aString, aString + 1, len - 1);
+    }
 }
 
 void mvUtil::RemoveDoubleQuotes(char* aString)
 {
-	size_t len = strlen(aString);
-	if (aString[0] == '"' && aString[len - 1] == '"') {
-		aString[len - 1] = '\0';
-		memmove(aString, aString + 1, len - 1);
-	}
+    size_t len = strlen(aString);
+    if (aString[0] == '"' && aString[len - 1] == '"')
+    {
+        aString[len - 1] = '\0';
+        memmove(aString, aString + 1, len - 1);
+    }
 }
+
+int mvUtil::stricmp(const char *a, const char *b)
+{
+#if defined(_MSC_VER)
+    return _stricmp(a, b);
+#else
+    int na;
+    int nb;
+    int result;
+    assert(a != nullptr);
+    assert(b != nullptr);
+    do
+    {
+        na     = tolower(*a++);
+        nb     = tolower(*b++);
+        result = na - nb;
+    } while (result == 0 && na != '\0');
+    return result;
+#endif
+}
+
+int mvUtil::strnicmp(const char *a, const char *b, size_t n)
+{
+#if defined(_MSC_VER)
+    return _strnicmp(a, b, n);
+#else
+    int na;
+    int nb;
+    int result;
+    if (n == 0) return 0;
+    assert(a != nullptr);
+    assert(b != nullptr);
+    size_t m = n;
+    do
+    {
+        na     = tolower(*a++);
+        nb     = tolower(*b++);
+        result = na - nb;
+    } while (result == 0 && na != '\0' && --m != 0);
+    return result;
+#endif
+}
+
+#if defined(QT_GUI_LIB)
+QString mvUtil::PathAppendA(const QString &path, const QString &more)
+{
+    return QDir::cleanPath(path + QDir::separator() + more);
+}
+#else
+int mvUtil::PathAppendA(char *path, const char *more)
+{
+#if defined(_MSC_VER)
+    return ::PathAppendA(path, more);
+#else
+    // @qt_todo
+    return 0;
+#endif
+}
+#endif
+
+#if defined(QT_GUI_LIB)
+QString mvUtil::PathCanonicalizeA(const QString &path)
+{
+    QDir dir(path);
+    return dir.canonicalPath();
+}
+#else
+int mvUtil::PathCanonicalizeA(char *buf, const char *path)
+{
+#if defined(_MSC_VER)
+    return ::PathCanonicalizeA(buf, path);
+#else
+    // @qt_todo
+    return 0;
+#endif
+}
+#endif
+
+#if defined(QT_GUI_LIB)
+bool mvUtil::PathFileExistsA(const QString &path)
+{
+    QFileInfo info(path);
+    return info.exists() && info.isFile();
+}
+#else
+int mvUtil::PathFileExistsA(const char *path)
+{
+#if defined(_MSC_VER)
+    return ::PathFileExistsA(path);
+#else
+    // @qt_todo
+    return 0;
+#endif
+}
+#endif
+
+char *mvUtil::strlwr(char *str)
+{
+#if defined(_MSC_VER)
+    return _strlwr(str);
+#else
+    char *c;
+    assert(str != nullptr);
+    for (c = str; *c != '\0'; ++c)
+    {
+        *c = tolower(*c);
+    }
+    return str;
+#endif
+}
+
+#if defined(QT_GUI_LIB)
+//
+// modified from QDir::toNativeSeparators
+//
+QString mvUtil::toNativeSeparators(const QString &pathName)
+{
+#if defined(Q_OS_WIN)
+    int i = pathName.indexOf(QLatin1Char('/'));
+    if (i != -1)
+    {
+        QString      n(pathName);
+
+        QChar *const data = n.data();
+        data[i++]         = QLatin1Char('\\');
+
+        for (; i < n.length(); ++i)
+        {
+            if (data[i] == QLatin1Char('/'))
+                data[i] = QLatin1Char('\\');
+        }
+
+        return n;
+    }
+#else
+    int i = pathName.indexOf(QLatin1Char('\\'));
+    if (i != -1)
+    {
+        QString      n(pathName);
+
+        QChar *const data = n.data();
+        data[i++]         = QLatin1Char('/');
+
+        for (; i < n.length(); ++i)
+        {
+            if (data[i] == QLatin1Char('\\'))
+                data[i] = QLatin1Char('/');
+        }
+
+        return n;
+    }
+#endif
+    return pathName;
+}
+#endif

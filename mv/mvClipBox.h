@@ -10,8 +10,8 @@ public:
     static mvClipBox *New();
     void              SetModelBounds(double bounds[6]);
     void              SetBounds(double bounds[6]);
-    virtual double    EvaluateFunction(double x[3]);
-    virtual void      EvaluateGradient(double x[3], double g[3]);
+    double            EvaluateFunction(double x[3]) override;
+    void              EvaluateGradient(double x[3], double g[3]) override;
     void              SetAngle(int angle);
 
 protected:

@@ -2,10 +2,15 @@
 #define __mvManager_h
 
 #include "mvDataSource.h"
-#include "vtkSmartPointer.h"
-#include <Math.h>
+
+#include <vtkSmartPointer.h>
+
+#include <cstdint>
+#include <math.h>
+#include <math.h>
 #include <typeinfo>
 #include <algorithm>
+#include <string>
 
 class mvCustomAppendPolyData;
 class mvGUISettings;
@@ -64,7 +69,8 @@ public:
 
     // Data set and animation control
     // void ClearData();
-    char                              *LoadData(char *modelType, char *dataFileList);
+    const mvDataSource *               GetDataSource() const;
+    const char *                       LoadData(char *modelType, char *dataFileList);
     char                              *GetDataFileList() const;
     int                                HasVectorData() const;
     int                                HasPathlineData() const;
@@ -87,9 +93,9 @@ public:
     int                                GetCurrentTimePointIndex() const { return m_TimePointIndex; }
     void                               SetScalarDataTypeTo(int dataTypeIndex);
     int                                GetActiveScalarDataType() const { return m_ActiveDataType; }
-    char                              *GetActiveScalarDataName() const;
-    int                                GetPrimaryScalarMode() const;
-    char                              *GetModelName() const;
+    const char *                       GetActiveScalarDataName() const;
+    ScalarMode                         GetPrimaryScalarMode() const;
+    const char *                       GetModelName() const;
     int                                GetTimeLabelOption() const;
     void                               SetTimePointTo(int timePointIndex);
     void                               AdvanceOneTimePoint();
@@ -181,8 +187,8 @@ public:
     void                               EnlargeModelFeatureGlyphs();
     void                               ShrinkModelFeatureGlyphs();
     int                                GetModelFeatureDisplayMode() const;
-    void                               SetModelFeatureColor(char *modelFeatureName, double *rgba);
-    void                               GetModelFeatureColor(char *modelFeatureName, double *rgba);
+    void                               SetModelFeatureColor(const char *modelFeatureName, double *rgba);
+    void                               GetModelFeatureColor(const char *modelFeatureName, double *rgba);
 
     // Overlay
     int                                HasOverlay();
@@ -211,7 +217,7 @@ public:
     int                                GetOverlayTrim();
     int                                GetOverlayCrop();
     void                               GetOverlayBounds(double &xmin, double &xmax, double &ymin, double &ymax);
-    int                                UpdateOverlay(char *errMsg);
+    int                                UpdateOverlay(const char *errMsg);
     void                               RemoveOverlay();
 
     // Grid shell
@@ -322,10 +328,10 @@ public:
     const double                      *GetColorBarTextColor() const;
     int                                GetColorBarNumberOfLabels() const;
     int                                GetColorBarLabelPrecision() const;
-    unsigned long                      GetColorBarFirstCustomColor() const;
-    unsigned long                      GetColorBarLastCustomColor() const;
-    void                               SetColorBarFirstCustomColor(unsigned long value);
-    void                               SetColorBarLastCustomColor(unsigned long value);
+    std::uint32_t                      GetColorBarFirstCustomColor() const;
+    std::uint32_t                      GetColorBarLastCustomColor() const;
+    void                               SetColorBarFirstCustomColor(std::uint32_t value);
+    void                               SetColorBarLastCustomColor(std::uint32_t value);
     int                                GetColorBarSource() const;
     void                               SetColorBarSource(int value);
 

@@ -13,7 +13,7 @@
 vtkStandardNewMacro(mvLogColorTable);
 
 // This must be below vtkStandardNewMacro
-#if defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(MV_DEBUG_MEMORY_LEAKS)
 #include <afx.h>
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -235,20 +235,20 @@ void mvLogColorTable::SetReversedModifiedColorScheme()
     SetColorScheme(MV_CT_REVERSED_MODIFIED_C0LOR_SCHEME);
 };
 
-void mvLogColorTable::SetFirstCustomColor(unsigned long value)
+void mvLogColorTable::SetFirstCustomColor(std::uint32_t value)
 {
     m_FirstCustomColor = value;
 };
 
-void mvLogColorTable::SetLastCustomColor(unsigned long value)
+void mvLogColorTable::SetLastCustomColor(std::uint32_t value)
 {
     m_LastCustomColor = value;
 };
 
-void mvLogColorTable::FillColorTable(unsigned long lowercolor, unsigned long uppercolor)
+void mvLogColorTable::FillColorTable(std::uint32_t lowercolor, std::uint32_t uppercolor)
 {
-    unsigned long LowerRed, LowerGreen, LowerBlue;
-    unsigned long UpperRed, UpperGreen, UpperBlue;
+    std::uint32_t LowerRed, LowerGreen, LowerBlue;
+    std::uint32_t UpperRed, UpperGreen, UpperBlue;
     // red
     LowerRed                 = lowercolor;
     LowerRed                 = LowerRed << 24;

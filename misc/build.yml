@@ -1,0 +1,707 @@
+name: build
+
+on:
+  push:
+    paths-ignore:
+      - .github/workflows/build-vtk*.yml
+      - CODE_OF_CONDUCT.md
+      - code.json
+      - DISCLAIMER.md
+      - misc/CMakePresets*.json
+      - README.md
+  pull_request:
+    branches:
+      - main
+      - develop*
+      - "*-rc*"
+    paths-ignore:
+      - .github/workflows/build-vtk*.yml
+      - CODE_OF_CONDUCT.md
+      - code.json
+      - DISCLAIMER.md
+      - misc/CMakePresets*.json
+      - README.md
+
+env:
+  RELEASES_URL: ${{github.api_url}}/repos/${{github.repository}}/releases
+  VTK_6_3_0_VS2017_X64_URL: https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/vtk-6.3.0-vs2017-x64/vtk-6.3.0-vs2017-x64.7z
+  VTK_9_1_0_VS2019_X64_URL: https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/vtk-9.1.0-vs2019-x64/vtk-9.1.0-vs2019-x64.7z
+  HTMLHELP_URL: http://web.archive.org/web/20160201063255/http://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe
+  SEM_VER_REGEX: ^(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+  SEM_VER_REGEX_2: (?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?
+
+jobs:
+
+  build-6_3:
+    if: ${{ false }}    # skip
+
+    runs-on: windows-2019
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Verify version in code.json
+      shell: pwsh
+      run: |
+        $file = ".\code.json"
+        $ver = ((Get-Content $file) | ConvertFrom-Json).version
+        echo "::debug::version = $ver"
+        echo "::debug::SEM_VER_REGEX = $env:SEM_VER_REGEX"
+        if ($ver -notmatch $env:SEM_VER_REGEX) {
+          echo "::error::Bad version in code.json -- $ver (see https://semver.org/)"
+          exit 1
+        }
+        if ($Matches["prerelease"] -and $Matches["prerelease"] -like "*runnumber*") {
+            $version = $Matches.0 -replace "runnumber", "${{github.run_number}}"
+            $version = $version -replace "prerelease.", "prerelease-vtk-6.3-"
+        }
+        else {
+            $version = $Matches.0
+        }
+        $name = "${{github.repository_owner}}"
+        $dist_dir = "mvmf6-${version}"
+        $user_dist_dir = "${name}-mvmf6-${version}"
+        # export
+        Write-Output "SEMVER=$version" >> $env:GITHUB_ENV
+        Write-Output "DIST_DIR=$dist_dir" >> $env:GITHUB_ENV
+        Write-Output "USER_DIST_DIR=$user_dist_dir" >> $env:GITHUB_ENV
+
+    - name: Cache vtk
+      id: cache-vtk
+      uses: actions/cache@v2
+      with:
+        path: C:\VTK-6.3.0-vs2017-x64
+        key: windows-2016-vtk-${{hashFiles('misc/CMakePresets.json')}}
+
+    - name: Download and install vtk
+      if: steps.cache-vtk.outputs.cache-hit != 'true'
+      shell: pwsh
+      run: |
+        $file = "vtk-6.3.0-vs2017-x64.7z"
+        curl -L -O "${{env.VTK_6_3_0_VS2017_X64_URL}}"
+        Get-FileHash $file
+        cd C:\
+        7z x ${{github.workspace}}\$file
+        rm ${{github.workspace}}\$file
+
+    - name: Install htmlhelp
+      shell: pwsh
+      run: |
+        curl -L -O http://web.archive.org/web/20160201063255/http://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe
+        cmd /c start /wait .\htmlhelp.exe /q /c /t:$(Get-Location)\tmp
+        # These changes allow htmlhelp to be installed without user input
+        $file = "$(Get-Location)\tmp\htmlhelp.inf"
+        (Get-Content $file) | Foreach-Object { $_ `
+          -replace '^BeginPrompt',                                               ';;BeginPrompt' `
+          -replace '^EndPrompt',                                                 ';;EndPrompt' `
+          -replace '^49000=CustomLDID49000, 1',                                  '49000=CustomLDID49000, 5' `
+          -replace '^"hhupd.exe',                                                ';;hhupd.exe' `
+          -replace '^DefaultInstallDir="C:\\Program Files\\HTML Help Workshop"', 'DefaultInstallDir="%ProgramFiles%\\HTML Help Workshop"'
+        } | Set-Content $file
+        cmd /c start /wait .\tmp\setup.exe
+        Remove-Item -Recurse -Force .\tmp
+        Remove-Item -Recurse -Force .\htmlhelp.exe
+        Write-Output 'C:\Program Files (x86)\HTML Help Workshop' >> $env:GITHUB_PATH
+
+    - name: Compile chm
+      shell: bash
+      run: |
+        pushd Help
+        # hhc returns 1 on success
+        set +e
+        hhc mvmf6.hhp | tee mvmf6.out
+        status=${PIPESTATUS[0]}
+        set -e
+        if [ "$status" -eq 1 ]; then
+          echo "[OK]"
+          exit 0
+        else
+          echo "[FAILED]"
+          exit 1
+        fi
+        popd
+
+    - name: Export next mvmf6 version
+      if: ${{ false }}
+      shell: pwsh
+      run: |
+        # create headers dictionary
+        $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
+
+        try {
+            $response = Invoke-WebRequest -Uri ${{env.RELEASES_URL}}/latest -Headers $h -Method GET
+            $json = $response.Content | ConvertFrom-Json
+            $tag_name = $json.tag_name
+        }
+        catch {
+            # none so far
+            $tag_name = "0.0"
+        }
+
+        $next_version = "1.0.0"
+        if ($tag_name -match '(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))?$') {
+            if ($Matches.ContainsKey('patch')) {
+              $patch = 1 + $Matches['patch']
+            }
+            else {
+              $patch = 0
+            }
+            $next_version = $Matches['major'] + "." + $Matches['minor'] + "." + $patch
+        }
+
+        # major.minor.patch.build
+        $build = ${{github.run_number}}
+        $fullversion = "$next_version.$build"
+        $fullversion_commas = $fullversion.Replace(".", ",")
+        $date_compiled = "$((Get-Date -UFormat '%m/%d/%Y (compiled %b %d %Y %T)'))"
+
+        # sed CMakeLists.txt
+        $file = ".\CMakeLists.txt"
+        (Get-Content $file) | Foreach-Object {
+           $_ -replace 'VERSION (?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))', "VERSION $next_version"
+        } | Set-Content $file
+
+        # sed ModelViewer.rc
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace 'Version (?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))',                                    "Version $next_version"`
+             -replace 'FILEVERSION (?<major>0|[1-9]\d*),(?<minor>0|[1-9]\d*),(?<patch>0|[1-9]\d*),(?<build>0|[1-9]\d*)',                 "FILEVERSION $fullversion_commas"`
+             -replace 'PRODUCTVERSION (?<major>0|[1-9]\d*),(?<minor>0|[1-9]\d*),(?<patch>0|[1-9]\d*),(?<build>0|[1-9]\d*)',              "PRODUCTVERSION $fullversion_commas"`
+             -replace 'VALUE "FileVersion", "(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d)\.(?<patch>0|[1-9]\d*)\.(?<build>0|[1-9]\d*)"',    "VALUE ""FileVersion"", ""$fullversion"""`
+             -replace 'VALUE "ProductVersion", "(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d)\.(?<patch>0|[1-9]\d*)\.(?<build>0|[1-9]\d*)"', "VALUE ""ProductVersion"", ""$fullversion"""`
+             -replace '"(?<month>[0-1][1-9])\/(?<day>[0-3][1-9])\/(?<year>\d{4}) \(.*\)"',                                               """$date_compiled"""`
+        } | Set-Content $file
+
+        # set env for remaining steps
+        if ($env:GITHUB_REPOSITORY -eq 'MODFLOW-USGS/modelviewer-mf6') {
+          Write-Output "DIST_DIR=mvmf6-$next_version" >> $env:GITHUB_ENV
+        } else {
+          Write-Output "DIST_DIR=mvmf6-$env:GITHUB_REPOSITORY_OWNER-$next_version" >> $env:GITHUB_ENV
+        }
+        Write-Output "NEXT_VERSION=$next_version" >> $env:GITHUB_ENV
+
+    - name: Update About dialog version
+      shell: pwsh
+      run: |
+        # sed ModelViewer.rc
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace "`"Version $env:SEM_VER_REGEX_2`"", "`"Version $env:SEMVER`""
+        } | Set-Content $file
+
+    - name: Update About dialog build date
+      shell: pwsh
+      run: |
+        # sed ModelViewer.rc
+        $date_compiled = "$((Get-Date -UFormat '%m/%d/%Y (compiled %b %d %Y %T)'))"
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace '"(?<month>[0-1][1-9])\/(?<day>[0-3][1-9])\/(?<year>\d{4}) \(.*\)"', """$date_compiled"""
+        } | Set-Content $file
+
+    # @TODO Only on push to main on MODFLOW-USGS/modelviewer-mf6
+    - name: Update About
+      if: ${{ false }}    # skip for now
+      shell: pwsh
+      run: |
+        $prelim_pt1 = '"This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey \(USGS\).",.*$'
+        $prelim_pt2 = '"No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty.",.*$'
+        $prelim_pt3 = '"The software is provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the software.",.*$'
+
+        $approved_pt1 = '"This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review.",IDC_STATIC,15,110,189,40'
+        $approved_pt2 = '"No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty.",IDC_STATIC,15,152,190,34'
+        $approved_pt3 = '"Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.",IDC_STATIC,15,187,190,26'
+
+        # sed ModelViewer.rc
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace $prelim_pt1, $approved_pt1`
+             -replace $prelim_pt2, $approved_pt2`
+             -replace $prelim_pt3, $approved_pt3`
+        } | Set-Content $file
+
+    # @TODO Only on push to main on MODFLOW-USGS/modelviewer-mf6
+    - name: Update README.md
+      if: ${{ false }}    # skip for now
+      shell: pwsh
+      run: |
+        $approved = ("Disclaimer`n" +
+                     "----------`n" +
+                     "`n" +
+                     "This software has been approved for release by the U.S. Geological Survey`n" +
+                     "(USGS). Although the software has been subjected to rigorous review, the USGS`n" +
+                     "reserves the right to update the software as needed pursuant to further analysis`n" +
+                     "and review. No warranty, expressed or implied, is made by the USGS or the U.S.`n" +
+                     "Government as to the functionality of the software and related material nor`n" +
+                     "shall the fact of release constitute any such warranty. Furthermore, the`n" +
+                     "software is released on condition that neither the USGS nor the U.S. Government`n" +
+                     "shall be held liable for any damages resulting from its authorized or`n" +
+                     "unauthorized use.")
+        $file = ".\README.md"
+        (Get-Content -Raw $file) -replace "(?ms)Disclaimer.*", $approved | Set-Content $file
+
+    - name: Commit and push
+      # if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
+      if: ${{ false }}    # skip for now
+      uses: actions-js/push@master
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        branch: main
+
+    - name: Commit and push branch
+      # if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6') )
+      if: ${{ false }}    # skip for now
+      uses: actions-js/push@master
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        branch: __${{env.NEXT_VERSION}}.${{github.run_number}}
+
+    - name: Configure
+      shell: pwsh
+      run: cmake --preset vtk-6.3.0-vs2017-x64
+
+    - name: Build
+      shell: pwsh
+      run: cmake --build --preset vtk-6.3.0-vs2017-x64 --config release
+
+    - name: Install
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
+      shell: pwsh
+      run: cmake --install _vtk-6.3.0-vs2017-x64 --prefix ${{env.DIST_DIR}} --config release
+
+    - name: Build mvmf6
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
+      run: |
+        Copy-Item .\Help\mvmf6.chm ${{env.DIST_DIR}}\bin\.
+        # 7z a -tzip ${{env.DIST_DIR}}.zip .\${{env.DIST_DIR}}\
+
+    - name: Upload artifact
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{env.DIST_DIR}}
+        path: ${{env.DIST_DIR}}
+
+    - name: Install (user)
+      if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      shell: pwsh
+      run: cmake --install _vtk-6.3.0-vs2017-x64 --prefix ${{env.USER_DIST_DIR}} --config release
+
+    - name: Build mvmf6 (user)
+      if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      run: |
+        Copy-Item .\Help\mvmf6.chm ${{env.USER_DIST_DIR}}\bin\.
+        # 7z a -tzip ${{env.USER_DIST_DIR}}.zip .\${{env.USER_DIST_DIR}}\
+
+    - name: Upload artifact (user)
+      if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{env.USER_DIST_DIR}}
+        path: ${{env.USER_DIST_DIR}}
+
+    # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
+    - name: Create release
+      # if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch') || (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      if: ${{ false }}    # skip for now
+      run: |
+        # store new commit
+        $target_commitish = (git log -n1 --format=format:"%H")
+
+        if (! ($env:NEXT_VERSION -match "^(?<major>0|[1-9]\d*)\.(?<minor>[0|1-9]\d*)\.(?<patch>[0|1-9]\d*)$") ) {
+          throw "Bad version"
+        }
+        $version = $env:NEXT_VERSION
+
+        # create headers dictionary
+        $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
+
+        $releases_url = "${{env.releases_url}}"
+
+        # create release
+        # POST /repos/{owner}/{repo}/releases
+        # see https://docs.github.com/en/rest/reference/repos#create-a-release
+        #
+        $create = @{
+          "tag_name"         = $version
+          "target_commitish" = "$target_commitish"
+          "name"             = "Model Viewer for Modflow 6 Version " + $version
+          "body"             = "Model Viewer for Modflow 6 Version " + $version
+          "draft"            = $true
+        }
+        $create_json = $create | ConvertTo-Json
+        $release = Invoke-WebRequest -Uri $releases_url -Headers $h -Method POST -Body $create_json
+
+        # upload artifact (asset)
+        # POST /repos/{owner}/{repo}/releases/{release_id}/assets
+        # see https://docs.github.com/en/rest/reference/repos#upload-a-release-asset
+        #
+        $upload_uri = ($release.Content | ConvertFrom-Json).upload_url
+        if (! ($upload_uri -match  "(.*)\{\?name,label\}") ) {
+          # expecting URI{?name,label}
+          # ie https://uploads.github.com/repos/MODFLOW-USGS/modelviewer-mf6/releases/24058628/assets{?name,label}
+          throw "Bad upload_url"
+        }
+
+        # upload
+        $upload_uri = $Matches[1] + "?name=$env:DIST_DIR.zip"
+        $h["Content-type"] = "application/zip"
+        $bytes = [System.IO.File]::ReadAllBytes("$env:DIST_DIR.zip")
+        $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method POST -Body $bytes
+
+        # update release
+        # PATCH /repos/{owner}/{repo}/releases/{release_id}
+        # see https://docs.github.com/en/rest/reference/repos#update-a-release
+        #
+        $release_id = ($release.Content | ConvertFrom-Json).id
+        $h.Remove("Content-type")
+        $update = @{ "draft" = $false }
+        $update_json = $update | ConvertTo-Json
+        $release = Invoke-WebRequest -Uri "$releases_url/$release_id" -Headers $h -Method PATCH -Body $update_json
+
+        # display download url
+        Write-Output "$((($release.Content | ConvertFrom-Json).assets).browser_download_url)"
+        Get-FileHash "$env:DIST_DIR.zip"
+        Remove-Item "$env:DIST_DIR.zip"
+
+###################################################################################################
+
+###################################################################################################
+
+###################################################################################################
+
+  build-9_1:
+    if: ${{ false }}    # skip
+
+    runs-on: windows-2019
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Verify version in code.json
+      shell: pwsh
+      run: |
+        $file = ".\code.json"
+        $ver = ((Get-Content $file) | ConvertFrom-Json).version
+        echo "::debug::version = $ver"
+        echo "::debug::SEM_VER_REGEX = $env:SEM_VER_REGEX"
+        if ($ver -notmatch $env:SEM_VER_REGEX) {
+          echo "::error::Bad version in code.json -- $ver (see https://semver.org/)"
+          exit 1
+        }
+        if ($Matches["prerelease"] -and $Matches["prerelease"] -like "*runnumber*") {
+            $version = $Matches.0 -replace "runnumber", "${{github.run_number}}"
+            $version = $version -replace "prerelease.", "prerelease-vtk-9.1-"
+        }
+        else {
+            $version = $Matches.0
+        }
+        $name = "${{github.repository_owner}}"
+        $dist_dir = "mvmf6-${version}"
+        $user_dist_dir = "${name}-mvmf6-${version}"
+        # export
+        Write-Output "SEMVER=$version" >> $env:GITHUB_ENV
+        Write-Output "DIST_DIR=$dist_dir" >> $env:GITHUB_ENV
+        Write-Output "USER_DIST_DIR=$user_dist_dir" >> $env:GITHUB_ENV
+
+    - name: Cache vtk
+      id: cache-vtk
+      uses: actions/cache@v2
+      with:
+        path: C:\VTK-9.1.0-vs2019-x64
+        key: windows-2019-vtk-${{hashFiles('misc/CMakePresets-vtk-9.1.0.json')}}
+
+    - name: Download and install vtk
+      if: steps.cache-vtk.outputs.cache-hit != 'true'
+      shell: pwsh
+      run: |
+        $file = "vtk-9.1.0-vs2019-x64.7z"
+        curl -L -O "${{env.VTK_9_1_0_VS2019_X64_URL}}"
+        Get-FileHash $file
+        cd C:\
+        7z x ${{github.workspace}}\$file
+        rm ${{github.workspace}}\$file
+
+    - name: Install htmlhelp
+      shell: pwsh
+      run: |
+        curl -L -O http://web.archive.org/web/20160201063255/http://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe
+        cmd /c start /wait .\htmlhelp.exe /q /c /t:$(Get-Location)\tmp
+        # These changes allow htmlhelp to be installed without user input
+        $file = "$(Get-Location)\tmp\htmlhelp.inf"
+        (Get-Content $file) | Foreach-Object { $_ `
+          -replace '^BeginPrompt',                                               ';;BeginPrompt' `
+          -replace '^EndPrompt',                                                 ';;EndPrompt' `
+          -replace '^49000=CustomLDID49000, 1',                                  '49000=CustomLDID49000, 5' `
+          -replace '^"hhupd.exe',                                                ';;hhupd.exe' `
+          -replace '^DefaultInstallDir="C:\\Program Files\\HTML Help Workshop"', 'DefaultInstallDir="%ProgramFiles%\\HTML Help Workshop"'
+        } | Set-Content $file
+        cmd /c start /wait .\tmp\setup.exe
+        Remove-Item -Recurse -Force .\tmp
+        Remove-Item -Recurse -Force .\htmlhelp.exe
+        Write-Output 'C:\Program Files (x86)\HTML Help Workshop' >> $env:GITHUB_PATH
+
+    - name: Compile chm
+      shell: bash
+      run: |
+        pushd Help
+        # hhc returns 1 on success
+        set +e
+        hhc mvmf6.hhp | tee mvmf6.out
+        status=${PIPESTATUS[0]}
+        set -e
+        if [ "$status" -eq 1 ]; then
+          echo "[OK]"
+          exit 0
+        else
+          echo "[FAILED]"
+          exit 1
+        fi
+        popd
+
+    - name: Export next mvmf6 version
+      if: ${{ false }}
+      shell: pwsh
+      run: |
+        # create headers dictionary
+        $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
+
+        try {
+            $response = Invoke-WebRequest -Uri ${{env.RELEASES_URL}}/latest -Headers $h -Method GET
+            $json = $response.Content | ConvertFrom-Json
+            $tag_name = $json.tag_name
+        }
+        catch {
+            # none so far
+            $tag_name = "0.0"
+        }
+
+        $next_version = "1.0.0"
+        if ($tag_name -match '(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))?$') {
+            if ($Matches.ContainsKey('patch')) {
+              $patch = 1 + $Matches['patch']
+            }
+            else {
+              $patch = 0
+            }
+            $next_version = $Matches['major'] + "." + $Matches['minor'] + "." + $patch
+        }
+
+        # major.minor.patch.build
+        $build = ${{github.run_number}}
+        $fullversion = "$next_version.$build"
+        $fullversion_commas = $fullversion.Replace(".", ",")
+        $date_compiled = "$((Get-Date -UFormat '%m/%d/%Y (compiled %b %d %Y %T)'))"
+
+        # sed CMakeLists.txt
+        $file = ".\CMakeLists.txt"
+        (Get-Content $file) | Foreach-Object {
+           $_ -replace 'VERSION (?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))', "VERSION $next_version"
+        } | Set-Content $file
+
+        # sed ModelViewer.rc
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace 'Version (?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)(?:\.(?<patch>0|[1-9]\d*))',                                    "Version $next_version"`
+             -replace 'FILEVERSION (?<major>0|[1-9]\d*),(?<minor>0|[1-9]\d*),(?<patch>0|[1-9]\d*),(?<build>0|[1-9]\d*)',                 "FILEVERSION $fullversion_commas"`
+             -replace 'PRODUCTVERSION (?<major>0|[1-9]\d*),(?<minor>0|[1-9]\d*),(?<patch>0|[1-9]\d*),(?<build>0|[1-9]\d*)',              "PRODUCTVERSION $fullversion_commas"`
+             -replace 'VALUE "FileVersion", "(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d)\.(?<patch>0|[1-9]\d*)\.(?<build>0|[1-9]\d*)"',    "VALUE ""FileVersion"", ""$fullversion"""`
+             -replace 'VALUE "ProductVersion", "(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d)\.(?<patch>0|[1-9]\d*)\.(?<build>0|[1-9]\d*)"', "VALUE ""ProductVersion"", ""$fullversion"""`
+             -replace '"(?<month>[0-1][1-9])\/(?<day>[0-3][1-9])\/(?<year>\d{4}) \(.*\)"',                                               """$date_compiled"""`
+        } | Set-Content $file
+
+        # set env for remaining steps
+        if ($env:GITHUB_REPOSITORY -eq 'MODFLOW-USGS/modelviewer-mf6') {
+          Write-Output "DIST_DIR=mvmf6-$next_version" >> $env:GITHUB_ENV
+        } else {
+          Write-Output "DIST_DIR=mvmf6-$env:GITHUB_REPOSITORY_OWNER-$next_version" >> $env:GITHUB_ENV
+        }
+        Write-Output "NEXT_VERSION=$next_version" >> $env:GITHUB_ENV
+
+    - name: Update About dialog version
+      shell: pwsh
+      run: |
+        # sed ModelViewer.rc
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace "Version $env:SEM_VER_REGEX_2", "Version $env:SEMVER"
+        } | Set-Content $file
+
+    - name: Update About dialog build date
+      shell: pwsh
+      run: |
+        # sed ModelViewer.rc
+        $date_compiled = "$((Get-Date -UFormat '%m/%d/%Y (compiled %b %d %Y %T)'))"
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace '"(?<month>[0-1][1-9])\/(?<day>[0-3][1-9])\/(?<year>\d{4}) \(.*\)"', """$date_compiled"""
+        } | Set-Content $file
+
+    # @TODO Only on push to main on MODFLOW-USGS/modelviewer-mf6
+    - name: Update About
+      if: ${{ false }}    # skip for now
+      shell: pwsh
+      run: |
+        $prelim_pt1 = '"This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey \(USGS\).",.*$'
+        $prelim_pt2 = '"No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty.",.*$'
+        $prelim_pt3 = '"The software is provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the software.",.*$'
+
+        $approved_pt1 = '"This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review.",IDC_STATIC,15,110,189,40'
+        $approved_pt2 = '"No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty.",IDC_STATIC,15,152,190,34'
+        $approved_pt3 = '"Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.",IDC_STATIC,15,187,190,26'
+
+        # sed ModelViewer.rc
+        $file = ".\ModelViewer\ModelViewer.rc"
+        (Get-Content $file) | Foreach-Object {
+          $_ -replace $prelim_pt1, $approved_pt1`
+             -replace $prelim_pt2, $approved_pt2`
+             -replace $prelim_pt3, $approved_pt3`
+        } | Set-Content $file
+
+    # @TODO Only on push to main on MODFLOW-USGS/modelviewer-mf6
+    - name: Update README.md
+      if: ${{ false }}    # skip for now
+      shell: pwsh
+      run: |
+        $approved = ("Disclaimer`n" +
+                     "----------`n" +
+                     "`n" +
+                     "This software has been approved for release by the U.S. Geological Survey`n" +
+                     "(USGS). Although the software has been subjected to rigorous review, the USGS`n" +
+                     "reserves the right to update the software as needed pursuant to further analysis`n" +
+                     "and review. No warranty, expressed or implied, is made by the USGS or the U.S.`n" +
+                     "Government as to the functionality of the software and related material nor`n" +
+                     "shall the fact of release constitute any such warranty. Furthermore, the`n" +
+                     "software is released on condition that neither the USGS nor the U.S. Government`n" +
+                     "shall be held liable for any damages resulting from its authorized or`n" +
+                     "unauthorized use.")
+        $file = ".\README.md"
+        (Get-Content -Raw $file) -replace "(?ms)Disclaimer.*", $approved | Set-Content $file
+
+    - name: Commit and push
+      # if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch')
+      if: ${{ false }}    # skip for now
+      uses: actions-js/push@master
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        branch: main
+
+    - name: Commit and push branch
+      # if: (! (github.repository == 'MODFLOW-USGS/modelviewer-mf6') )
+      if: ${{ false }}    # skip for now
+      uses: actions-js/push@master
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        branch: __${{env.NEXT_VERSION}}.${{github.run_number}}
+
+    - name: Configure
+      shell: pwsh
+      run: cmake --preset vtk-9.1.0-vs2019-x64
+
+    - name: Build
+      shell: pwsh
+      run: cmake --build --preset vtk-9.1.0-vs2019-x64 --config release
+
+    - name: Install
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
+      shell: pwsh
+      run: cmake --install _vtk-9.1.0-vs2019-x64 --prefix ${{env.DIST_DIR}} --config release
+
+    - name: Build mvmf6
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
+      run: |
+        Copy-Item .\Help\mvmf6.chm ${{env.DIST_DIR}}\bin\.
+        # 7z a -tzip ${{env.DIST_DIR}}.zip .\${{env.DIST_DIR}}\
+
+    - name: Upload artifact
+      if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6')
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{env.DIST_DIR}}
+        path: ${{env.DIST_DIR}}
+
+    - name: Install (user)
+      if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      shell: pwsh
+      run: cmake --install _vtk-9.1.0-vs2019-x64 --prefix ${{env.USER_DIST_DIR}} --config release
+
+    - name: Build mvmf6 (user)
+      if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      run: |
+        Copy-Item .\Help\mvmf6.chm ${{env.USER_DIST_DIR}}\bin\.
+        # 7z a -tzip ${{env.USER_DIST_DIR}}.zip .\${{env.USER_DIST_DIR}}\
+
+    - name: Upload artifact (user)
+      if: (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{env.USER_DIST_DIR}}
+        path: ${{env.USER_DIST_DIR}}
+
+    # when on the MODFLOW-USGS/modelviewer-mf6 repo only release from the main branch
+    - name: Create release
+      # if: (github.repository == 'MODFLOW-USGS/modelviewer-mf6' && github.ref_name == 'main' && github.ref_type == 'branch') || (github.repository != 'MODFLOW-USGS/modelviewer-mf6')
+      if: ${{ false }}    # skip for now
+      run: |
+        # store new commit
+        $target_commitish = (git log -n1 --format=format:"%H")
+
+        if (! ($env:NEXT_VERSION -match "^(?<major>0|[1-9]\d*)\.(?<minor>[0|1-9]\d*)\.(?<patch>[0|1-9]\d*)$") ) {
+          throw "Bad version"
+        }
+        $version = $env:NEXT_VERSION
+
+        # create headers dictionary
+        $h = @{"Authorization" = "token ${{secrets.GITHUB_TOKEN}}"}
+
+        $releases_url = "${{env.releases_url}}"
+
+        # create release
+        # POST /repos/{owner}/{repo}/releases
+        # see https://docs.github.com/en/rest/reference/repos#create-a-release
+        #
+        $create = @{
+          "tag_name"         = $version
+          "target_commitish" = "$target_commitish"
+          "name"             = "Model Viewer for Modflow 6 Version " + $version
+          "body"             = "Model Viewer for Modflow 6 Version " + $version
+          "draft"            = $true
+        }
+        $create_json = $create | ConvertTo-Json
+        $release = Invoke-WebRequest -Uri $releases_url -Headers $h -Method POST -Body $create_json
+
+        # upload artifact (asset)
+        # POST /repos/{owner}/{repo}/releases/{release_id}/assets
+        # see https://docs.github.com/en/rest/reference/repos#upload-a-release-asset
+        #
+        $upload_uri = ($release.Content | ConvertFrom-Json).upload_url
+        if (! ($upload_uri -match  "(.*)\{\?name,label\}") ) {
+          # expecting URI{?name,label}
+          # ie https://uploads.github.com/repos/MODFLOW-USGS/modelviewer-mf6/releases/24058628/assets{?name,label}
+          throw "Bad upload_url"
+        }
+
+        # upload
+        $upload_uri = $Matches[1] + "?name=$env:DIST_DIR.zip"
+        $h["Content-type"] = "application/zip"
+        $bytes = [System.IO.File]::ReadAllBytes("$env:DIST_DIR.zip")
+        $upload = Invoke-WebRequest -Uri $upload_uri -Headers $h -Method POST -Body $bytes
+
+        # update release
+        # PATCH /repos/{owner}/{repo}/releases/{release_id}
+        # see https://docs.github.com/en/rest/reference/repos#update-a-release
+        #
+        $release_id = ($release.Content | ConvertFrom-Json).id
+        $h.Remove("Content-type")
+        $update = @{ "draft" = $false }
+        $update_json = $update | ConvertTo-Json
+        $release = Invoke-WebRequest -Uri "$releases_url/$release_id" -Headers $h -Method PATCH -Body $update_json
+
+        # display download url
+        Write-Output "$((($release.Content | ConvertFrom-Json).assets).browser_download_url)"
+        Get-FileHash "$env:DIST_DIR.zip"
+        Remove-Item "$env:DIST_DIR.zip"

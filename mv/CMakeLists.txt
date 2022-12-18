@@ -2,14 +2,18 @@ cmake_minimum_required(VERSION 3.20)
 
 project (
   mv
-  VERSION ${MvProject${VTK_SUFFIX}_VERSION_MAJOR}.${MvProject${VTK_SUFFIX}_VERSION_MINOR}.${MvProject${VTK_SUFFIX}_VERSION_PATCH}
+  # VERSION ${MvProject${VTK_SUFFIX}_VERSION_MAJOR}.${MvProject${VTK_SUFFIX}_VERSION_MINOR}.${MvProject${VTK_SUFFIX}_VERSION_PATCH}
   LANGUAGES CXX C
 )
 
-# This sets 'Use MFC in a Shared DLL' -- automatically sets _AFXDLL
-set(CMAKE_MFC_FLAG 2)
+if(APPLE)
+  set(mv_library_type STATIC)
+else()
+  set(mv_library_type SHARED)
+endif() 
 
-add_library(mv
+# add_library(mv SHARED
+add_library(mv ${mv_library_type}
   Modflow6DataSource.cpp
   Modflow6DataSource.h
   ModpathReader.cpp
@@ -64,8 +68,12 @@ add_library(mv
   mvUtil.h
   shpopen.c
   shapefil.h
-  win32/mvSaveCurrentDirectory.cpp
-  win32/mvSaveCurrentDirectory.h
+  ##win32/mvSaveCurrentDirectory.cpp
+  ##win32/mvSaveCurrentDirectory.h
+  ##qt/mvSaveCurrentDirectory.cpp
+  ##qt/mvSaveCurrentDirectory.h
+  mvSaveCurrentDirectory.cpp
+  mvSaveCurrentDirectory.h
 )
 
 # generate mvHeader for dll linkage
@@ -77,14 +85,18 @@ generate_export_header(mv
 target_compile_definitions(mv PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
 
 # @TODO clean this up
-target_compile_definitions(mv PRIVATE MV_USE_VTKMFCWINDOW)
-target_compile_definitions(mv PRIVATE _WIN32_WINNT=_WIN32_WINNT_WIN7)
+# # # target_compile_definitions(mv PRIVATE MV_USE_VTKMFCWINDOW)
+if(WIN32)
+  target_compile_definitions(mv PRIVATE _WIN32_WINNT=_WIN32_WINNT_WIN7)
+endif()
 
 if (MV_DEBUG_MEMORY_LEAKS)
   # set for all configs
   target_compile_definitions(mv PRIVATE MV_DEBUG_MEMORY_LEAKS)
-  # set only for debug config
-  target_compile_definitions(mv PRIVATE $<$<CONFIG:Debug>:_CRTDBG_MAP_ALLOC>)
+  if(WIN32)
+    # set only for debug config
+    target_compile_definitions(mv PRIVATE $<$<CONFIG:Debug>:_CRTDBG_MAP_ALLOC>)
+  endif()
 endif()
 
 target_include_directories(mv PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
@@ -94,6 +106,17 @@ if (WIN32)
 endif()
 
 target_link_libraries(mv ${VTK_LIBRARIES})
+
+if(WIN32)
+  target_link_libraries(mv Shlwapi)
+endif()
+
+if(UNIX AND NOT APPLE)
+  ##set_target_properties(CMAKE_SKIP_BUILD_RPATH FALSE)
+  ##set_target_properties(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+  set_target_properties(mv PROPERTIES INSTALL_RPATH "\$ORIGIN")
+endif()
+
 
 # precompiled headers
 target_precompile_headers(mv
@@ -179,16 +202,21 @@ target_precompile_headers(mv
     "$<$<COMPILE_LANGUAGE:CXX>:<vtkWindow.h$<ANGLE-R>>"
 )
 
-if (MSVC AND BUILD_SHARED_LIBS)
-  add_custom_command(TARGET mv POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:ModelViewer>
-  )
-  add_custom_command(TARGET mv POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:mv> $<TARGET_FILE_DIR:ModelViewer>
+# # # if (MSVC AND BUILD_SHARED_LIBS)
+# if (MSVC)
+#   add_custom_command(TARGET mv POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:QModelViewer>
+#   )
+#   add_custom_command(TARGET mv POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:mv> $<TARGET_FILE_DIR:QModelViewer>
+#   )
+# endif()
+
+if(${mv_library_type} STREQUAL SHARED)
+  # install
+  install(TARGETS mv
+    BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   )
 endif()
-
-# install
-install(TARGETS mv
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)

@@ -7,6 +7,8 @@
 #include "vtkPolyDataMapper2D.h"
 #include "vtkTextMapper.h"
 
+#include <cstdint>
+
 #define MV_DEFAULT_COLOR_SCHEME  0
 #define MV_MODIFIED_COLOR_SCHEME 1
 #define MV_CUSTOM_COLOR_SCHEME   2
@@ -38,11 +40,11 @@ public:
     void               SetColorScheme(int value);
     int                GetColorScheme() const { return m_ColorScheme; }
 
-    int                RenderOpaqueGeometry(vtkViewport *viewport);
-    virtual int        RenderTranslucentPolygonalGeometry(vtkViewport *) { return 0; };
-    int                RenderOverlay(vtkViewport *viewport);
-    virtual int        HasTranslucentPolygonalGeometry();
-    virtual void       ReleaseGraphicsResources(vtkWindow *);
+    int                RenderOpaqueGeometry(vtkViewport *viewport) override;
+    int                RenderTranslucentPolygonalGeometry(vtkViewport *) override { return 0; };
+    int                RenderOverlay(vtkViewport *viewport) override;
+    int                HasTranslucentPolygonalGeometry() override;
+    void               ReleaseGraphicsResources(vtkWindow *) override;
     int                GetColorBarColorScheme() const;
 
     void               SetScalarRange(double min, double max);
@@ -67,8 +69,8 @@ protected:
     char                *m_LabelFormat;
     double               m_minColor;
     double               m_maxColor;
-    unsigned long        m_FirstCustomColor;
-    unsigned long        m_LastCustomColor;
+    std::uint32_t        m_FirstCustomColor;
+    std::uint32_t        m_LastCustomColor;
     double               m_TextColor[3];
 
     vtkLookupTable      *m_LookupTable;

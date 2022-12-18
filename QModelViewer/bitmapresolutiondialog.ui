@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BitmapResolutionDialog</class>
+ <widget class="QDialog" name="BitmapResolutionDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>283</width>
+    <height>126</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>PNG Resolution &amp; Size</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayoutDialog">
+   <item row="0" column="0" rowspan="2">
+    <widget class="QGroupBox" name="groupBoxResolution">
+     <property name="title">
+      <string>Resolution</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayoutResolution">
+      <item>
+       <widget class="QRadioButton" name="radioButtonScreen">
+        <property name="text">
+         <string>Screen</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButton150ppi">
+        <property name="text">
+         <string>150 ppi</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButton300ppi">
+        <property name="text">
+         <string>300 ppi</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QGroupBox" name="groupBoxSize">
+     <property name="title">
+      <string>Size</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayoutSize">
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="lineEditWidth"/>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="labelInchesHeight">
+        <property name="text">
+         <string>inches</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QRadioButton" name="radioButtonHeight">
+        <property name="text">
+         <string>height</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QRadioButton" name="radioButtonWidth">
+        <property name="text">
+         <string>width</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="labelInchesWidth">
+        <property name="text">
+         <string>inches</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="lineEditHeight"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -16,7 +16,7 @@ public:
 protected:
     mvCustomAppendPolyData();
     ~mvCustomAppendPolyData();
-    virtual int FillInputPortInformation(int, vtkInformation *);
+    int FillInputPortInformation(int, vtkInformation *) override;
 };
 
 #endif

@@ -16,14 +16,21 @@ enum class SolidDisplayType {
 #define MV_PATHLINE_TUBE     0
 #define MV_PATHLINE_LINE     1
 
-#define MV_CELL_SCALARS      0
-#define MV_POINT_SCALARS     1
+enum class ScalarMode {
+    MV_CELL_SCALARS  = 0,
+    MV_POINT_SCALARS = 1
+};
 
 enum class GridType {
     MV_GRID_NOT_DEFINED  = 0,
     MV_STRUCTURED_GRID   = 4, // DIS6
     MV_LAYERED_GRID      = 5, // DISV6
     MV_UNSTRUCTURED_GRID = 6  // DISU6
+};
+
+enum class OverlayType {
+    otShapeFile = 0,            // MV_ESRI_SHAPEFILE_OVERLAY
+    otDXFFile   = 1             // MV_DXF_ASCII_OVERLAY
 };
 
 #define MV_INITIAL_DISPLAY_BOUNDING_BOX 0
