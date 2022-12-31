@@ -21,12 +21,11 @@
 #include <vtkVersion.h>
 
 #include "aboutdialog.h"
+#include "mv_version.h"
 #include "mvdoc.h"
 #include "mvview.h"
 #include "displaysizedialog.h"
-
 #include "bitmapresolutiondialog.h"
-
 #include "mvManager.h"
 #include "mvGUISettings.h"
 #include "mvSaveCurrentDirectory.h"
@@ -87,9 +86,7 @@ void MainWindow::createActions()
 
     // File->Close
     closeAct = new QAction(tr("&Close"), this);
-#if !defined(WIN32)
     closeAct->setShortcuts(QKeySequence::Close);
-#endif
     closeAct->setStatusTip(tr("Close the current mvmv6 file"));
     connect(closeAct, &QAction::triggered, this, &MainWindow::onFileClose);
 
@@ -1131,8 +1128,68 @@ void MainWindow::onViewFromNextDirection()
 
 void MainWindow::onHelpAbout()
 {
+#if 0
     AboutDialog dlg(this);
     dlg.exec();
+#else
+    QString text;
+    if (QString(MV_SHORT_SHA1).length())
+    {
+        text = tr("<h4>Model Viewer for Modflow 6</h4>"
+                  "<h4>Version %1.%2.%3%4 (%5)</h4>"
+                  "<h4>%6</h4>")
+                   .arg(QLatin1String(MV_VERSION_MAJOR))
+                   .arg(QLatin1String(MV_VERSION_MINOR))
+                   .arg(QLatin1String(MV_VERSION_PATCH))
+                   .arg(QLatin1String(MV_VERSION_PRERELEASE))
+                   .arg(QLatin1String(MV_SHORT_SHA1))
+                   .arg(QLatin1String(MV_DATE_COMPILED).isEmpty() ? QLatin1String("YYYY-mm-dd (compiled bbb dd YYYY HH:MM:SS)") : QLatin1String(MV_DATE_COMPILED));
+    }
+    else
+    {
+        text = tr("<h4>Model Viewer for Modflow 6</h4>"
+                  "<h4>Version %1.%2.X-prerelease</h4>"
+                  "<h4>%3</h4>")
+                   .arg(QLatin1String(MV_VERSION_MAJOR))
+                   .arg(QLatin1String(MV_VERSION_MINOR))
+                   .arg(QLatin1String(MV_DATE_COMPILED).isEmpty() ? QLatin1String("YYYY-mm-dd (compiled bbb dd YYYY HH:MM:SS)") : QLatin1String(MV_DATE_COMPILED));
+    }
+
+    QMessageBox *msgBox = new QMessageBox(this);
+    msgBox->setAttribute(Qt::WA_DeleteOnClose);
+    msgBox->setWindowTitle(tr("About"));
+    msgBox->setText(text);
+
+    const QString informativeText = QMessageBox::tr(
+        "<h4>Notice</h4>"
+
+        "<p>This software uses the Visualization Toolkit (vtk), written and "
+        "copyrighted by Ken Martin, Will Schroeder and Bill Lorensen. "
+        "The authors of vtk have granted permission to use, copy, "
+        "and distribute vtk while retaining their copyright.</p>"
+
+        "<h4>Disclaimer</h4>"
+
+        "<p>This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey (USGS).<p>"
+
+        "<p>No warranty, expressed or implied, is made by the USGS or the U.S.Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty.</p>"
+
+        "<p>The software is provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the software.</p>"
+
+        "<h4>Credits</h4>"
+        "Model Viewer for Modflow 6 was developed by <br>"
+        "Paul A. Hsieh (pahsieh@usgs.gov) and <br>"
+        "Scott R. Charlton (charlton@usgs.gov) <br>");
+
+    msgBox->setInformativeText(informativeText);
+
+    QPixmap pm(QLatin1String(":/images/ModelViewer-32x32.png"));
+    if (!pm.isNull())
+    {
+        msgBox->setIconPixmap(pm);
+    }
+    msgBox->exec();
+#endif
 }
 
 void MainWindow::onHelpContents()
