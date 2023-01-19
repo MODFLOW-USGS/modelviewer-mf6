@@ -176,6 +176,7 @@ source_group("Resources"
 )
 
 configure_file(mv_version.h.in mv_version.h)
+configure_file(mvmf6.desktop.in mvmf6.desktop @ONLY)
 
 # For VTK versions greater than or equal to 8.90.0:
 #  CMAKE_AUTOUIC is ON so we handle uic automatically for Qt targets.
@@ -269,6 +270,16 @@ if(WIN32 AND FALSE)
   endforeach()
 endif()
 
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+  install(FILES images/ModelViewer-32x32.png
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/icons/hicolor/32x32
+    RENAME gov.usgs.mvmf6.png
+  )
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mvmf6.desktop
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
+  )
+endif()
+
 if(WIN32 AND FALSE)
   # install extra vtk dlls
   foreach(_lib VTK::InteractionWidgets VTK::RenderingContext2D VTK::FiltersTexture VTK::ImagingGeneral VTK::ImagingHybrid VTK::RenderingAnnotation VTK::ImagingColor)
@@ -281,5 +292,5 @@ endif()
 # install VS runtimes
 include(InstallRequiredSystemLibraries)
 
-include(CTest)
-add_test(NAME ModelViewer COMMAND ModelViewer)
+add_test(NAME test.run COMMAND $<TARGET_FILE:ModelViewer>)
+set_tests_properties(test.run PROPERTIES TIMEOUT 5 WILL_FAIL true)

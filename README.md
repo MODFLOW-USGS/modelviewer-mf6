@@ -51,12 +51,34 @@ On Windows run
       cmake --build --preset win64_msvc2019_64 --config Release
       cmake --install %RUNNER_WORKSPACE%/qt5-vtk-%VTK_VER%-build --config Release
 
+Build mvmf6
+
+For all OSs set the following environment variables
+
+      $env{VTK_DIR} = $env{RUNNER_WORKSPACE}/qt5-vtk-$env{VTK_VER}/lib/cmake
+      $env{Qt5_DIR} = /home/runner/work/modelviewer-mf6/Qt/5.15.2/gcc_64
+
+      Linux
+      export Qt5_DIR=$RUNNER_WORKSPACE/Qt/$AQT_VER/gcc_64
+
+
 Download (or clone) the modelviewer-mf6 source
 
 Within the top-level directory of modelviewer-mf6 run
 
-      cmake -S . -B ./_ninja_multi -G "Ninja Multi-Config"
-      cmake --build ./_ninja_multi --config Release
+On Linux
+
+      cmake --preset gcc_64
+      cmake --build --preset gcc_64 --config Release
+      cmake --install _ninja --config Release
+
+## Installing precompiled versions
+
+On Linux run
+
+      cd
+      curl https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/1.1.0/mvmf6-1.1.0-Linux.tar.gz
+      
 
 
 Disclaimer

@@ -1,78 +1,153 @@
 {
-  "version": 3,
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 18,
-    "patch": 0
-  },
-  "configurePresets": [
-    {
-      "name": "vtk-6.3.0-vs2017-x64",
-      "displayName": "vs2019 x64 with vtk-6.3.0-vs2017 (builds in _vtk-6.3.0-vs2017-x64)",
-      "generator": "Visual Studio 16 2019",
-      "architecture": "x64",
-      "binaryDir": "${sourceDir}/_${presetName}",
-      "cacheVariables": {
-        "VTK_DIR" : "C:/VTK-6.3.0-vs2017-x64/lib/cmake/vtk-6.3",
-        "VTK_SUFFIX" : "-vtk-6.3"
-      }
+    "version": 3,
+    "cmakeMinimumRequired": {
+      "major": 3,
+      "minor": 18,
+      "patch": 0
     },
-    {
-      "name": "vtk-6.3.0-leaks-vs2017-x64",
-      "displayName": "vs2019 x64 with vtk-6.3.0-vs2017 (builds in _vtk-6.3.0-leaks-vs2017-x64)",
-      "generator": "Visual Studio 16 2019",
-      "architecture": "x64",
-      "binaryDir": "${sourceDir}/_${presetName}",
-      "cacheVariables": {
-        "VTK_DIR" : "C:/VTK-6.3.0-leaks-vs2017-x64/lib/cmake/vtk-6.3",
-        "MV_DEBUG_MEMORY_LEAKS": "ON",
-        "VTK_SUFFIX" : "-vtk-6.3-leaks"
+    "configurePresets": [
+      {
+        "name": "default",
+        "hidden": true,
+        "binaryDir": "${sourceDir}/_${presetName}",
+        "cacheVariables": {
+        },
+        "generator": "Ninja Multi-Config",
+        "environment": {
+          "VTK_DIR": "$env{RUNNER_WORKSPACE}/qt5-vtk-$env{VTK_VER}/lib/cmake",
+          "Qt5_DIR": "$env{RUNNER_WORKSPACE}/Qt/$env{AQT_VER}/${presetName}/lib/cmake/Qt5"
+        }
+      },
+      {
+        "name": "win64_msvc2019_64",
+        "inherits": "default",
+        "displayName": "mvmf6 on Windows",
+        "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Windows"
+        },
+        "vendor": {
+          "usgs.gov/modflow": {
+            "Name": "U.S. Geological Survey",
+            "Configure": "cmake --preset win64_msvc2019_64",
+            "Build-debug": "cmake --build --preset win64_msvc2019_64 --config Debug",
+            "Build-release": "cmake --build --preset win64_msvc2019_64 --config Release",
+            "Install-debug": "cmake --install ./_ninja --config Debug",
+            "Install-release": "cmake --install ./_ninja --config Release"
+          }
+        }
+      },
+      {
+        "name": "gcc_64",
+        "inherits": "default",
+        "displayName": "mvmf6 on Linux",
+        "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Linux"
+        },
+        "cacheVariables": {
+          "CMAKE_INSTALL_PREFIX": "$env{HOME}/.local"
+        },
+        "vendor": {
+          "usgs.gov/modflow": {
+            "Name": "U.S. Geological Survey",
+            "Configure": "cmake --preset gcc_64",
+            "Build-debug": "cmake --build --preset gcc_64 --config Debug",
+            "Build-release": "cmake --build --preset gcc_64 --config Release",
+            "Install-debug": "cmake --install _gcc_64 --config Debug",
+            "Install-release": "cmake --install _gcc_64 --config Release"
+          }
+        }
+      },
+      {
+        "name": "gcc_64_sudo",
+        "inherits": "gcc_64",
+        "displayName": "mvmf6 on Linux (as root)",
+        "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Linux"
+        },
+        "environment": {
+          "Qt5_DIR": "$env{RUNNER_WORKSPACE}/Qt/$env{AQT_VER}/gcc_64/lib/cmake/Qt5"
+        },
+        "cacheVariables": {
+          "CMAKE_INSTALL_PREFIX": null
+        },
+        "vendor": {
+          "usgs.gov/modflow": {
+            "Name": "U.S. Geological Survey",
+            "Configure": "cmake --preset gcc_64_sudo",
+            "Build-debug": "cmake --build --preset gcc_64_sudo --config Debug",
+            "Build-release": "cmake --build --preset gcc_64_sudo --config Release",
+            "Install-debug": "sudo cmake --install _gcc_64_sudo --config Debug",
+            "Install-release": "sudo cmake --install _gcc_64_sudo --config Release"
+          }
+        }
+      },
+      {
+        "name": "clang_64",
+        "inherits": "default",
+        "displayName": "mvmf6 on Darwin",
+        "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Darwin"
+        },  
+        "vendor": {
+          "usgs.gov/modflow": {
+            "Name": "U.S. Geological Survey",
+            "Notes": "This file should be placed in the root directory of VTK-9.1.0",
+            "Configure": "cmake --preset ${presetName}",
+            "Build-debug": "cmake --build --preset ${presetName} --config Debug",
+            "Build-release": "cmake --build --preset ${presetName} --config Release",
+            "Install-debug": "cmake --install ${binaryDir} --config Debug",
+            "Install-release": "cmake --install ${binaryDir} --config Release"
+          }
+        }
       }
-    },
-    {
-      "name": "vtk-9.1.0-vs2019-x64",
-      "displayName": "vs2019 x64 with vtk-9.1.0-vs2019-x64 (builds in _vtk-9.1.0-vs2019-x64)",
-      "generator": "Visual Studio 16 2019",
-      "architecture": "x64",
-      "binaryDir": "${sourceDir}/_${presetName}",
-      "cacheVariables": {
-        "VTK_DIR" : "C:/VTK-9.1.0-vs2019-x64/lib/cmake/vtk-9.1",
-        "VTK_SUFFIX" : "-vtk-9.1"
+    ],
+    "buildPresets": [
+      {
+        "name": "win64_msvc2019_64",
+        "configurePreset": "win64_msvc2019_64",
+        "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Windows"
+        }
+      },
+      {
+        "name": "gcc_64",
+        "configurePreset": "gcc_64",
+        "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Linux"
+        }
+      },
+      {
+        "name": "gcc_64_sudo",
+        "configurePreset": "gcc_64_sudo",
+        "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Linux"
+        }
+      },
+      {
+        "name": "clang_64",
+        "configurePreset": "clang_64",
+        "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Darwin"
+        }
       }
-    },
-    {
-      "name": "vtk-9.1.0-leaks-vs2019-x64",
-      "displayName": "vs2019 x64 with VTK-9.1.0-leaks-vs2019-x64 (builds in _vtk-9.1.0-leaks-vs2019-x64)",
-      "generator": "Visual Studio 16 2019",
-      "architecture": "x64",
-      "binaryDir": "${sourceDir}/_${presetName}",
-      "cacheVariables": {
-        "VTK_DIR" : "C:/VTK-9.1.0-leaks-vs2019-x64/lib/cmake/vtk-9.1",
-        "MV_DEBUG_MEMORY_LEAKS": "ON",
-        "VTK_SUFFIX" : "-vtk-9.1-leaks"
-      }
+    ],
+    "vendor": {
+      "Note": ""
     }
-  ]
-  ,
-  "buildPresets": [
-    {
-      "name": "vtk-6.3.0-vs2017-x64",
-      "configurePreset": "vtk-6.3.0-vs2017-x64"
-    },
-    {
-      "name": "vtk-6.3.0-leaks-vs2017-x64",
-      "configurePreset": "vtk-6.3.0-leaks-vs2017-x64"
-    },
-    {
-      "name": "vtk-9.1.0-vs2019-x64",
-      "configurePreset": "vtk-9.1.0-vs2019-x64"
-    },
-    {
-      "name": "vtk-9.1.0-leaks-vs2019-x64",
-      "configurePreset": "vtk-9.1.0-leaks-vs2019-x64"
-    }
-  ],
-  "vendor": {
-    "Note": "Couldn't get vtk-6.3.0 to compile with vs2019 x64"
   }
-}
