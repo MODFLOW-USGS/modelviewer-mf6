@@ -30,9 +30,12 @@ of the VTK source tree and rename it to CMakePresets.json.
 Set the following environment variables or manually edit
 the default presets in the CMakePresets.json file:
 
-      $env{RUNNER_WORKSPACE}  = <location to build vtk>
-      $env{VTK_VER}           = 9.1.0
-      $env{AQT_VER}           = 5.15.2
+```cmake
+$env{RUNNER_WORKSPACE}  = <location to build vtk>
+$env{VTK_VER}           = 9.1.0
+$env{AQT_VER}           = 5.15.2
+$env{MV_VER}            = 1.1.x
+```
 
 On Linux run
 
@@ -67,9 +70,34 @@ cmake --install ${RUNNER_WORKSPACE}/qt5-vtk-${VTK_VER}-build --config Release
 
 On macOS run
 
-      cmake --preset clang_64
-      cmake --build --preset clang_64 --config Release
-      cmake --install $RUNNER_WORKSPACE/qt5-vtk-$VTK_VER-build --config Release
+```Bash
+# set environment vars
+export RUNNER_WORKSPACE=${HOME}/work/modelviewer-mf6
+export VTK_VER=9.1.0
+export AQT_VER=5.15.2
+export MV_VER=1.1.0   # greater than or equal to 1.1.0
+
+# setup work space
+mkdir -p ${RUNNER_WORKSPACE}
+cd ${RUNNER_WORKSPACE}
+
+# download and extract mvmf6 source
+curl -fSLO https://github.com/MODFLOW-USGS/modelviewer-mf6/archive/refs/tags/${MV_VER}.tar.gz
+tar xzf ./${MV_VER}.tar.gz
+
+# download and extract VTK source
+curl -fSLO https://github.com/Kitware/VTK/archive/refs/tags/v${VTK_VER}.tar.gz
+tar xzf ./v${VTK_VER}.tar.gz
+
+# copy cmake preset file to VTK directory
+cp ./modelviewer-mf6-${MV_VER}/misc/CMakePresets-vtk-${VTK_VER}-qt-${AQT_VER}.json ./VTK-${VTK_VER}/CMakePresets.json
+cd ./VTK-${VTK_VER}
+
+# use cmake to build VTK with Qt
+cmake --preset clang_64
+cmake --build --preset clang_64 --config Release
+cmake --install $RUNNER_WORKSPACE/qt5-vtk-$VTK_VER-build --config Release
+```
 
 On Windows run
 
