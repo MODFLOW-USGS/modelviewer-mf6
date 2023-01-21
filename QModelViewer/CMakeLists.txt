@@ -272,7 +272,7 @@ endif()
 
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   install(FILES images/ModelViewer-32x32.png
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/icons/hicolor/32x32
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons
     RENAME gov.usgs.mvmf6.png
   )
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mvmf6.desktop

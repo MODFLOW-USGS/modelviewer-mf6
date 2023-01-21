@@ -3,4 +3,4 @@ Type=Application
 Terminal=false
 Exec=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_BINDIR@/@PROJECT_NAME@
 Name=Model Viewer for MODFLOW 6
-Icon=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_DATADIR@/@PROJECT_NAME@/icons/hicolor/32x32/gov.usgs.mvmf6.png
+Icon=gov.usgs.mvmf6.png
