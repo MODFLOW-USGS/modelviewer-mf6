@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.21)
 cmake_policy(SET CMP0057 NEW)
 
 project (
-  QMvProject${VTK_SUFFIX}
+  mvmf6
   VERSION 1.1.0
   LANGUAGES CXX C
 )
@@ -92,6 +92,8 @@ if (MV_DEBUG_MEMORY_LEAKS)
 else()
   set(BUILD_SHARED_LIBS ON)
 endif()
+
+include(CTest)
 
 if(NOT APPLE)
   add_subdirectory(doc)
@@ -220,7 +222,6 @@ elseif(WIN32)
   set(CPACK_GENERATOR "ZIP")
 endif()
 
-set(CPACK_PACKAGE_NAME "mvmf6")
 SET(CPACK_PACKAGE_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}${MV_VERSION_PRERELEASE}")
 
 include(CPack)
@@ -233,3 +234,4 @@ if(OFF)
     message(STATUS "${_variableName}=${${_variableName}}")
   endforeach()
 endif()
+
