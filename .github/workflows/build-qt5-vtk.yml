@@ -2,15 +2,13 @@ name: build-qt5-vtk
 
 on:
   push:
-    branches:
-      - 'main'
-      - 'develop'
-      - 'issue-*'
+    paths-ignore:
+      - *.md
+      - rtd/**
   pull_request:
     branches:
       - 'main'
       - 'develop'
-      - '_develop-*'
 
   workflow_dispatch:
 
