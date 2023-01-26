@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
+# Support new ``if()`` IN_LIST operator.
 cmake_policy(SET CMP0057 NEW)
 
 project (

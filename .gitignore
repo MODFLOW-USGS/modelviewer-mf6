@@ -34,7 +34,7 @@ Help/mvmf6.chm
 CMakeUserPresets.json
 
 # read-the-docs
-docs/build
+rtd/build/
 
 # Backup files
 *.BAK
