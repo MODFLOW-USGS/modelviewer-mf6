@@ -3,10 +3,10 @@
 # -- Project information
 
 project = 'Model Viewer for MODFLOW 6'
-copyright = '2022, MODFLOW Development Team'
+copyright = '2023, MODFLOW Development Team'
 author = 'MODFLOW Development Team'
 
-release = '1.2.0'
+release = '1.1.0'
 
 # -- General configuration
 
