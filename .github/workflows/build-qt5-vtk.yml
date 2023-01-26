@@ -3,8 +3,8 @@ name: build-qt5-vtk
 on:
   push:
     paths-ignore:
-      - *.md
-      - rtd/**
+      - '*.md'
+      - 'rtd/**'
   pull_request:
     branches:
       - 'main'
