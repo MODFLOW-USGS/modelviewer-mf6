@@ -208,30 +208,30 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # #
-      # # Open 'PowerShell 7 for VS 2019 x64' in Windows Terminal
-      # #
-      # # see https://ddalcino.github.io/aqt-list-server/
-      # # aqt install-qt mac desktop 5.15.2 clang_64 --dir ${HOME}/work/modelviewer-mf6/Qt
-      # # aqt install-qt linux desktop 5.15.2 gcc_64 --dir ${HOME}/work/modelviewer-mf6/Qt
-      # # aqt install-qt windows desktop 5.15.2 win64_msvc2019_64 --dir ${env:USERPROFILE}\work\modelviewer-mf6\Qt
-      # #
-      # - name: Install Qt
-      #   uses: jurplel/install-qt-action@v3
-      #   with:
-      #     version: ${{ env.AQT_VER }}
-      #     host: ${{ matrix.config.aqt_host }}
-      #     target: ${{ env.AQT_TARGET }}
-      #     arch: ${{ matrix.config.aqt_arch }}
-      #     dir: ${{ runner.workspace }}
-      #     cache: true
-      #     cache-key-prefix: install-qt-action
-      #     tools: tools_ninja
+      #
+      # Open 'PowerShell 7 for VS 2019 x64' in Windows Terminal
+      #
+      # see https://ddalcino.github.io/aqt-list-server/
+      # aqt install-qt mac desktop 5.15.2 clang_64 --dir ${HOME}/work/modelviewer-mf6/Qt
+      # aqt install-qt linux desktop 5.15.2 gcc_64 --dir ${HOME}/work/modelviewer-mf6/Qt
+      # aqt install-qt windows desktop 5.15.2 win64_msvc2019_64 --dir ${env:USERPROFILE}\work\modelviewer-mf6\Qt
+      #
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.AQT_VER }}
+          host: ${{ matrix.config.aqt_host }}
+          target: ${{ env.AQT_TARGET }}
+          arch: ${{ matrix.config.aqt_arch }}
+          dir: ${{ runner.workspace }}
+          cache: true
+          cache-key-prefix: install-qt-action
+          tools: tools_ninja
 
-      # - name: Add ninja path
-      #   shell: bash
-      #   run: |
-      #     echo "${IQTA_TOOLS}/Ninja" >> $GITHUB_PATH
+      - name: Add ninja path
+        shell: bash
+        run: |
+          echo "${IQTA_TOOLS}/Ninja" >> $GITHUB_PATH
 
       # - name: Cache qt5-vtk debug
       #   id: cache-qt5-vtk-debug
@@ -247,62 +247,67 @@ jobs:
       #     path: ${{ runner.workspace }}/qt5-vtk-${{ env.VTK_VER }}
       #     key: ${{ matrix.config.os }}-qt5-vtk-Release-${{ hashFiles('misc/CMakePresets-vtk-9.1.0-qt-5.15.2.json') }}
 
+      # - name: Download assets
+      #   uses: robinraju/release-downloader@v1.7
+      #   with:
+      #     repository: "MODFLOW-USGS/modelviewer-mf6-build-deps"
+      #     releaseId: "90254461" # 2023-01-26T02.03.20Z
+      #     fileName: "qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
+
       - name: Download assets
         uses: robinraju/release-downloader@v1.7
+        id: download
         with:
           repository: "MODFLOW-USGS/modelviewer-mf6-build-deps"
-          releaseId: "90254461" # 2023-01-26T02.03.20Z
+          latest: true
           fileName: "qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
 
-      - name: List assets
+      - name: Extract assets ${{ steps.download.outputs.tag_name }}
         shell: bash
         working-directory: ${{ runner.workspace }}
         run: |
-          pwd
-          sha256sum "${{github.workspace }}/qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
-          7z x "${{github.workspace }}/qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
-          rm "${{github.workspace }}/qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
-          ls -l
+          echo ${{ steps.download.outputs.tag_name }}
+          7z x "${{ github.workspace }}/qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
+          rm "${{ github.workspace }}/qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
 
+      - name: Set env vars
+        shell: bash
+        run: |
+          echo "MV_SHORT_SHA1=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "MV_DATE_COMPILED=$(date --rfc-3339=date) (compiled $(date "+%b %d %Y %H:%M:%S"))" >> $GITHUB_ENV
 
-      # - name: Set env vars
-      #   shell: bash
-      #   run: |
-      #     echo "MV_SHORT_SHA1=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-      #     echo "MV_DATE_COMPILED=$(date --rfc-3339=date) (compiled $(date "+%b %d %Y %H:%M:%S"))" >> $GITHUB_ENV
+        # the shell needs to be set to use ninja on windows
+      - name: Set up Visual Studio shell
+        if: runner.os == 'Windows'
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: x64
 
-      #   # the shell needs to be set to use ninja on windows
-      # - name: Set up Visual Studio shell
-      #   if: runner.os == 'Windows'
-      #   uses: egor-tensin/vs-shell@v2
-      #   with:
-      #     arch: x64
+      - name: "*** Configure modelviewer-mf6 for release ***"
+        if: ${{ github.ref_name == 'master' }}
+        env:
+          VTK_DIR: ${{ runner.workspace }}/qt5-vtk-${{ env.VTK_VER }}/lib/cmake
+        run: cmake -S . -B ./_ninja_multi -G "Ninja Multi-Config" -DMV_SHORT_SHA1="${{ env.MV_SHORT_SHA1 }}" -DMV_DATE_COMPILED="${{ env.MV_DATE_COMPILED }}"
 
-      # - name: "*** Configure modelviewer-mf6 for release ***"
-      #   if: ${{ github.ref_name == 'master' }}
-      #   env:
-      #     VTK_DIR: ${{ runner.workspace }}/qt5-vtk-${{ env.VTK_VER }}/lib/cmake
-      #   run: cmake -S . -B ./_ninja_multi -G "Ninja Multi-Config" -DMV_SHORT_SHA1="${{ env.MV_SHORT_SHA1 }}" -DMV_DATE_COMPILED="${{ env.MV_DATE_COMPILED }}"
+      - name: "*** Configure modelviewer-mf6 for prerelease ***"
+        if: ${{ github.ref_name != 'master' }}
+        env:
+          VTK_DIR: ${{ runner.workspace }}/qt5-vtk-${{ env.VTK_VER }}/lib/cmake
+          MV_VERSION_PRERELEASE: -prerelease.${{ github.run_number }}
+        run: cmake -S . -B ./_ninja_multi -G "Ninja Multi-Config" -DMV_SHORT_SHA1="${{ env.MV_SHORT_SHA1 }}" -DMV_DATE_COMPILED="${{ env.MV_DATE_COMPILED }}" -DMV_VERSION_PRERELEASE="${{ env.MV_VERSION_PRERELEASE }}"
 
-      # - name: "*** Configure modelviewer-mf6 for prerelease ***"
-      #   if: ${{ github.ref_name != 'master' }}
-      #   env:
-      #     VTK_DIR: ${{ runner.workspace }}/qt5-vtk-${{ env.VTK_VER }}/lib/cmake
-      #     MV_VERSION_PRERELEASE: -prerelease.${{ github.run_number }}
-      #   run: cmake -S . -B ./_ninja_multi -G "Ninja Multi-Config" -DMV_SHORT_SHA1="${{ env.MV_SHORT_SHA1 }}" -DMV_DATE_COMPILED="${{ env.MV_DATE_COMPILED }}" -DMV_VERSION_PRERELEASE="${{ env.MV_VERSION_PRERELEASE }}"
+      - name: "*** Build modelviewer-mf6 debug with cmake ***"
+        run: cmake --build ./_ninja_multi --config Debug
 
-      # - name: "*** Build modelviewer-mf6 debug with cmake ***"
-      #   run: cmake --build ./_ninja_multi --config Debug
+      - name: "*** Build modelviewer-mf6 release with cmake ***"
+        run: cmake --build ./_ninja_multi --config Release
 
-      # - name: "*** Build modelviewer-mf6 release with cmake ***"
-      #   run: cmake --build ./_ninja_multi --config Release
+      - name: "*** Package modelviewer-mf6 release with cpack ***"
+        working-directory: ./_ninja_multi
+        run: cpack --verbose
 
-      # - name: "*** Package modelviewer-mf6 release with cpack ***"
-      #   working-directory: ./_ninja_multi
-      #   run: cpack --verbose
-
-      # - name: "*** Upload package ***"
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: ${{ matrix.config.os }}-artifact
-      #     path: ${{ github.workspace }}/_ninja_multi/*.${{ matrix.config.package_suffix }}
+      - name: "*** Upload package ***"
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.config.os }}-artifact
+          path: ${{ github.workspace }}/_ninja_multi/*.${{ matrix.config.package_suffix }}
