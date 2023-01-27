@@ -247,3 +247,22 @@ cmake --preset gcc_64_sudo
 cmake --build --preset gcc_64_sudo --config Release
 sudo cmake --install _gcc_64_sudo --config Release
 sudo update-desktop-database /usr/local/share/applications
+
+
+
+=====================================================================
+
+/home/charlton/work/modelviewer-mf6
+
+
+C:\Qt
+C:\Users\schar\work\modelviewer-mf6\Qt
+
+Windows
+
+Visual Studio Community 2019 (Version 16.11)  -- 
+Total space required 8.18 GB
+  Workloads
+    [x] Desktop development with C++
+    
+    	*** Checkout C++ AddressSanitizer
