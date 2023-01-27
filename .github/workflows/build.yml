@@ -248,7 +248,7 @@ jobs:
       #     key: ${{ matrix.config.os }}-qt5-vtk-Release-${{ hashFiles('misc/CMakePresets-vtk-9.1.0-qt-5.15.2.json') }}
 
       - name: Download assets
-      - uses: robinraju/release-downloader@v1.7
+        uses: robinraju/release-downloader@v1.7
         with:
           repository: "MODFLOW-USGS/modelviewer-mf6-build-deps"
           releaseId: "90254461" # 2023-01-26T02.03.20Z
