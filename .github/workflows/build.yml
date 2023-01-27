@@ -206,7 +206,7 @@ jobs:
           }
 
     steps:
-      # - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       # #
       # # Open 'PowerShell 7 for VS 2019 x64' in Windows Terminal
@@ -254,11 +254,16 @@ jobs:
           releaseId: "90254461" # 2023-01-26T02.03.20Z
           fileName: "qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
 
-
       - name: List assets
         shell: bash
+        working-directory: ${{ runner.workspace }}
         run: |
-          ls -al
+          pwd
+          sha256sum "${{github.workspace }}/qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
+          7z x "${{github.workspace }}/qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
+          rm "${{github.workspace }}/qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
+          ls -l
+
 
       # - name: Set env vars
       #   shell: bash
