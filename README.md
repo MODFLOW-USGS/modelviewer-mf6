@@ -179,10 +179,16 @@ On Linux
 
 On Linux run
 
-      cd
-      curl https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/1.1.0/mvmf6-1.1.0-Linux.tar.gz
-      
-
+```bash
+cd ~/Downloads
+export MV_VER=1.1.0
+curl https://github.com/MODFLOW-USGS/modelviewer-mf6/releases/download/1.1.0/mvmf6-${MV_VER}-Linux.tar.gz
+cd ~/.local
+tar xzf ~/Downloads/mvmf6-${MV_VER}-Linux.tar.gz --strip-components=1
+# Note
+# may need to install libxcb-xinerama0
+# sudo apt-get install libxcb-xinerama0      
+```
 
 Disclaimer
 ----------
