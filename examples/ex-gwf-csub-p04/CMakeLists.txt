@@ -23,5 +23,6 @@ install(
     gwf_obs.csv
     mfsim.lst
     mfsim.nam
-  DESTINATION ${CMAKE_INSTALL_DOCDIR}/examples/ex-gwf-csub-p04
+  DESTINATION
+    ${CMAKE_INSTALL_DOCDIR}/examples/ex-gwf-csub-p04
 )

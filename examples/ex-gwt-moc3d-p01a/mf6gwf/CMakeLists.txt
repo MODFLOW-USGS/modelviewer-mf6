@@ -1,0 +1,20 @@
+install(
+  FILES 
+    flow.bud
+    flow.chd
+    flow.dis
+    flow.dis.grb
+    flow.hds
+    flow.ic
+    flow.ims
+    flow.lst
+    flow.nam
+    flow.npf
+    flow.oc
+    flow.tdis
+    flow.wel
+    mfsim.lst
+    mfsim.nam
+  DESTINATION 
+    ${CMAKE_INSTALL_DOCDIR}/examples/ex-gwt-moc3d-p01a/mf6gwf
+)

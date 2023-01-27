@@ -16,5 +16,6 @@ install(
     ex-gwf-disvmesh.tdis
     mfsim.lst
     mfsim.nam
-  DESTINATION ${CMAKE_INSTALL_DOCDIR}/examples/ex-gwf-disvmesh
+  DESTINATION
+    ${CMAKE_INSTALL_DOCDIR}/examples/ex-gwf-disvmesh
 )
