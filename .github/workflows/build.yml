@@ -22,8 +22,20 @@ env:
 # therefore use ${{ runner.workspace }} instead of ${{ env.RUNNER_WORKSPACE }}
 
 jobs:
+  init:
+    runs-on: ubuntu-latest
+    # Map step outputs to job outputs
+    outputs:
+      DATE_COMPILED: ${{ steps.vars.outputs.DATE_COMPILED }}
+    steps:
+      - name: Setup vars
+        id: vars
+        run: |
+          echo "DATE_COMPILED=$(date --rfc-3339=date) (compiled $(date "+%b %d %Y %H:%M:%S"))" >> $GITHUB_OUTPUT
+
   build:
     name: ${{ matrix.config.os }}
+    needs: [init]
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
@@ -115,7 +127,7 @@ jobs:
         shell: bash
         run: |
           echo "MV_SHORT_SHA1=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo "MV_DATE_COMPILED=$(date --rfc-3339=date) (compiled $(date "+%b %d %Y %H:%M:%S"))" >> $GITHUB_ENV
+          echo "MV_DATE_COMPILED=${{ needs.init.outputs.DATE_COMPILED }}" >> $GITHUB_ENV
 
         # the shell needs to be set to use ninja on windows
       - name: Set up Visual Studio shell
