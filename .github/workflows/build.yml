@@ -252,7 +252,7 @@ jobs:
         with:
           repository: "MODFLOW-USGS/modelviewer-mf6-build-deps"
           releaseId: "90254461" # 2023-01-26T02.03.20Z
-          fileName: "qt5-vtk-${{ env.VTK_VER }}-${{ matrix.os }}.7z"
+          fileName: "qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
 
 
       - name: List assets
