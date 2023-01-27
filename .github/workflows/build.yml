@@ -22,148 +22,9 @@ env:
 # therefore use ${{ runner.workspace }} instead of ${{ env.RUNNER_WORKSPACE }}
 
 jobs:
-  # cache-qt5-vtk:
-  #   name: ${{ matrix.config.name }}
-  #   runs-on: ${{ matrix.config.os }}
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       config:
-  #       - {
-  #           name: "macos-11-debug",
-  #           os: macos-11,
-  #           cmake_config: Debug,
-  #           aqt_host: mac,
-  #           aqt_arch: clang_64
-  #         }
-  #       - {
-  #           name: "ubuntu-20.04-debug",
-  #           os: ubuntu-20.04,
-  #           cmake_config: Debug,
-  #           aqt_host: linux,
-  #           aqt_arch: gcc_64
-  #         }
-  #       - {
-  #           name: "windows-2019-debug",
-  #           os: windows-2019,
-  #           cmake_config: Debug,
-  #           aqt_host: windows,
-  #           aqt_arch: win64_msvc2019_64
-  #         }
-  #       - {
-  #           name: "macos-11-release",
-  #           os: macos-11,
-  #           cmake_config: Release,
-  #           aqt_host: mac,
-  #           aqt_arch: clang_64
-  #         }
-  #       - {
-  #           name: "ubuntu-20.04-release",
-  #           os: ubuntu-20.04,
-  #           cmake_config: Release,
-  #           aqt_host: linux,
-  #           aqt_arch: gcc_64
-  #         }
-  #       - {
-  #           name: "windows-2019-release",
-  #           os: windows-2019,
-  #           cmake_config: Release,
-  #           aqt_host: windows,
-  #           aqt_arch: win64_msvc2019_64
-  #         }
-  #       - {
-  #           name: "macos-12-debug",
-  #           os: macos-12,
-  #           cmake_config: Debug,
-  #           aqt_host: mac,
-  #           aqt_arch: clang_64
-  #         }
-  #       - {
-  #           name: "ubuntu-22.04-debug",
-  #           os: ubuntu-22.04,
-  #           cmake_config: Debug,
-  #           aqt_host: linux,
-  #           aqt_arch: gcc_64
-  #         }
-  #       - {
-  #           name: "windows-2022-debug",
-  #           os: windows-2022,
-  #           cmake_config: Debug,
-  #           aqt_host: windows,
-  #           aqt_arch: win64_msvc2019_64
-  #         }
-  #       - {
-  #           name: "macos-12-release",
-  #           os: macos-12,
-  #           cmake_config: Release,
-  #           aqt_host: mac,
-  #           aqt_arch: clang_64
-  #         }
-  #       - {
-  #           name: "ubuntu-22.04-release",
-  #           os: ubuntu-22.04,
-  #           cmake_config: Release,
-  #           aqt_host: linux,
-  #           aqt_arch: gcc_64
-  #         }
-  #       - {
-  #           name: "windows-2022-release",
-  #           os: windows-2022,
-  #           cmake_config: Release,
-  #           aqt_host: windows,
-  #           aqt_arch: win64_msvc2019_64
-  #         }
-
-  #   steps:
-  #     - uses: actions/checkout@v3
-
-  #     - name: Install Qt
-  #       uses: jurplel/install-qt-action@v3
-  #       with:
-  #         version: ${{ env.AQT_VER }}
-  #         host: ${{ matrix.config.aqt_host }}
-  #         target: ${{ env.AQT_TARGET }}
-  #         arch: ${{ matrix.config.aqt_arch }}
-  #         dir: ${{ runner.workspace }}
-  #         cache: true
-  #         cache-key-prefix: install-qt-action
-  #         tools: tools_ninja
-
-  #     - name: Add ninja path
-  #       shell: bash
-  #       run: |
-  #         echo "${IQTA_TOOLS}/Ninja" >> $GITHUB_PATH
-
-  #     - name: Set up Visual Studio shell
-  #       if: runner.os == 'Windows'
-  #       uses: egor-tensin/vs-shell@v2
-  #       with:
-  #         arch: x64
-
-  #     - name: Cache qt5-vtk
-  #       id: cache-qt5-vtk
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ${{ runner.workspace }}/qt5-vtk-${{ env.VTK_VER }}
-  #         key: ${{ matrix.config.os }}-qt5-vtk-${{ matrix.config.cmake_config }}-${{ hashFiles('misc/CMakePresets-vtk-9.1.0-qt-5.15.2.json') }}
-
-  #     - name: Build qt5-vtk
-  #       if: steps.cache-qt5-vtk.outputs.cache-hit != 'true'
-  #       run: |
-  #         cd ${{ runner.workspace }}
-  #         curl -L -O https://github.com/Kitware/VTK/archive/refs/tags/v${{ env.VTK_VER }}.tar.gz
-  #         tar xzf ./v${{ env.VTK_VER }}.tar.gz
-  #         cp ./modelviewer-mf6/misc/CMakePresets-vtk-9.1.0-qt-5.15.2.json ./VTK-${{ env.VTK_VER }}/CMakePresets.json
-  #         cd ./VTK-${{ env.VTK_VER }}/.
-  #         cmake --preset ${{ matrix.config.aqt_arch }}
-  #         cmake --build --preset ${{ matrix.config.aqt_arch }} --config ${{ matrix.config.cmake_config }}
-  #         cmake --install ${{ runner.workspace }}/qt5-vtk-${{ env.VTK_VER }}-build --config ${{ matrix.config.cmake_config }}
-
-
   build:
     name: ${{ matrix.config.os }}
     runs-on: ${{ matrix.config.os }}
-    # needs: [cache-qt5-vtk]
     strategy:
       fail-fast: false
       matrix:
@@ -216,7 +77,7 @@ jobs:
       # aqt install-qt linux desktop 5.15.2 gcc_64 --dir ${HOME}/work/modelviewer-mf6/Qt
       # aqt install-qt windows desktop 5.15.2 win64_msvc2019_64 --dir ${env:USERPROFILE}\work\modelviewer-mf6\Qt
       #
-      - name: Install Qt
+      - name: Install Qt (${{ env.AQT_VER }})
         uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.AQT_VER }}
@@ -233,36 +94,16 @@ jobs:
         run: |
           echo "${IQTA_TOOLS}/Ninja" >> $GITHUB_PATH
 
-      # - name: Cache qt5-vtk debug
-      #   id: cache-qt5-vtk-debug
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ${{ runner.workspace }}/qt5-vtk-${{ env.VTK_VER }}
-      #     key: ${{ matrix.config.os }}-qt5-vtk-Debug-${{ hashFiles('misc/CMakePresets-vtk-9.1.0-qt-5.15.2.json') }}
-
-      # - name: Cache qt5-vtk release
-      #   id: cache-qt5-vtk-release
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ${{ runner.workspace }}/qt5-vtk-${{ env.VTK_VER }}
-      #     key: ${{ matrix.config.os }}-qt5-vtk-Release-${{ hashFiles('misc/CMakePresets-vtk-9.1.0-qt-5.15.2.json') }}
-
-      # - name: Download assets
-      #   uses: robinraju/release-downloader@v1.7
-      #   with:
-      #     repository: "MODFLOW-USGS/modelviewer-mf6-build-deps"
-      #     releaseId: "90254461" # 2023-01-26T02.03.20Z
-      #     fileName: "qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
-
-      - name: Download assets
+      - name: Download (qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z)
         uses: robinraju/release-downloader@v1.7
         id: download
         with:
           repository: "MODFLOW-USGS/modelviewer-mf6-build-deps"
           latest: true
+          # releaseId: "90254461" # 2023-01-26T02.03.20Z
           fileName: "qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
 
-      - name: Extract assets ${{ steps.download.outputs.tag_name }}
+      - name: Extract (Tag:${{ steps.download.outputs.tag_name }})
         shell: bash
         working-directory: ${{ runner.workspace }}
         run: |
