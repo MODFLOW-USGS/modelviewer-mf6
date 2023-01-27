@@ -103,7 +103,7 @@ jobs:
           # releaseId: "90254461" # 2023-01-26T02.03.20Z
           fileName: "qt5-vtk-${{ env.VTK_VER }}-${{ matrix.config.os }}.7z"
 
-      - name: Extract (Tag:${{ steps.download.outputs.tag_name }})
+      - name: "Extract (Tag: ${{ steps.download.outputs.tag_name }})"
         shell: bash
         working-directory: ${{ runner.workspace }}
         run: |
