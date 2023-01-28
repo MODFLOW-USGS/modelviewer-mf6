@@ -1,0 +1,268 @@
+Model Viewer for MODFLOW 6 Release
+Revision History
+
+
+
+
+
+Release History
+
+Model Viewer for MODFLOW 6 Version	Date			Digital Object Identifier
+            1.0.0			April 12, 2022		https://doi.org/10.5066/P9UHN4YB
+            1.1.0			@TBD@			https://doi.org/10.5066/P9K4N2RN
+
+
+
+Changes Introduced in this Release
+
+* Version 1.1.0-@TBD@
+
+New fuctionality and changes
+
+The help system (htmlhelp) has been replaced by a Read the Docs (https://modelviewer-mf6.readthedocs.io/en/latest/) website.
+
+Microsoft Foundation Class Library (MFC) was replaced by the Qt Framework version 5.15.2 in order to run on recent versions of macOS, Ubuntu, and Windows natively.
+
+VTK was updated from version 6.3.0 to version 9.1.0.
+
+The grid origin and angrot are now automatically set in the Overlay Toolbox when they are specified using the XORIGIN, YORIGIN, and ANGROT options of the discretization (DIS) input file.
+
+Added the ability to replace the head file with a concentration file using the 'Data Files' option of the 'Modflow 6 Data Files' (File->New...) dialog. (Add example ???)
+
+Added the ability to resize most of the Toolbox dialogs.
+
+Added the ability to save the .mvmf6 files in any directory. The previous version required the .mvmf6 file be located in the same directory as the modflow output files.
+
+
+Bug fixes
+
+
+Fixed a bug that occured when attempting to open an .mvmf6 that is located in a directory other than the directory where the .nam file is located. (issue-53)
+
+Fixed a bug that caused the overlay to appear in the wrong location when the origin is non-zero. (issue-51)
+
+Fixed missing documentation for the Overlay Toolbox.
+
+
+
+Version 1.0.0 April 12, 2022
+
+Enhancements
+
+DIS6 (Structured Discretization (DIS))
+DISV6 (Structured Discretiztaion by Vertices (DISV))
+DISU6 (Unstructured Discretization (DISU))
+
+Updated for Modflow 6
+Updated to be able to read read and load "unstructured" grids
+
+Updated to use Microsoft Foundation Classes (MFC) Version 14.29.30319.0.
+Compiled with Visual C++ 16.11.9
+Updated VTK from 4.0 to 6.1.0
+
+Only Modflow 6 is supported
+
+
+Limitations
+
+1. Vectors for DISU grids cannot currently be displayed
+2. Pathlines functionionality has not been implemented
+3. No installer
+4. Printing and Print Preview is not implemented
+5. No command line arguments are currently supported
+6. Only supports Modflow 6
+
+
+
+
+
+Langevin, C.D., Hughes, J.D., Banta, E.R., Provost, A.M., Niswonger, R.G., and Panday, Sorab, 2017, MODFLOW 6 Modular Hydrologic Model: U.S. Geological Survey Software, https://doi.org/10.5066/F76Q1VQV
+
+
+
+
+
+
+
+
+
+
+
+
+Building on Ubuntu
+
+sudo apt-get update
+sudo apt-get install build-essential libgl1-mesa-dev libpulse-dev libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-render0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xfixes0 libxcb-xinerama0 libxcb1 libxkbcommon-x11-0 -y
+python3 -m pip install setuptools wheel py7zr==0.19.* aqtinstall==2.1.*
+mkdir -p ~/work/modelviewer-mf6/Qt
+python3 -m aqt install-qt linux desktop 5.15.2 gcc_64 --outputdir ~/work/modelviewer-mf6/Qt
+python3 -m aqt install-tool linux desktop tools_ninja --outputdir ~/work/modelviewer-mf6/Qt
+
+Add the following to .zshrc
+
+	# add ninja to PATH
+	if [ -d "$HOME/work/modelviewer-mf6/Qt/Tools/Ninja" ] ; then
+	    export PATH="$HOME/work/modelviewer-mf6/Qt/Tools/Ninja:$PATH"
+	fi
+
+
+
+1. Install pip
+   $ sudo apt install python3-pip
+   
+2. Install aqtinstall
+   $ python3 -m pip install setuptools wheel "py7zr==0.19.*" "aqtinstall==2.1.*"
+
+Add the following to .zshrc
+   
+	# set PATH so it includes user's private bin if it exists
+	if [ -d "$HOME/bin" ] ; then
+	    export PATH="$HOME/bin:$PATH"
+	fi
+
+	# set PATH so it includes user's private bin if it exists
+	if [ -d "$HOME/.local/bin" ] ; then
+	    export PATH="$HOME/.local/bin:$PATH"
+	fi
+	
+cd ~/work/modelviewer-mf6
+curl -L -O https://github.com/Kitware/VTK/archive/refs/tags/v9.1.0.tar.gz
+tar xzf ./v9.1.0.tar.gz
+git clone git@github.com:scharlton2/modelviewer-mf6.git
+cp ./modelviewer-mf6/misc/CMakePresets-vtk-9.1.0-qt-5.15.2.json ./VTK-9.1.0/CMakePresets.json
+cd VTK-9.1.0
+sudo snap install cmake --classic
+
+
+export VTK_DIR=$RUNNER_WORKSPACE/qt5-vtk-$VTK_VER/lib/cmake
+
+   
+   
+Setup Ubuntu 22.04.1
+
+Let system update
+list installed packages
+apt list --installed > apt-list--installed.txt
+
+ubuntu oh-my-zsexh
+  sudo apt install build-essential curl file git
+  sudo apt install zsh
+  sudo apt install git-core curl fonts-powerline
+  
+  https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh
+
+
+VS Code
+  sudo snap install code --classic
+
+SSH
+  ssh-keygen -t ed25519 -C "charlton@jammy"
+
+create snapshot 2
+
+
+
+####################################################
+
+/usr/share/applications/org.gnome.gedit.desktop
+
+/usr/share/applications/gov.usgs.mvmf6.desktop
+
+####################################################
+
+
+Recommended work flow
+
+fork repository
+
+set develop as default branch
+
+protect develop branch
+
+  Settings->Branches
+  
+    Under the 'Branch protection rules' section click the Edit button
+    
+      Under the 'Protect matching branches' section check the following
+      
+      	<<<<<<<<<<<<<<<<<<<<<
+        Require a pull request before merging
+        Require linear history
+        Do not allow bypassing the above settings
+        =====================
+        Lock branch
+          Allow fork syncing
+        Do not allow bypassing the above settings
+        >>>>>>>>>>>>>>>>>>>>>
+        
+verify develop branch is sync'd with upstream MODFLOW-USGS/modelviewer-mf6
+by selecting 'Sync fork' and selecting 'Update branch' button
+        
+clone repository
+
+  git clone git@github.com:<username>/modelviewer-mf6.git
+  
+  <<<<<<<<<<<<
+  # copy develop branch to fork
+  git remote add upstream git@github.com:MODFLOW-USGS/modelviewer-mf6.git
+  git fetch --all
+  git switch develop
+  git push origin  
+  >>>>>>>>>>>>
+  
+switch to develop branch
+
+  git switch develop
+    
+verify develop branch is sync'd with your fork
+
+  $ git pull
+  Already up to date.
+  
+create issue on MODFLOW-USGS/modelviewer-mf6
+
+create issue branch locally
+
+  git switch -c issue-62
+  
+  make your changes
+  
+  Make sure that github actions is enabled on your fork
+  by using the Actions tab on your github repo
+  
+  
+Ubuntu 22.04
+Maybe set ninja path in CMakePresets.json ???
+
+export RUNNER_WORKSPACE=/home/charlton/work/modelviewer-mf6
+export VTK_VER=9.1.0
+export AQT_VER=5.15.2
+
+cmake --preset gcc_64
+cmake --build --preset gcc_64 --config Release
+cmake --install _gcc_64 --config Release
+
+Install using sudo
+cmake --preset gcc_64_sudo
+cmake --build --preset gcc_64_sudo --config Release
+sudo cmake --install _gcc_64_sudo --config Release
+sudo update-desktop-database /usr/local/share/applications
+
+
+
+=====================================================================
+
+/home/charlton/work/modelviewer-mf6
+
+
+C:\Qt
+C:\Users\schar\work\modelviewer-mf6\Qt
+
+Windows
+
+Visual Studio Community 2019 (Version 16.11)  -- 
+Total space required 8.18 GB
+  Workloads
+    [x] Desktop development with C++
+    
+    	*** Checkout C++ AddressSanitizer
