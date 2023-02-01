@@ -5126,8 +5126,7 @@ char *mvManager::Serialize(const char *fileName, mvGUISettings *gui) const
     // Overlay
     if (m_Overlay->HasData())
     {
-        std::string dir      = mvSaveCurrentDirectory::GetDirName(fileName);
-        std::string relative = mvSaveCurrentDirectory::GetRelativePath(dir.c_str(), m_Overlay->GetFileName());
+        std::string relative = mvSaveCurrentDirectory::GetRelativePath(fileName, m_Overlay->GetFileName());
         out << "Overlay file = " << relative << endl;
     }
     out << "Overlay data type = " << m_Overlay->GetType() << endl;
@@ -5232,19 +5231,32 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
         if (strlen(buffer))
         {
 #if defined(QT_GUI_LIB)
-            QString dest(dirname.c_str());
-            dest = mvUtil::PathAppendA(dest, buffer);
-            QString fullPath = mvUtil::PathCanonicalizeA(dest);
-            if (!mvUtil::PathFileExistsA(fullPath))
+            QString fullpath;
+            QString filepath(buffer);
+            if (QDir::isAbsolutePath(filepath))
+            {
+                fullpath = QDir::cleanPath(filepath);
+            }
+            else if (QDir::isRelativePath(filepath))
+            {
+                QDir dir(dirname.c_str());
+                Q_ASSERT(dir.exists());
+                fullpath = QDir::cleanPath(dir.absoluteFilePath(filepath));
+            }
+            else
+            {
+                Q_ASSERT(false);
+            }
+            if (!QFileInfo::exists(fullpath))
             {
                 delete hashTable;
                 delete[] dataFileList;
                 std::ostringstream oss;
-                oss << "Unable to open \"" << fullpath << "\".";
+                oss << "Unable to open \"" << filepath.toLocal8Bit().constData() << "\".";
                 errorMsg = oss.str();
                 return;
             }
-            strcat(dataFileList, mvUtil::toNativeSeparators(fullPath).toLocal8Bit().data());
+            strcat(dataFileList, fullpath.toLocal8Bit().constData());
 #else
             strcpy(szDest, dirname.c_str());
             mvUtil::PathAppendA(szDest, buffer);
@@ -5271,6 +5283,9 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
     std::shared_ptr<mvSaveCurrentDirectory> spCurDir;
     if (ncode == 1)
     {
+        // this assumes that the remaining files are relative
+        // to this file (which should be the name file (*.nam - not mfsim.nam)
+        // 
         // save current directory and cd to dataFileList
         spCurDir.reset(new mvSaveCurrentDirectory(dataFileList));
     }

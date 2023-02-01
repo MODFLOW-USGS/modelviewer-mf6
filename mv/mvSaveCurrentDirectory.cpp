@@ -156,35 +156,21 @@ std::string mvSaveCurrentDirectory::GetDirName(const char* fullPath)
     return std::string(szPath);
 
 #else
-
-#if defined(_MSC_VER)
-    char szOut[MAX_PATH];
-    char szDrive[_MAX_DRIVE];
-    char szDir[_MAX_DIR];
-    char szDest[MAX_PATH];
-
-    _splitpath_s(fullPath, szDrive, _MAX_DRIVE, szDir, _MAX_DIR, nullptr, 0, nullptr, 0);
-
-    char szPath[MAX_PATH];
-    _makepath_s(szPath, _MAX_DIR, szDrive, szDir, nullptr, nullptr);
-#endif
-
-
+    // this always returns paths with forward slashes
     QString   path(fullPath);
     path = path.trimmed();
 
     QFileInfo fileInfo(path);
-    QString   absolutePath = fileInfo.canonicalPath();
+    QString   absolutePath = QDir::cleanPath(fileInfo.canonicalPath());
 
-#if defined(_MSC_VER)
-    assert((mvUtil::toNativeSeparators(absolutePath).toStdString() + "\\").compare(szPath) == 0);
-#endif
-    assert(QDir(absolutePath).exists());
-    return mvUtil::toNativeSeparators(absolutePath).toStdString();
-
+    Q_ASSERT(QDir(absolutePath).exists());
+    return absolutePath.toStdString();
 #endif
 }
 
+// Assumes pszFrom and pszTo are both files (as opposed to either of them being directories)
+// and that they both exist similar to the following on Windows:
+// PathRelativePathTo(szOut, pszFrom, FILE_ATTRIBUTE_NORMAL, cpTo.c_str(), FILE_ATTRIBUTE_NORMAL)
 std::string mvSaveCurrentDirectory::GetRelativePath(const char* pszFrom, const char* pszTo)
 {
 #if defined(_AFXDLL)
@@ -204,32 +190,23 @@ std::string mvSaveCurrentDirectory::GetRelativePath(const char* pszFrom, const c
     return std::string(pszTo);
 
 #else
-
-#if defined(_MSC_VER)
-    std::string ret;
-    char szOut[MAX_PATH + 1] = "";
-    if (strlen(pszTo) && PathIsSameRoot(pszFrom, pszTo))
+    Q_ASSERT(pszFrom);
+    QFileInfo fiFrom = QFileInfo(pszFrom);
+    Q_ASSERT(fiFrom.exists() && fiFrom.isFile());
+    if (pszTo && strlen(pszTo))
     {
-        std::string cpTo(pszTo);
-        std::replace(cpTo.begin(), cpTo.end(), '/', '\\');
-        PathCanonicalize(szOut, cpTo.c_str());
-        cpTo = szOut;
-        PathRelativePathTo(szOut, pszFrom, FILE_ATTRIBUTE_NORMAL, cpTo.c_str(), FILE_ATTRIBUTE_NORMAL);
-        ret = std::string(szOut);
+        QFileInfo fiTo = QFileInfo(pszTo);
+        Q_ASSERT(fiTo.exists() && fiTo.isFile());
     }
-    else
-    {
-        ret = std::string(pszTo);
-    }
-#endif
 
-    QDir        dir(GetDirName(pszFrom).c_str());
-    QString     s      = dir.relativeFilePath(pszTo);
-    QString     ns     = mvUtil::toNativeSeparators(s);
-    std::string native = ns.toStdString();
+    QFileInfo i   = QFileInfo(pszFrom);
+    QDir      dir = i.absoluteDir();
+    QString   std = dir.absolutePath();
+    Q_ASSERT(dir.exists());
 
-    return native;
-
+    QString s  = dir.relativeFilePath(pszTo);
+    QString ss = QDir::fromNativeSeparators(s);
+    return ss.toStdString();
 #endif
 }
 
@@ -253,49 +230,21 @@ std::string mvSaveCurrentDirectory::GetFullPath(const char* szMore, const char* 
     }
     return std::string(szMore);
 #else
-
-#if defined(_MSC_VER)
-    std::string retval;
-    if (PathIsRelative(szMore))
-    {
-        assert(szDirectory);
-        assert(PathIsDirectory(szDirectory));
-
-        char buffer[MAX_PATH + 1];
-        strcpy(buffer, szDirectory);
-        PathAddBackslash(buffer);
-        PathAppend(buffer, szMore);
-
-        char canon[MAX_PATH + 1];
-        PathCanonicalize(canon, buffer);
-
-        retval = std::string(canon);
-    }
-    else
-    {
-        retval = std::string(szMore);
-    }
-#endif
-
+    // this always returns paths with forward slashes
     if (QDir::isRelativePath(QString(szMore)))
     {
-        assert(szDirectory);
-        assert(QDir(szDirectory).exists());    
+        Q_ASSERT(szDirectory);
+        Q_ASSERT(QDir(szDirectory).exists());    
 
         QDir      dir(szDirectory);
-        QString abs = dir.absoluteFilePath(szMore);
+        QString   abs = dir.absoluteFilePath(szMore);
 
         QFileInfo fileInfo(abs);
         abs = fileInfo.canonicalFilePath();
 
-        abs = mvUtil::toNativeSeparators(abs);
-
-#if defined(_MSC_VER)
-        assert(retval.compare(abs.toStdString()) == 0);
-#endif
         return abs.toStdString();
     }
-    return std::string(szMore);
-
+    std::string more = QDir::fromNativeSeparators(szMore).toStdString();
+    return more;
 #endif
 }

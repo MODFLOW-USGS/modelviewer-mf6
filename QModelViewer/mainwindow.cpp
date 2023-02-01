@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#if defined(Q_OS_WINDOWS)
+#if defined(Q_OS_WIN)
 #include <shlwapi.h>
 #endif
 
@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
     , view{nullptr}
 
 {
-#if defined(Q_OS_WINDOWS)
+#if defined(Q_OS_WIN)
     // Disables the window ghosting feature for the calling GUI process
     // (Don't display '(Not Responding)' in window caption)
     DisableProcessWindowsGhosting();
@@ -993,7 +993,6 @@ bool MainWindow::onFileSave()
     }
 }
 
-
 bool MainWindow::onFileSaveAs()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
@@ -1318,7 +1317,7 @@ void MainWindow::updateRecentFileActions()
         recentFileActions[i]->setText(text);
         recentFileActions[i]->setData(files[i]);
         recentFileActions[i]->setVisible(true);
-#if defined(Q_OS_WINDOWS)
+#if defined(Q_OS_WIN)
         QString native = QDir::toNativeSeparators(files[i]);
         char    path_in[MAX_PATH];
         char    path_out[MAX_PATH];
