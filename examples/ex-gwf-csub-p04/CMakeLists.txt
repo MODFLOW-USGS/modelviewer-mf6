@@ -24,5 +24,5 @@ install(
     mfsim.lst
     mfsim.nam
   DESTINATION
-    ${CMAKE_INSTALL_DOCDIR}/examples/ex-gwf-csub-p04
+    $<$<PLATFORM_ID:Linux>:${CMAKE_INSTALL_DOCDIR}/>examples/ex-gwf-csub-p04
 )

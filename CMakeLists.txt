@@ -172,7 +172,7 @@ elseif(UNIX)
   get_filename_component(DIRS "${DIRS}" DIRECTORY)
   get_filename_component(DIRS "${DIRS}" DIRECTORY)
 elseif(WIN32)
-  string(APPEND DIRS "../../../bin")
+  get_filename_component(DIRS "${DIRS}/../../../bin" REALPATH)
 endif()
 
 # add qt5-vtk to DIRS

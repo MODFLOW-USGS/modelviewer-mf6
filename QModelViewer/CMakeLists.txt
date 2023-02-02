@@ -217,7 +217,11 @@ target_include_directories(ModelViewer PRIVATE ${CMAKE_SOURCE_DIR}/mv)
 target_link_libraries(ModelViewer ${VTK_LIBRARIES})
 target_link_libraries(ModelViewer mv)
 
-set_target_properties(ModelViewer PROPERTIES VS_DEBUGGER_ENVIRONMENT "PATH=$(SolutionDir)\\mv\\$(Configuration);C:\\QT-VTK-9.1.0-leaks-vs2019-x64\\bin;C:\\Qt\\5.15.2\\msvc2019_64\\bin;%PATH%")
+# set path for visual studio debugging
+get_filename_component(QT_BIN "${Qt5Widgets_DIR}/../../../bin" REALPATH)
+file(TO_NATIVE_PATH ${QT_BIN} QT_PATH)
+file(TO_NATIVE_PATH ${VTK_PREFIX_PATH}/bin VTK_PATH)
+set_target_properties(ModelViewer PROPERTIES VS_DEBUGGER_ENVIRONMENT "PATH=$(SolutionDir)\\mv\\$(Configuration);${VTK_PATH};${QT_PATH};%PATH%")
 
 if(UNIX AND NOT APPLE)
   set_target_properties(ModelViewer PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")

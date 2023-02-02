@@ -71,12 +71,12 @@ Limitations
 4. Printing and Print Preview is not implemented
 5. No command line arguments are currently supported
 6. Only supports Modflow 6
+7. Cannot export as VRML (Virtual Reality Modeling Language)
 
 
 
 
 
-Langevin, C.D., Hughes, J.D., Banta, E.R., Provost, A.M., Niswonger, R.G., and Panday, Sorab, 2017, MODFLOW 6 Modular Hydrologic Model: U.S. Geological Survey Software, https://doi.org/10.5066/F76Q1VQV
 
 
 
@@ -266,3 +266,13 @@ Total space required 8.18 GB
     [x] Desktop development with C++
     
     	*** Checkout C++ AddressSanitizer
+
+
+
+
+MODFLOW 6
+Langevin, C.D., Hughes, J.D., Banta, E.R., Provost, A.M., Niswonger, R.G., and Panday, Sorab, 2017, MODFLOW 6 Modular Hydrologic Model: U.S. Geological Survey Software, https://doi.org/10.5066/F76Q1VQV
+
+
+VRML
+https://en.wikipedia.org/wiki/VRML

@@ -88,9 +88,7 @@ constexpr auto MAX_PATH = 4096;
 #endif
 
 mvManager::mvManager()
-//{{
     : m_ColorBarDataSource{0}
-//}}
 {
     // initial values
     m_ActiveDataType             = 0;
@@ -4882,7 +4880,7 @@ char *mvManager::Serialize(const char *fileName, mvGUISettings *gui) const
     delete[] fnames;
     int numDataTypes = m_DataSource->GetNumberOfScalarDataTypes();
     out << "Data type count = " << numDataTypes << endl;
-    out << "Data type active= " << m_ActiveDataType << endl;
+    out << "Data type active = " << m_ActiveDataType << endl;
 
     // Color bar, solid and isosurface control
     const double *rgb = GetColorBarTextColor();
@@ -5233,19 +5231,17 @@ void mvManager::Deserialize(const char *fileName, mvGUISettings *gui, std::strin
 #if defined(QT_GUI_LIB)
             QString fullpath;
             QString filepath(buffer);
+            filepath.replace('\\', '/');
             if (QDir::isAbsolutePath(filepath))
             {
                 fullpath = QDir::cleanPath(filepath);
             }
-            else if (QDir::isRelativePath(filepath))
+            else
             {
+                Q_ASSERT(QDir::isRelativePath(filepath));
                 QDir dir(dirname.c_str());
                 Q_ASSERT(dir.exists());
                 fullpath = QDir::cleanPath(dir.absoluteFilePath(filepath));
-            }
-            else
-            {
-                Q_ASSERT(false);
             }
             if (!QFileInfo::exists(fullpath))
             {
