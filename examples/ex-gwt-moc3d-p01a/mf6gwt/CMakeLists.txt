@@ -19,5 +19,5 @@ install(
     trans.tdis
     trans.ucn
   DESTINATION 
-    ${CMAKE_INSTALL_DOCDIR}/examples/ex-gwt-moc3d-p01a/mf6gwt
+    $<$<PLATFORM_ID:Linux>:${CMAKE_INSTALL_DOCDIR}/>examples/ex-gwt-moc3d-p01a/mf6gwt
 )
