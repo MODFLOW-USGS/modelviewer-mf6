@@ -82,7 +82,7 @@ CropDialog::CropDialog(QWidget* parent, MvDoc* doc)
                 {
                     ui->doubleSpinBoxYMax->setMinimum(val);
                 }
-                doc->crop(mYMin, mYMax, mYMin, mYMax, mZMin, mZMax, mCropAngle);
+                doc->crop(mXMin, mXMax, mYMin, mYMax, mZMin, mZMax, mCropAngle);
             });
     connect(ui->doubleSpinBoxYMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             [=](double val) {
@@ -127,7 +127,7 @@ CropDialog::CropDialog(QWidget* parent, MvDoc* doc)
                 {
                     ui->doubleSpinBoxZMax->setMinimum(val);
                 }
-                doc->crop(mZMin, mZMax, mYMin, mYMax, mZMin, mZMax, mCropAngle);
+                doc->crop(mXMin, mXMax, mYMin, mYMax, mZMin, mZMax, mCropAngle);
             });
     connect(ui->doubleSpinBoxZMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             [=](double val) {
