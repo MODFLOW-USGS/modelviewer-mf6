@@ -162,16 +162,18 @@ jobs:
 
       - name: "Package modelviewer-mf6 release with cpack (Windows)"
         if: runner.os == 'Windows'
+        working-directory: ./_ninja_multi
         run: |
-          echo 'see https://github.com/MODFLOW-USGS/modelviewer-mf6/issues/81'
-          echo 'Remove Performance Tools from PATH (dbghelp.dll)'
+          Write-Output 'see https://github.com/MODFLOW-USGS/modelviewer-mf6/issues/81'
+          Write-Output 'Remove Performance Tools from PATH (dbghelp.dll)'
           $skip = '\Enterprise\Team Tools\Performance Tools'
           $paths = ($env:PATH -Split ';') | Where-Object { ! $_.Contains($skip) }
           foreach ($path in ($paths)) {if ($env:_PATH_NEW_) { $env:_PATH_NEW_="$env:_PATH_NEW_;$path"} else {$env:_PATH_NEW_="$path"} }
           $env:PATH = $env:_PATH_NEW_
+          Write-Output $env:PATH
           cpack --verbose
 
-      - name: "*** Upload package ***"
+      - name: "Upload package"
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.config.os }}-artifact
