@@ -136,28 +136,40 @@ jobs:
         with:
           arch: x64
 
-      - name: "*** Configure modelviewer-mf6 for release ***"
-        if: ${{ github.ref_name == 'master' }}
+      - name: "Configure modelviewer-mf6 for release"
+        if: ${{ github.ref_name == 'main' }}
         env:
           VTK_DIR: ${{ runner.workspace }}/qt5-vtk-${{ env.VTK_VER }}/lib/cmake
         run: cmake -S . -B ./_ninja_multi -G "Ninja Multi-Config" -DMV_SHORT_SHA1="${{ env.MV_SHORT_SHA1 }}" -DMV_DATE_COMPILED="${{ env.MV_DATE_COMPILED }}"
 
-      - name: "*** Configure modelviewer-mf6 for prerelease ***"
-        if: ${{ github.ref_name != 'master' }}
+      - name: "Configure modelviewer-mf6 for prerelease"
+        if: ${{ github.ref_name != 'main' }}
         env:
           VTK_DIR: ${{ runner.workspace }}/qt5-vtk-${{ env.VTK_VER }}/lib/cmake
           MV_VERSION_PRERELEASE: -prerelease.${{ github.run_number }}
         run: cmake -S . -B ./_ninja_multi -G "Ninja Multi-Config" -DMV_SHORT_SHA1="${{ env.MV_SHORT_SHA1 }}" -DMV_DATE_COMPILED="${{ env.MV_DATE_COMPILED }}" -DMV_VERSION_PRERELEASE="${{ env.MV_VERSION_PRERELEASE }}"
 
-      - name: "*** Build modelviewer-mf6 debug with cmake ***"
+      - name: "Build modelviewer-mf6 debug with cmake"
         run: cmake --build ./_ninja_multi --config Debug
 
-      - name: "*** Build modelviewer-mf6 release with cmake ***"
+      - name: "Build modelviewer-mf6 release with cmake"
         run: cmake --build ./_ninja_multi --config Release
 
-      - name: "*** Package modelviewer-mf6 release with cpack ***"
+      - name: "Package modelviewer-mf6 release with cpack"
+        if: runner.os != 'Windows'
         working-directory: ./_ninja_multi
         run: cpack --verbose
+
+      - name: "Package modelviewer-mf6 release with cpack (Windows)"
+        if: runner.os == 'Windows'
+        run: |
+          echo 'see https://github.com/MODFLOW-USGS/modelviewer-mf6/issues/81'
+          echo 'Remove Performance Tools from PATH (dbghelp.dll)'
+          $skip = '\Enterprise\Team Tools\Performance Tools'
+          $paths = ($env:PATH -Split ';') | Where-Object { ! $_.Contains($skip) }
+          foreach ($path in ($paths)) {if ($env:_PATH_NEW_) { $env:_PATH_NEW_="$env:_PATH_NEW_;$path"} else {$env:_PATH_NEW_="$path"} }
+          $env:PATH = $env:_PATH_NEW_
+          cpack --verbose
 
       - name: "*** Upload package ***"
         uses: actions/upload-artifact@v3
