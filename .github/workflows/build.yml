@@ -164,12 +164,14 @@ jobs:
         if: runner.os == 'Windows'
         working-directory: ./_ninja_multi
         run: |
-          Write-Output 'see https://github.com/MODFLOW-USGS/modelviewer-mf6/issues/81'
-          Write-Output 'Remove Performance Tools from PATH (dbghelp.dll)'
-          $skip = '\Enterprise\Team Tools\Performance Tools'
-          $paths = ($env:PATH -Split ';') | Where-Object { ! $_.Contains($skip) }
-          foreach ($path in ($paths)) {if ($env:_PATH_NEW_) { $env:_PATH_NEW_="$env:_PATH_NEW_;$path"} else {$env:_PATH_NEW_="$path"} }
-          $env:PATH = $env:_PATH_NEW_
+          ### Write-Output 'see https://github.com/MODFLOW-USGS/modelviewer-mf6/issues/81'
+          ### Write-Output 'Remove Performance Tools from PATH (dbghelp.dll)'
+          ### $skip = '\Enterprise\Team Tools\Performance Tools'
+          ### $paths = ($env:PATH -Split ';') | Where-Object { ! $_.Contains($skip) }
+          ### foreach ($path in ($paths)) {if ($env:_PATH_NEW_) { $env:_PATH_NEW_="$env:_PATH_NEW_;$path"} else {$env:_PATH_NEW_="$path"} }
+          ### $env:PATH = $env:_PATH_NEW_
+          $env:PATH="$env:SystemRoot\System32;$env:PATH"
+          Get-Command dbghelp.dll
           Write-Output $env:PATH
           cpack --verbose
 
