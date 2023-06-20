@@ -235,7 +235,7 @@ void Modflow6DataFilesDialog::onBrowseModelHeadFile()
     QString fileName = QFileDialog::getOpenFileName(this,
                                                     tr("GWF Model Head or GWT Model Concentration File"),
                                                     QString(),
-                                                    tr("Head & Concentration Files (*.hds; *.bhd; *.hdb; *.hed; *.ucn);;Concentration Files (*.ucn);;Head Files (*.hds; *.bhd; *.hdb; *.hed);;All files (*.*)"));
+                                                    tr("Head & Concentration Files (*.hds; *.bhd; *.hdb; *.hed; *.conc; *.ucn);;Concentration Files (*.ucn; *.conc);;Head Files (*.hds; *.bhd; *.hdb; *.hed);;All files (*.*)"));
     if (fileName.isEmpty())
     {
         return;
