@@ -75,19 +75,19 @@ void MainWindow::createActions()
     //const QIcon newIcon     = QIcon::fromTheme("document-new", QIcon(":/images/new.png"));
     newAct      = new QAction(/* newIcon, */ tr("&New..."), this);
     newAct->setShortcuts(QKeySequence::New);
-    newAct->setStatusTip(tr("Create a new mvmv6 file"));
+    newAct->setStatusTip(tr("Create a new mvmf6 file"));
     connect(newAct, &QAction::triggered, this, &MainWindow::onFileNew);
 
     // File->Open...
     openAct = new QAction(tr("&Open..."), this);
     openAct->setShortcuts(QKeySequence::Open);
-    openAct->setStatusTip(tr("Open an existing mvmv6 file"));
+    openAct->setStatusTip(tr("Open an existing mvmf6 file"));
     connect(openAct, &QAction::triggered, this, &MainWindow::onFileOpen);
 
     // File->Close
     closeAct = new QAction(tr("&Close"), this);
     closeAct->setShortcuts(QKeySequence::Close);
-    closeAct->setStatusTip(tr("Close the current mvmv6 file"));
+    closeAct->setStatusTip(tr("Close the current mvmf6 file"));
     connect(closeAct, &QAction::triggered, this, &MainWindow::onFileClose);
 
     // File->Save
