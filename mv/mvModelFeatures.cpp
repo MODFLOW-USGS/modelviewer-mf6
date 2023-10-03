@@ -32,8 +32,8 @@ static char THIS_FILE[] = __FILE__;
 mvModelFeatures::mvModelFeatures()
 {
     m_DisplayMode      = MV_DISPLAY_MODEL_FEATURES_AS_CELLS;
-    m_StructuredGrid   = 0;
-    m_UnstructuredGrid = 0;
+    m_StructuredGrid   = nullptr;
+    m_UnstructuredGrid = nullptr;
     m_ThresholdCells   = vtkSmartPointer<vtkThreshold>::New();
     m_ThresholdCells->SetInputData(m_StructuredGrid);
 #if ((VTK_MAJOR_VERSION == 9) && (VTK_MINOR_VERSION < 1) || (VTK_MAJOR_VERSION < 9))
@@ -269,7 +269,7 @@ void mvModelFeatures::Build()
             m_UnstructuredGrid->SetPoints(m_GridPoints);
             m_NumberOfCells = m_Cells->GetNumberOfCells();
         }
-        else
+        else if (m_StructuredGrid)
         {
             m_StructuredGrid->SetDimensions(m_Dim[0], m_Dim[1], m_Dim[2]);
             m_StructuredGrid->SetPoints(m_GridPoints);
@@ -291,7 +291,7 @@ void mvModelFeatures::Build()
         {
             m_UnstructuredGrid->GetCellData()->SetScalars(scalars);
         }
-        else
+        else if (m_StructuredGrid)
         {
             m_StructuredGrid->GetCellData()->SetScalars(scalars);
         }
@@ -595,7 +595,7 @@ void mvModelFeatures::SetCellArrayForUnstructuredGrid(vtkUnsignedCharArray *cell
 
 void mvModelFeatures::SetGridTypeToStructuredGrid()
 {
-    m_UnstructuredGrid = 0;
+    m_UnstructuredGrid = nullptr;
     m_StructuredGrid   = vtkSmartPointer<vtkStructuredGrid>::New();
     m_ThresholdCells->SetInputData(m_StructuredGrid);
     m_ThresholdCells->Modified();
@@ -603,7 +603,7 @@ void mvModelFeatures::SetGridTypeToStructuredGrid()
 
 void mvModelFeatures::SetGridTypeToUnstructuredGrid()
 {
-    m_StructuredGrid   = 0;
+    m_StructuredGrid   = nullptr;
     m_UnstructuredGrid = vtkSmartPointer<vtkUnstructuredGrid>::New();
     m_ThresholdCells->SetInputData(m_UnstructuredGrid);
     m_ThresholdCells->Modified();
@@ -616,6 +616,7 @@ void mvModelFeatures::Update()
     }
     else
     {
+        assert(m_DisplayMode == MV_DISPLAY_MODEL_FEATURES_AS_CELLS);
         if (m_UnstructuredGrid)
         {
             m_UnstructuredGrid->SetCells(m_CellTypes, m_CellLocations, m_Cells);
