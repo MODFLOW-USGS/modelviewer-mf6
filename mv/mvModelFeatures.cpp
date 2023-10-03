@@ -622,7 +622,7 @@ void mvModelFeatures::Update()
             m_UnstructuredGrid->SetPoints(m_GridPoints);
             m_UnstructuredGrid->Modified();
         }
-        else
+        else if (m_StructuredGrid)
         {
             m_StructuredGrid->SetDimensions(m_Dim[0], m_Dim[1], m_Dim[2]);
             m_StructuredGrid->SetPoints(m_GridPoints);
